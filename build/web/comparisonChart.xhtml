@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Autocross DB</title>
+        <script>
+            function lineChartExtender()
+            {
+                this.cfg.axesDefaults.tickOptions.formatString = "%#.3f";
+            }
+        </script>
+        
+    </h:head>
+    <h:body>
+        <p:tabMenu activeIndex="#{param.i}">
+            <p:menuitem value="Home" outcome="index">
+                <f:param name="i" value="0"/>
+            </p:menuitem>
+            <p:menuitem value="Event Info" outcome="eventInfoPage">
+                <f:param name="i" value="1"/>
+            </p:menuitem>
+            <p:menuitem value="New Event" outcome="loadEventPage">
+                <f:param name="i" value="2"/>
+            </p:menuitem>
+            <p:menuitem value="Chart" outcome="comparisonChart">
+                <f:param name="i" value="3" />
+            </p:menuitem>
+            <p:menuitem value="Awards" outcome="awardsPage" >
+                <f:param name="i" value="4" />
+            </p:menuitem>
+            <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
+                <f:param name="i" value="5" />
+            </p:menuitem>
+        </p:tabMenu> 
+        <p:layout style="min-width:400px;min-height:1000px;" >
+            <p:growl id="messages" />
+                <p:layoutUnit position="south" size="300">
+                    <h:form id="driverForm">
+                    <h:panelGrid id="grid" columns="2" cellpadding="5">
+                        <p:outputLabel value="Driver 1:" for="driver1" />
+                        <p:autoComplete id="driver1" forceSelection="true" value="#{comparisonChart.driver1}" completeMethod="#{comparisonChart.completeDriverText}" />
+                        <p:outputLabel value="Driver 2:" for="driver2" />
+                        <p:autoComplete id="driver2" forceSelection="true" value="#{comparisonChart.driver2}" completeMethod="#{comparisonChart.completeDriverText}" />
+                        <p:outputLabel value="Start Date:" for="start" />
+                        <p:calendar id="start" showOn="button" mode="popup" value="#{comparisonChart.startDate}" />
+                        <p:outputLabel value="End Date:" for="end" />
+                        <p:calendar id="end" showOn="button" mode="popup" value="#{comparisonChart.endDate}" />
+                        <p:outputLabel for="type" value="Stat to Compare:" />
+                        <p:selectOneRadio id="type" value="#{comparisonChart.type}" required="true" >
+                            <f:selectItem itemLabel="Raw" itemValue="raw" />
+                            <f:selectItem itemLabel="Pax" itemValue="pax" />
+                            <f:selectItem itemLabel="Cones" itemValue="cones" />
+                        </p:selectOneRadio>
+                        <p:commandButton id="viewChart" value="View Chart" action="#{comparisonChart.drawChart}" update="compareChart driverForm" />
+                    </h:panelGrid>
+                    </h:form>
+                </p:layoutUnit>
+            <p:layoutUnit position="center" >
+                <p:chart id="compareChart" type="line" model="#{comparisonChart.lineModel}" style="height:600px;" responsive="true" />
+            </p:layoutUnit>
+        </p:layout>
+    </h:body>
+</html>
+

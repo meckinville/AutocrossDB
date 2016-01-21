@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Autocross DB</title>
+    </h:head>
+    <h:body>
+        <p:tabMenu activeIndex="#{param.i}">
+            <p:menuitem value="Home" outcome="index">
+                <f:param name="i" value="0"/>
+            </p:menuitem>
+            <p:menuitem value="Event Info" outcome="eventInfoPage">
+                <f:param name="i" value="1"/>
+            </p:menuitem>
+            <p:menuitem value="New Event" outcome="loadEventPage">
+                <f:param name="i" value="2"/>
+            </p:menuitem>
+            <p:menuitem value="Chart" outcome="comparisonChart">
+                <f:param name="i" value="3" />
+            </p:menuitem>
+            <p:menuitem value="Awards" outcome="awardsPage" >
+                <f:param name="i" value="4" />
+            </p:menuitem>
+            <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
+                <f:param name="i" value="5" />
+            </p:menuitem>
+        </p:tabMenu> 
+        <h:form id="analysisForm">
+            <p:outputLabel value="Driver:" />
+            <p:autoComplete id="driver" forceSelection="true" value="#{driverAnalysis.driver}" completeMethod="#{driverAnalysis.completeDriverText}" />
+            <p:commandButton value="Analyze" update="analysisForm" action="#{driverAnalysis.analyzeDriver}" />
+            <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" itemStyle="text-align:center;" responsive="true" headerText="Events for ..." >
+                <p:panelGrid columns="2">
+                    <h:outputText value="Event: " />
+                    <h:outputText value="#{event.eventName}" />
+                    <h:outputText value="Your Car: " />
+                    <h:outputText value="#{event.carName}" />
+                    <h:outputText value="Your Class: " />
+                    <h:outputText value="#{event.className}" />
+                    <h:outputText value="Class Position: " />
+                    <p:commandLink oncomplete="PF('classDetailsOP').show()" update=":analysisForm:classDetails">
+                        <h:outputText value="#{event.classPosition}" />
+                        <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
+                    </p:commandLink>
+                    <h:outputText value="Raw Position: " />
+                    <h:outputText value="#{event.rawPosition}" />
+                    <h:outputText value="Pax Position: " />
+                    <h:outputText value="#{event.paxPosition}" />
+                </p:panelGrid>
+            </p:carousel>
+
+            <p:overlayPanel widgetVar="classDetailsOP" showCloseIcon="true">
+                <p:outputPanel id="classDetails" >
+                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.classTable}">
+                        <p:column headerText="Position">
+                          #{driver.position}
+                        </p:column>
+                        <p:column headerText="Driver">
+                            #{driver.driver}
+                        </p:column>
+                        <p:column headerText="Car">
+                            #{driver.car}
+                        </p:column>
+                        <p:column headerText="Best Time">
+                            #{driver.time}
+                        </p:column>
+                        <p:column headerText="Time Difference" >
+                            #{driver.diff} (#{driver.leaderDiff})
+                        </p:column>
+                    </p:dataTable>
+                </p:outputPanel>
+            </p:overlayPanel>
+        </h:form>
+    </h:body>
+</html>
+
