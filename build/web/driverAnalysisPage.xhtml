@@ -41,7 +41,7 @@
                     <h:outputText value="Your Class: " />
                     <h:outputText value="#{event.className}" />
                     <h:outputText value="Class Position: " />
-                    <p:commandLink onmouseout="PF('classDetailsOP').hide()" oncomplete="PF('classDetailsOP').show()" update=":analysisForm:classDetails">
+                    <p:commandLink oncomplete="PF('classDetailsOP').show()" update=":analysisForm:classDetails">
                         <h:outputText value="#{event.classPosition}" />
                         <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                     </p:commandLink>
@@ -50,8 +50,8 @@
                     <h:outputText value="Pax Position: " />
                     <h:outputText value="#{event.paxPosition}" />
                 </p:panelGrid>
+                
             </p:carousel>
-
             <p:overlayPanel widgetVar="classDetailsOP" showCloseIcon="true">
                 <p:outputPanel id="classDetails" >
                     <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.classTable}">
@@ -73,6 +73,7 @@
                     </p:dataTable>
                 </p:outputPanel>
             </p:overlayPanel>
+            
         </h:form>
     </h:body>
 </html>
