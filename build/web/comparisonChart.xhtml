@@ -54,12 +54,25 @@
                             <f:selectItem itemLabel="Pax" itemValue="pax" />
                             <f:selectItem itemLabel="Cones" itemValue="cones" />
                         </p:selectOneRadio>
-                        <p:commandButton id="viewChart" value="View Chart" action="#{comparisonChart.drawChart}" update="compareChart driverForm" />
+                        <p:commandButton id="viewChart" value="View Chart" action="#{comparisonChart.drawComparison}" update="compareChart driverForm statsTable" />
                     </h:panelGrid>
                     </h:form>
                 </p:layoutUnit>
             <p:layoutUnit position="center" >
                 <p:chart id="compareChart" type="line" model="#{comparisonChart.lineModel}" style="height:600px;" responsive="true" />
+            </p:layoutUnit>
+            <p:layoutUnit position="east" size="400">
+                <p:dataTable id="statsTable" var="stat" value="#{comparisonChart.statistics}">
+                    <p:column headerText="Statistic">
+                        <h:outputText value="#{stat.name}"/>
+                    </p:column>
+                    <p:column headerText="#{comparisonChart.driver1}">
+                        <h:outputText value="#{stat.driver1Value}"/>
+                    </p:column>
+                    <p:column headerText="#{comparisonChart.driver2}">
+                        <h:outputText value="#{stat.driver2Value}"/>
+                    </p:column>
+                </p:dataTable>
             </p:layoutUnit>
         </p:layout>
     </h:body>

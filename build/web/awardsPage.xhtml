@@ -30,7 +30,7 @@
         </p:tabMenu> 
         <p:tabView>
             <p:tab title="2015 Awards" >
-                <h:panelGrid columns="2" cellpadding="5" >
+                <h:panelGrid columns="3" cellpadding="5" >
                     <p:dataList value="#{awardsInfo.rawWins2015}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Raw Wins
@@ -40,6 +40,12 @@
                     <p:dataList value="#{awardsInfo.rawWinsPercent2015}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Highest Percent Raw Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.mostEvents2015}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Events Attended
                         </f:facet>
                         #{driver} 
                     </p:dataList>
@@ -55,6 +61,12 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
+                    <p:dataList value="#{awardsInfo.mostRuns2015}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Runs Taken
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
                     <p:dataList value="#{awardsInfo.coneKillers2015}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Cones Hit
@@ -67,15 +79,21 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.mostEvents2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.biggestClassAtEvent2015}" var="driver" type="ordered" >
                         <f:facet name="header" >
-                            Most Events Attended
+                            Largest Class Attendance
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.mostRuns2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.mostUniqueDriversInClass2015}" var="driver" type="ordered" >
                         <f:facet name="header" >
-                            Most Runs Taken
+                            Most Unique Drivers in Class
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.classJumper2015}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Class Jumper
                         </f:facet>
                         #{driver} 
                     </p:dataList>

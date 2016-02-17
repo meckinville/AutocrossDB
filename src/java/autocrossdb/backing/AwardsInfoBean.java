@@ -6,18 +6,16 @@
 package autocrossdb.backing;
 
 import component.Award;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -32,6 +30,8 @@ import javax.persistence.PersistenceContext;
 @ApplicationScoped
 public class AwardsInfoBean 
 {
+    private static final int PLACES_TO_POPULATE = 5;
+    
     private List<String> rawWins2015;
     private List<String> paxWins2015;
     private List<String> coneKillers2015;
@@ -40,6 +40,9 @@ public class AwardsInfoBean
     private List<String> rawWinsPercent2015;
     private List<String> paxWinsPercent2015;
     private List<String> coneKillersPercent2015;
+    private List<String> biggestClassAtEvent2015;
+    private List<String> mostUniqueDriversInClass2015;
+    private List<String> classJumper2015;
     
     
     @PersistenceContext
@@ -54,21 +57,30 @@ public class AwardsInfoBean
         endYear.set(2015, Calendar.DECEMBER, 31);
         List<Object[]> eventsAttendedQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 group by r.runDriverName having count(r.runDriverName) > 3 order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         List<Object[]> objectQuery = em.createQuery("SELECT count(e.eventRawWinner), e.eventRawWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventRawWinner order by count(e.eventRawWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        rawWins2015 = populateRawList(objectQuery, 5);                                                                                                                                 
-        rawWinsPercent2015 = populateRawPercentList(calculatePercent(eventsAttendedQuery, objectQuery), 5);
+        rawWins2015 = populateRawList(objectQuery, PLACES_TO_POPULATE);                                                                                                                                 
+        rawWinsPercent2015 = populateRawPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE);
         
         objectQuery = em.createQuery("SELECT count(e.eventPaxWinner), e.eventPaxWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventPaxWinner order by count(e.eventPaxWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        paxWins2015 = populatePaxList(objectQuery, 5);
-        paxWinsPercent2015 = populatePaxPercentList(calculatePercent(eventsAttendedQuery, objectQuery), 5);
+        paxWins2015 = populatePaxList(objectQuery, PLACES_TO_POPULATE);
+        paxWinsPercent2015 = populatePaxPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE);
         
         objectQuery = em.createQuery("SELECT sum(r.runCones), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        coneKillers2015 = populateConesList(objectQuery, 5);
-        coneKillersPercent2015 = populateConesPercentList(calculatePercent(eventsAttendedQuery, objectQuery), 5);
+        coneKillers2015 = populateConesList(objectQuery, PLACES_TO_POPULATE);
+        coneKillersPercent2015 = populateConesPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE);
         
-        mostEvents2015 = populateEventsList(eventsAttendedQuery, 5);
+        mostEvents2015 = populateEventsList(eventsAttendedQuery, PLACES_TO_POPULATE);
         
         objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        mostRuns2015 = populateRunsList(objectQuery, 5);
+        mostRuns2015 = populateRunsList(objectQuery, PLACES_TO_POPULATE);
+        
+        objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runClassName.className, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName, r.runEventUrl order by count(r.runDriverName) desc" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        biggestClassAtEvent2015 = populateEventClassSizeList(objectQuery, PLACES_TO_POPULATE);
+        
+        objectQuery = em.createQuery("SELECT count(distinct r.runDriverName), r.runClassName.className from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName order by count(distinct r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        mostUniqueDriversInClass2015 = populateUniqueDriversList(objectQuery, PLACES_TO_POPULATE);
+        
+        objectQuery = em.createQuery("SELECT count(distinct r.runClassName.className), r.runDriverName from Runs r where r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(distinct r.runClassName.className) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        classJumper2015 = populateClassJumper(objectQuery, PLACES_TO_POPULATE);
     }
     
     private static List<String> populateRawList(List<Object[]> query, int places)
@@ -131,7 +143,6 @@ public class AwardsInfoBean
         Map<String, Number> rawPercentMap = new TreeMap();
         for(Object[] rawObject : rawQuery)
         {
-            System.out.println("Added " + String.valueOf(rawObject[1]) + " to rawPercentMap");
             rawPercentMap.put(String.valueOf(rawObject[1]), new Long(String.valueOf(rawObject[0])).doubleValue());
         }
         
@@ -139,7 +150,6 @@ public class AwardsInfoBean
         {
             if(rawPercentMap.containsKey(String.valueOf(eventObject[1])))
             {
-                System.out.println("rawPercentMap contains " + String.valueOf(eventObject[1]));
                 double eventsAttended = new Long(String.valueOf(eventObject[0])).doubleValue();
                 double rawWins = rawPercentMap.get(String.valueOf(eventObject[1])).doubleValue();
                 double percent = rawWins / eventsAttended;
@@ -197,6 +207,39 @@ public class AwardsInfoBean
             returnList.add(next.getName() + " hit " + String.format("%.3f", next.getValue()/100) + " cones per attended event.");
         }
         
+        return returnList;
+    }
+    
+    private static List<String> populateEventClassSizeList(List<Object[]> query, int places)
+    {
+        List<String> returnList = new ArrayList();
+        
+        for(int x = 0; x < places; x++)
+        {
+            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " participants at " + query.get(x)[4] + " " + query.get(x)[2] + " " + new SimpleDateFormat("MM/dd/yyyy").format(query.get(x)[3]) + ".");
+        }
+        return returnList;
+    }
+    
+    private static List<String> populateUniqueDriversList(List<Object[]> query, int places)
+    {
+        List<String> returnList = new ArrayList();
+        
+        for(int x = 0; x < places; x++)
+        {
+            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " unique participants.");
+        }
+        return returnList;
+    }
+    
+    private static List<String> populateClassJumper(List<Object[]> query, int places)
+    {
+        List<String> returnList = new ArrayList();
+        
+        for(int x = 0; x < places; x++)
+        {
+            returnList.add(query.get(x)[1] + " participated in " + query.get(x)[0] + " different classes.");
+        }
         return returnList;
     }
 
@@ -263,6 +306,30 @@ public class AwardsInfoBean
 
     public void setMostRuns2015(List<String> mostRuns2015) {
         this.mostRuns2015 = mostRuns2015;
+    }
+
+    public List<String> getBiggestClassAtEvent2015() {
+        return biggestClassAtEvent2015;
+    }
+
+    public void setBiggestClassAtEvent2015(List<String> biggestClassAtEvent2015) {
+        this.biggestClassAtEvent2015 = biggestClassAtEvent2015;
+    }
+
+    public List<String> getMostUniqueDriversInClass2015() {
+        return mostUniqueDriversInClass2015;
+    }
+
+    public void setMostUniqueDriversInClass2015(List<String> mostUniqueDriversInClass2015) {
+        this.mostUniqueDriversInClass2015 = mostUniqueDriversInClass2015;
+    }
+
+    public List<String> getClassJumper2015() {
+        return classJumper2015;
+    }
+
+    public void setClassJumper2015(List<String> classJumper2015) {
+        this.classJumper2015 = classJumper2015;
     }
 
    
