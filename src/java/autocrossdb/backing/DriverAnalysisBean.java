@@ -34,6 +34,7 @@ import javax.persistence.PersistenceContext;
 public class DriverAnalysisBean 
 {
     private String driver;
+    private String driverLabel = "";
     
     private List<AnalyzedEvent> events;
     private AnalyzedEvent selectedEvent;
@@ -50,6 +51,7 @@ public class DriverAnalysisBean
     
     public void analyzeDriver()
     {
+        driverLabel = driver;
         List<Events> rawEventList = em.createQuery("SELECT e from Events e JOIN e.runsCollection r WHERE r.runDriverName = :driver AND r.runNumber = 1 ORDER BY e.eventDate desc", Events.class).setParameter("driver", this.driver).getResultList();
 
         for(Events e : rawEventList)
@@ -106,7 +108,6 @@ public class DriverAnalysisBean
             List<Runs> classRuns =  em.createQuery("SELECT r FROM Runs r WHERE r.runClassName.className = :class AND r.runEventUrl = :url AND r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime)", Runs.class).setParameter("class", yourRuns.get(0).getRunClassName().getClassName()).setParameter("url", e).getResultList();
             events.add(new AnalyzedEvent(e, driver, yourRuns.get(0).getRunClassName().getClassName(), yourRuns.get(0).getRunCarName(), classPosition, rawPosition, paxPosition, competitorRuns));
         }
-        System.out.println(nemesisList.toString());
         driver = "";
     }
     
@@ -146,6 +147,14 @@ public class DriverAnalysisBean
 
     public void setSelectedEvent(AnalyzedEvent selectedEvent) {
         this.selectedEvent = selectedEvent;
+    }
+
+    public String getDriverLabel() {
+        return driverLabel;
+    }
+
+    public void setDriverLabel(String driverLabel) {
+        this.driverLabel = driverLabel;
     }
     
     

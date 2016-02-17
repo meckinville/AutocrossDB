@@ -32,7 +32,7 @@
             <p:outputLabel value="Driver:" />
             <p:autoComplete id="driver" forceSelection="true" value="#{driverAnalysis.driver}" completeMethod="#{driverAnalysis.completeDriverText}" />
             <p:commandButton value="Analyze" update="analysisForm" action="#{driverAnalysis.analyzeDriver}" />
-            <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" itemStyle="text-align:center;" responsive="true" headerText="Events for ..." >
+            <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" itemStyle="text-align:center;" numVisible="4" responsive="true" headerText="Events for #{driverAnalysis.driverLabel}" >
                 <p:panelGrid columns="2">
                     <h:outputText value="Event: " />
                     <h:outputText value="#{event.eventName}" />
@@ -41,7 +41,7 @@
                     <h:outputText value="Your Class: " />
                     <h:outputText value="#{event.className}" />
                     <h:outputText value="Class Position: " />
-                    <p:commandLink oncomplete="PF('classDetailsOP').show()" update=":analysisForm:classDetails">
+                    <p:commandLink onmouseout="PF('classDetailsOP').hide()" oncomplete="PF('classDetailsOP').show()" update=":analysisForm:classDetails">
                         <h:outputText value="#{event.classPosition}" />
                         <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                     </p:commandLink>
