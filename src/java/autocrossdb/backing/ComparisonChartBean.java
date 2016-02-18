@@ -7,7 +7,7 @@ package autocrossdb.backing;
 
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
-import component.ChartStatistic;
+import autocrossdb.component.ChartStatistic;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

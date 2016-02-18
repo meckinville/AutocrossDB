@@ -30,11 +30,23 @@ public class EventInfoBean
     private List<SelectItem> events;
     private int totalDrivers;
     private String averageTime;
-    private String topRaw;
-    private String topPax;
+    private String topRawName;
+    private String topRawTime;
+    private String topRawCar;
+    private String topRawClass;
+    private String topPaxName;
+    private String topPaxTime;
+    private String topPaxCar;
+    private String topPaxClass;
     private String totalCones;
-    private String topConeKiller;
-    private String noviceChamp;
+    private String topConeKillerName;
+    private String topConeKillerCones;
+    private String topConeKillerCar;
+    private String topConeKillerClass;
+    private String noviceChampName;
+    private String noviceChampTime;
+    private String noviceChampCar;
+    private String noviceChampClass;
     @PersistenceContext
     private EntityManager em;
     
@@ -83,11 +95,17 @@ public class EventInfoBean
             
             TypedQuery<Object[]> objectQuery = em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", event);
             List<Object[]> objectResults = objectQuery.getResultList();
-            topRaw = objectResults.get(0)[0] + " " + objectResults.get(0)[1] + " " + objectResults.get(0)[2] + " " + objectResults.get(0)[3];
+            topRawName = objectResults.get(0)[0].toString();
+            topRawCar = objectResults.get(0)[1].toString();
+            topRawClass = objectResults.get(0)[2].toString();
+            topRawTime = objectResults.get(0)[3].toString();
             
             objectQuery = em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", event);
             objectResults = objectQuery.getResultList();
-            topPax = objectResults.get(0)[0] + " " + objectResults.get(0)[1] + " " + objectResults.get(0)[2] + " " + objectResults.get(0)[3];
+            topPaxName = objectResults.get(0)[0].toString();
+            topPaxCar = objectResults.get(0)[1].toString();
+            topPaxClass = objectResults.get(0)[2].toString();
+            topPaxTime = objectResults.get(0)[3].toString();
             
             TypedQuery<Long> longQuery = em.createNamedQuery("Runs.findTotalConesHitAtEvent", Long.class).setParameter("eventUrl", event);
             List<Long> longResults = longQuery.getResultList();
@@ -95,17 +113,26 @@ public class EventInfoBean
             
             objectQuery = em.createNamedQuery("Runs.findTopConeKiller", Object[].class).setParameter("eventUrl", event);
             objectResults = objectQuery.getResultList();
-            topConeKiller = objectResults.get(0)[0] + " " + objectResults.get(0)[1];
+            topConeKillerName = objectResults.get(0)[0].toString();
+            topConeKillerCones = objectResults.get(0)[1].toString();
+            topConeKillerCar = objectResults.get(0)[2].toString();
+            topConeKillerClass = objectResults.get(0)[3].toString();
             
             objectQuery = em.createNamedQuery("Runs.findNoviceChamp", Object[].class).setParameter("eventUrl", event);
             objectResults = objectQuery.getResultList();
             if(objectResults.size() == 0)
             {
-                noviceChamp = "No novices attended this event.";
+                noviceChampName = "No novices.";
+                noviceChampTime = "N/A";
+                noviceChampClass = "N/A";
+                noviceChampCar = "N/A";
             }
             else
             {
-                noviceChamp = objectResults.get(0)[0] + " " + objectResults.get(0)[1] + " " + objectResults.get(0)[2] + " " + objectResults.get(0)[3];
+                noviceChampName = objectResults.get(0)[0].toString();
+                noviceChampCar = objectResults.get(0)[1].toString();
+                noviceChampClass = objectResults.get(0)[2].toString();
+                noviceChampTime = objectResults.get(0)[3].toString();
             }
             
         }
@@ -189,22 +216,6 @@ public class EventInfoBean
         this.averageTime = averageTime;
     }
 
-    public String getTopRaw() {
-        return topRaw;
-    }
-
-    public void setTopRaw(String topRaw) {
-        this.topRaw = topRaw;
-    }
-
-    public String getTopPax() {
-        return topPax;
-    }
-
-    public void setTopPax(String topPax) {
-        this.topPax = topPax;
-    }
-
     public String getTotalCones() {
         return totalCones;
     }
@@ -213,21 +224,135 @@ public class EventInfoBean
         this.totalCones = totalCones;
     }
 
-    public String getTopConeKiller() {
-        return topConeKiller;
+    public String getTopRawName() {
+        return topRawName;
     }
 
-    public void setTopConeKiller(String topConeKiller) {
-        this.topConeKiller = topConeKiller;
+    public void setTopRawName(String topRawName) {
+        this.topRawName = topRawName;
     }
 
-    public String getNoviceChamp() {
-        return noviceChamp;
+    public String getTopRawTime() {
+        return topRawTime;
     }
 
-    public void setNoviceChamp(String noviceChamp) {
-        this.noviceChamp = noviceChamp;
+    public void setTopRawTime(String topRawTime) {
+        this.topRawTime = topRawTime;
     }
+
+    public String getTopRawCar() {
+        return topRawCar;
+    }
+
+    public void setTopRawCar(String topRawCar) {
+        this.topRawCar = topRawCar;
+    }
+
+    public String getTopRawClass() {
+        return topRawClass;
+    }
+
+    public void setTopRawClass(String topRawClass) {
+        this.topRawClass = topRawClass;
+    }
+
+    public String getTopPaxName() {
+        return topPaxName;
+    }
+
+    public void setTopPaxName(String topPaxName) {
+        this.topPaxName = topPaxName;
+    }
+
+    public String getTopPaxTime() {
+        return topPaxTime;
+    }
+
+    public void setTopPaxTime(String topPaxTime) {
+        this.topPaxTime = topPaxTime;
+    }
+
+    public String getTopPaxCar() {
+        return topPaxCar;
+    }
+
+    public void setTopPaxCar(String topPaxCar) {
+        this.topPaxCar = topPaxCar;
+    }
+
+    public String getTopPaxClass() {
+        return topPaxClass;
+    }
+
+    public void setTopPaxClass(String topPaxClass) {
+        this.topPaxClass = topPaxClass;
+    }
+
+    public String getTopConeKillerName() {
+        return topConeKillerName;
+    }
+
+    public void setTopConeKillerName(String topConeKillerName) {
+        this.topConeKillerName = topConeKillerName;
+    }
+
+    public String getTopConeKillerCones() {
+        return topConeKillerCones;
+    }
+
+    public void setTopConeKillerCones(String topConeKillerCones) {
+        this.topConeKillerCones = topConeKillerCones;
+    }
+
+    public String getTopConeKillerCar() {
+        return topConeKillerCar;
+    }
+
+    public void setTopConeKillerCar(String topConeKillerCar) {
+        this.topConeKillerCar = topConeKillerCar;
+    }
+
+    public String getTopConeKillerClass() {
+        return topConeKillerClass;
+    }
+
+    public void setTopConeKillerClass(String topConeKillerClass) {
+        this.topConeKillerClass = topConeKillerClass;
+    }
+
+    public String getNoviceChampName() {
+        return noviceChampName;
+    }
+
+    public void setNoviceChampName(String noviceChampName) {
+        this.noviceChampName = noviceChampName;
+    }
+
+    public String getNoviceChampTime() {
+        return noviceChampTime;
+    }
+
+    public void setNoviceChampTime(String noviceChampTime) {
+        this.noviceChampTime = noviceChampTime;
+    }
+
+    public String getNoviceChampCar() {
+        return noviceChampCar;
+    }
+
+    public void setNoviceChampCar(String noviceChampCar) {
+        this.noviceChampCar = noviceChampCar;
+    }
+
+    public String getNoviceChampClass() {
+        return noviceChampClass;
+    }
+
+    public void setNoviceChampClass(String noviceChampClass) {
+        this.noviceChampClass = noviceChampClass;
+    }
+
+   
     
 }
  

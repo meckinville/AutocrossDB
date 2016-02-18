@@ -15,6 +15,9 @@
         
     </h:head>
     <h:body>
+        <f:facet name="last">
+            <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
+        </f:facet>
         <p:tabMenu activeIndex="#{param.i}">
             <p:menuitem value="Home" outcome="index">
                 <f:param name="i" value="0"/>
@@ -39,7 +42,7 @@
             <p:growl id="messages" />
                 <p:layoutUnit position="south" size="300">
                     <h:form id="driverForm">
-                    <h:panelGrid id="grid" columns="2" cellpadding="5">
+                    <p:panelGrid id="grid" columns="2" styleClass="noOutlineGrid">
                         <p:outputLabel value="Driver 1:" for="driver1" />
                         <p:autoComplete id="driver1" forceSelection="true" value="#{comparisonChart.driver1}" completeMethod="#{comparisonChart.completeDriverText}" />
                         <p:outputLabel value="Driver 2:" for="driver2" />
@@ -55,7 +58,7 @@
                             <f:selectItem itemLabel="Cones" itemValue="cones" />
                         </p:selectOneRadio>
                         <p:commandButton id="viewChart" value="View Chart" action="#{comparisonChart.drawComparison}" update="compareChart driverForm statsTable" />
-                    </h:panelGrid>
+                    </p:panelGrid>
                     </h:form>
                 </p:layoutUnit>
             <p:layoutUnit position="center" >
@@ -63,14 +66,14 @@
             </p:layoutUnit>
             <p:layoutUnit position="east" size="400">
                 <p:dataTable id="statsTable" var="stat" value="#{comparisonChart.statistics}">
-                    <p:column headerText="Statistic">
+                    <p:column headerText="Statistic" styleClass="descriptionColumn">
                         <h:outputText value="#{stat.name}"/>
                     </p:column>
                     <p:column headerText="#{comparisonChart.driver1}">
-                        <h:outputText value="#{stat.driver1Value}"/>
+                        <h:outputText styleClass="#{stat.driver1Value lt 0.00 ? 'negativeDiff' : stat.driver1Value gt 0.00 ? 'positiveDiff' : null}" value="#{stat.driver1Value}"/>
                     </p:column>
                     <p:column headerText="#{comparisonChart.driver2}">
-                        <h:outputText value="#{stat.driver2Value}"/>
+                        <h:outputText styleClass="#{stat.driver2Value lt 0.00 ? 'negativeDiff' : stat.driver2Value gt 0.00 ? 'positiveDiff' : null}" value="#{stat.driver2Value}"/>
                     </p:column>
                 </p:dataTable>
             </p:layoutUnit>

@@ -8,6 +8,9 @@
         <title>Autocross DB</title>
     </h:head>
     <h:body>
+        <f:facet name="last">
+            <h:outputStylesheet library="css" name="autoxDbMainStyle.css"  />
+        </f:facet>
         <p:tabMenu activeIndex="#{param.i}">
             <p:menuitem value="Home" outcome="index">
                 <f:param name="i" value="0"/>
@@ -37,23 +40,49 @@
                 </p:selectOneMenu>
                 <p:commandButton value="Select Event" action="#{eventInfo.loadInfo}" update="selectionGrid eventInfoGrid" />
             </h:panelGrid>
-
-            <h:panelGrid id="eventInfoGrid" columns="2" cellpadding="10">
-                <h:outputText value="Total Drivers: " />
-                <h:outputText id="totalDrivers" value="#{eventInfo.totalDrivers}" />
-                <h:outputText value="Average Time (Best Runs Only): " />
-                <h:outputText id="avgTime" value="#{eventInfo.averageTime}"/>
-                <h:outputText  value="Top Raw Time: " />
-                <h:outputText id="topRaw" value="#{eventInfo.topRaw}"/>
-                <h:outputText value="Top Pax Time: " />
-                <h:outputText id="topPax" value="#{eventInfo.topPax}"/>
-                <h:outputText value="Total Cones Hit: " />
-                <h:outputText id="totalCones" value="#{eventInfo.totalCones}"/>
-                <h:outputText value="Top Cone Killer: " />
-                <h:outputText id="coneKiller" value="#{eventInfo.topConeKiller}"/>
-                <h:outputText value="Novice Champ: " />
-                <h:outputText id="noviceChamp" value="#{eventInfo.noviceChamp}"/>
-            </h:panelGrid>
+            
+            <p:panelGrid id="eventInfoGrid">
+                <p:row>
+                    <p:column styleClass="descriptionColumn" colspan="3">Total Drivers</p:column>
+                    <p:column colspan="8" style="text-align:center;">#{eventInfo.totalDrivers}</p:column>
+                </p:row>
+                <p:row>
+                    <p:column styleClass="descriptionColumn" colspan="3">Average Time (Best Runs Only)</p:column>
+                    <p:column colspan="8" style="text-align:center;">#{eventInfo.averageTime}</p:column>
+                </p:row>
+                <p:row>
+                    <p:column styleClass="descriptionColumn" colspan="3">Total Cones Hit</p:column>
+                    <p:column colspan="8" style="text-align:center;">#{eventInfo.totalCones}</p:column>
+                </p:row>
+                <p:row>
+                    <p:column styleClass="descriptionColumn" colspan="3">Top Raw Time</p:column>
+                    <p:column colspan="1">#{eventInfo.topRawTime}</p:column>
+                    <p:column colspan="3">#{eventInfo.topRawName}</p:column>
+                    <p:column colspan="3">#{eventInfo.topRawCar}</p:column>
+                    <p:column colspan="1">#{eventInfo.topRawClass}</p:column>
+                </p:row>
+                <p:row>
+                    <p:column styleClass="descriptionColumn" colspan="3">Top Pax Time</p:column>
+                    <p:column colspan="1">#{eventInfo.topPaxTime}</p:column>
+                    <p:column colspan="3">#{eventInfo.topPaxName}</p:column>
+                    <p:column colspan="3">#{eventInfo.topPaxCar}</p:column>
+                    <p:column colspan="1">#{eventInfo.topPaxClass}</p:column>
+                </p:row>
+                <p:row>
+                    <p:column styleClass="descriptionColumn" colspan="3">Top Cone Killer</p:column>
+                    <p:column colspan="1">#{eventInfo.topConeKillerCones}</p:column>
+                    <p:column colspan="3">#{eventInfo.topConeKillerName}</p:column>
+                    <p:column colspan="3">#{eventInfo.topConeKillerCar}</p:column>
+                    <p:column colspan="1">#{eventInfo.topConeKillerClass}</p:column>
+                </p:row>
+                <p:row>
+                    <p:column styleClass="descriptionColumn" colspan="3">Novice Champ</p:column>
+                    <p:column colspan="1">#{eventInfo.noviceChampTime}</p:column>
+                    <p:column colspan="3">#{eventInfo.noviceChampName}</p:column>
+                    <p:column colspan="3">#{eventInfo.noviceChampCar}</p:column>
+                    <p:column colspan="1">#{eventInfo.noviceChampClass}</p:column>
+                </p:row>
+            </p:panelGrid>
         </h:form>
     </h:body>
 </html>

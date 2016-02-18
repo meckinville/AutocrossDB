@@ -1,0 +1,32 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 18, 2016, 3:18:00 PM
+    Author     : rmcconville
+*/
+
+body {
+    font-family: Arial;
+}
+
+.descriptionColumn {
+    font-weight: bold;
+}
+
+
+/*removes border from the tr and td elements inside the panel grid table */
+.noOutlineGrid.ui-panelgrid>*>tr,
+.noOutlineGrid.ui-panelgrid .ui-panelgrid-cell {
+    border: 0px;
+}
+
+.negativeDiff {
+    color: green;
+}
+
+.positiveDiff {
+    color: red
+}

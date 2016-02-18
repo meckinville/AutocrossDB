@@ -7,8 +7,8 @@ package autocrossdb.backing;
 
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
-import component.AnalyzedEvent;
-import component.Nemesis;
+import autocrossdb.component.AnalyzedEvent;
+import autocrossdb.component.Nemesis;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

@@ -8,6 +8,9 @@
         <title>Autocross DB</title>
     </h:head>
     <h:body>
+        <f:facet name="last">
+            <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
+        </f:facet>
         <p:tabMenu activeIndex="#{param.i}">
             <p:menuitem value="Home" outcome="index">
                 <f:param name="i" value="0"/>
@@ -33,7 +36,7 @@
             <p:autoComplete id="driver" forceSelection="true" value="#{driverAnalysis.driver}" completeMethod="#{driverAnalysis.completeDriverText}" />
             <p:commandButton value="Analyze" update="analysisForm" action="#{driverAnalysis.analyzeDriver}" />
             <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" itemStyle="text-align:center;" numVisible="4" responsive="true" headerText="Events for #{driverAnalysis.driverLabel}" >
-                <p:panelGrid columns="2">
+                <p:panelGrid columns="2" columnClasses="descriptionColumn">
                     <h:outputText value="Event: " />
                     <h:outputText value="#{event.eventName}" />
                     <h:outputText value="Your Car: " />

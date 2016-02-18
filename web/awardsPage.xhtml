@@ -8,6 +8,9 @@
         <title>Autocross DB</title>
     </h:head>
     <h:body>
+        <f:facet name="last">
+            <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
+        </f:facet>
         <p:tabMenu activeIndex="#{param.i}">
             <p:menuitem value="Home" outcome="index">
                 <f:param name="i" value="0"/>
@@ -30,7 +33,7 @@
         </p:tabMenu> 
         <p:tabView>
             <p:tab title="2015 Awards" >
-                <h:panelGrid columns="3" cellpadding="5" >
+                <p:panelGrid columns="3" >
                     <p:dataList value="#{awardsInfo.rawWins2015}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Raw Wins
@@ -97,7 +100,7 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                </h:panelGrid>
+                </p:panelGrid>
             </p:tab>
             <p:tab title="2014 Awards" >
                 

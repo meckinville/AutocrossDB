@@ -5,7 +5,7 @@
  */
 package autocrossdb.backing;
 
-import component.Award;
+import autocrossdb.component.Award;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
