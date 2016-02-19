@@ -19,15 +19,17 @@ public class ClassTableRow
     private int position;
     private String driver;
     private String car;
+    private String cls;
     private String time;
     private String diff;
     private String leaderDiff;
     
 
-    public ClassTableRow(int position, String driver, String car, double time, double diff, double leaderDiff) {
+    public ClassTableRow(int position, String driver, String car, String cls, double time, double diff, double leaderDiff) {
         this.position = position;
         this.driver = driver;
         this.car = car;
+        this.cls = cls;
         this.time = String.format("%.3f", time);
         this.diff = String.format("%.3f", diff);
         this.leaderDiff = String.format("%.3f", leaderDiff);
@@ -84,6 +86,14 @@ public class ClassTableRow
 
     public void setLeaderDiff(String leaderDiff) {
         this.leaderDiff = leaderDiff;
+    }
+
+    public String getCls() {
+        return cls;
+    }
+
+    public void setCls(String cls) {
+        this.cls = cls;
     }
 
     

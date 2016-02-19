@@ -7,7 +7,6 @@ package autocrossdb.backing;
 
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
-import autocrossdb.component.ChartStatistic;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -47,7 +46,16 @@ public class ComparisonChartBean implements Serializable
     private LineChartModel lineModel;
     private DateFormat chartFormat;
     private List<String> selectedDrivers;
-    private List<ChartStatistic> statistics;
+    private String d1TotalEvents;
+    private String d2TotalEvents;
+    private String d1RawWins;
+    private String d2RawWins;
+    private String d1RawDiff;
+    private String d2RawDiff;
+    private String d1PaxWins;
+    private String d2PaxWins;
+    private String d1PaxDiff;
+    private String d2PaxDiff;
 
     @PersistenceContext
     private EntityManager em;
@@ -181,16 +189,11 @@ public class ComparisonChartBean implements Serializable
     {
         if(!driver1.equals("") && driver1 != null && !driver2.equals("") && driver2 != null && !driver1.equals("Driver 1") && !driver2.equals("Driver 2"))
         {
-            statistics = new ArrayList<ChartStatistic>();
-            String v1;
-            String v2;           
-            
             //total events attended over time period
             List<Object[]> query = em.createQuery("SELECT count(r.runDriverName) from Runs r where r.runDriverName = :name AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1").setParameter("name", driver1).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
-            v1 = String.valueOf(query.get(0));
+            d1TotalEvents = String.valueOf(query.get(0));
             query = em.createQuery("SELECT count(r.runDriverName) from Runs r where r.runDriverName = :name AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1").setParameter("name", driver2).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
-            v2 = String.valueOf(query.get(0));
-            statistics.add(new ChartStatistic("Total Events Attended in this Time",v1,v2));
+            d2TotalEvents = String.valueOf(query.get(0));
             
             //head to head raw wins
             query = em.createQuery("SELECT min(a.runTime), a.runDriverName, a.runEventUrl.eventUrl from Runs a, Runs b where a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runOffcourse = 'N' AND b.runOffcourse = 'N' AND a.runEventUrl.eventUrl = b.runEventUrl.eventUrl and a.runEventUrl.eventDate > :begin AND a.runEventUrl.eventDate < :end GROUP BY a.runEventUrl.eventUrl, a.runDriverName ORDER BY a.runEventUrl.eventUrl, min(a.runTime)").setParameter("driverList", selectedDrivers).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
@@ -207,9 +210,8 @@ public class ComparisonChartBean implements Serializable
                     d2Wins++;
                 }
             }
-            v1 = String.valueOf(d1Wins);
-            v2 = String.valueOf(d2Wins);
-            statistics.add(new ChartStatistic("Head to Head Raw Wins",v1,v2));
+            d1RawWins = String.valueOf(d1Wins);
+            d2RawWins = String.valueOf(d2Wins);
             
             //average raw diff
             int eventsAttended = 0;
@@ -234,8 +236,8 @@ public class ComparisonChartBean implements Serializable
                 eventsAttended++;
             }
             
-            statistics.add(new ChartStatistic("Average Raw Differential", String.format("%.3f", d1Total /= eventsAttended), String.format("%.3f", d2Total /= eventsAttended)));
-            
+            d1RawDiff = String.format("%.3f", d1Total /= eventsAttended);
+            d2RawDiff = String.format("%.3f", d2Total /= eventsAttended);
             //head to head pax wins
             query = em.createQuery("SELECT min(a.runPaxTime), a.runDriverName, a.runEventUrl.eventUrl from Runs a, Runs b where a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runOffcourse = 'N' AND b.runOffcourse = 'N' AND a.runEventUrl.eventUrl = b.runEventUrl.eventUrl and a.runEventUrl.eventDate > :begin AND a.runEventUrl.eventDate < :end GROUP BY a.runEventUrl.eventUrl, a.runDriverName ORDER BY a.runEventUrl.eventUrl, min(a.runPaxTime)").setParameter("driverList", selectedDrivers).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
             d1Wins = 0;
@@ -251,9 +253,8 @@ public class ComparisonChartBean implements Serializable
                     d2Wins++;
                 }
             }
-            v1 = String.valueOf(d1Wins);
-            v2 = String.valueOf(d2Wins);
-            statistics.add(new ChartStatistic("Head to Head Pax Wins",v1,v2));
+            d1PaxWins = String.valueOf(d1Wins);
+            d2PaxWins = String.valueOf(d2Wins);
             
             //average pax diff
             eventsAttended = 0;
@@ -278,8 +279,8 @@ public class ComparisonChartBean implements Serializable
                 eventsAttended++;
             }
             
-            statistics.add(new ChartStatistic("Average Pax Differential", String.format("%.3f", d1Total /= eventsAttended), String.format("%.3f", d2Total /= eventsAttended)));
-            
+            d1PaxDiff = String.format("%.3f", d1Total /= eventsAttended);
+            d2PaxDiff = String.format("%.3f", d2Total /= eventsAttended);
             //total runs taken
             
             //events attended together
@@ -338,13 +339,87 @@ public class ComparisonChartBean implements Serializable
         this.type = type;
     }
 
-    public List<ChartStatistic> getStatistics() {
-        return statistics;
+    public String getD1TotalEvents() {
+        return d1TotalEvents;
     }
 
-    public void setStatistics(List<ChartStatistic> statistics) {
-        this.statistics = statistics;
+    public void setD1TotalEvents(String d1TotalEvents) {
+        this.d1TotalEvents = d1TotalEvents;
     }
+
+    public String getD2TotalEvents() {
+        return d2TotalEvents;
+    }
+
+    public void setD2TotalEvents(String d2TotalEvents) {
+        this.d2TotalEvents = d2TotalEvents;
+    }
+
+    public String getD1RawWins() {
+        return d1RawWins;
+    }
+
+    public void setD1RawWins(String d1RawWins) {
+        this.d1RawWins = d1RawWins;
+    }
+
+    public String getD2RawWins() {
+        return d2RawWins;
+    }
+
+    public void setD2RawWins(String d2RawWins) {
+        this.d2RawWins = d2RawWins;
+    }
+
+    public String getD1RawDiff() {
+        return d1RawDiff;
+    }
+
+    public void setD1RawDiff(String d1RawDiff) {
+        this.d1RawDiff = d1RawDiff;
+    }
+
+    public String getD2RawDiff() {
+        return d2RawDiff;
+    }
+
+    public void setD2RawDiff(String d2RawDiff) {
+        this.d2RawDiff = d2RawDiff;
+    }
+
+    public String getD1PaxWins() {
+        return d1PaxWins;
+    }
+
+    public void setD1PaxWins(String d1PaxWins) {
+        this.d1PaxWins = d1PaxWins;
+    }
+
+    public String getD2PaxWins() {
+        return d2PaxWins;
+    }
+
+    public void setD2PaxWins(String d2PaxWins) {
+        this.d2PaxWins = d2PaxWins;
+    }
+
+    public String getD1PaxDiff() {
+        return d1PaxDiff;
+    }
+
+    public void setD1PaxDiff(String d1PaxDiff) {
+        this.d1PaxDiff = d1PaxDiff;
+    }
+
+    public String getD2PaxDiff() {
+        return d2PaxDiff;
+    }
+
+    public void setD2PaxDiff(String d2PaxDiff) {
+        this.d2PaxDiff = d2PaxDiff;
+    }
+
+    
 
     
     

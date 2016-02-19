@@ -32,69 +32,145 @@
             </p:menuitem>
         </p:tabMenu> 
         <p:tabView>
-            <p:tab title="2015 Awards" >
-                <p:panelGrid columns="3" >
-                    <p:dataList value="#{awardsInfo.rawWins2015}" var="driver" type="ordered" >
+            <p:tab title="2016 Awards" >
+                <p:panelGrid columns="3" styleClass="noOutlinePanelGrid">
+                    <h:outputText value="Number of Events in 2016: #{awardsInfo.stats2016.get(0)}" />
+                    <h:outputText value="Total Unique Drivers in 2016: #{awardsInfo.stats2016.get(1)}" />
+                    <h:outputText value="" />
+                    <p:dataList value="#{awardsInfo.awards2016.get(0)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Raw Wins
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.rawWinsPercent2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(1)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Highest Percent Raw Wins
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.mostEvents2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(6)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Events Attended
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.paxWins2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(2)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Pax Wins
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.paxWinsPercent2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(3)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Highest Percent Pax Wins
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.mostRuns2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(7)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Runs Taken
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.coneKillers2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(4)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Cones Hit
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.coneKillersPercent2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(5)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Cones Hit Per Event Average
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.biggestClassAtEvent2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(8)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Largest Class Attendance
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.mostUniqueDriversInClass2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(9)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Most Unique Drivers in Class
                         </f:facet>
                         #{driver} 
                     </p:dataList>
-                    <p:dataList value="#{awardsInfo.classJumper2015}" var="driver" type="ordered" >
+                    <p:dataList value="#{awardsInfo.awards2016.get(10)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Class Jumper
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                </p:panelGrid>
+            </p:tab>
+            <p:tab title="2015 Awards" >
+                <p:panelGrid columns="3" styleClass="noOutlinePanelGrid">
+                    <h:outputText value="Number of Events in 2015: #{awardsInfo.stats2015.get(0)}" />
+                    <h:outputText value="Total Unique Drivers in 2015: #{awardsInfo.stats2015.get(1)}" />
+                    <h:outputText value="" />
+                    <p:dataList value="#{awardsInfo.awards2015.get(0)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Raw Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(1)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Highest Percent Raw Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(6)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Events Attended
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(2)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Pax Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(3)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Highest Percent Pax Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(7)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Runs Taken
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(4)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Cones Hit
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(5)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Cones Hit Per Event Average
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(8)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Largest Class Attendance
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(9)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Unique Drivers in Class
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(10)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Class Jumper
                         </f:facet>
@@ -103,7 +179,77 @@
                 </p:panelGrid>
             </p:tab>
             <p:tab title="2014 Awards" >
-                
+                <p:panelGrid columns="3" styleClass="noOutlinePanelGrid">
+                    <h:outputText value="Number of Events in 2014: #{awardsInfo.stats2014.get(0)}" />
+                    <h:outputText value="Total Unique Drivers in 2014: #{awardsInfo.stats2014.get(1)}" />
+                    <h:outputText value="" />
+                    <p:dataList value="#{awardsInfo.awards2014.get(0)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Raw Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(1)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Highest Percent Raw Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(6)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Events Attended
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(2)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Pax Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(3)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Highest Percent Pax Wins
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(7)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Runs Taken
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(4)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Cones Hit
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(5)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Cones Hit Per Event Average
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(8)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Largest Class Attendance
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(9)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Most Unique Drivers in Class
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(10)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Class Jumper
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
+                </p:panelGrid>
             </p:tab>
         </p:tabView>
           

@@ -6,6 +6,7 @@
 package autocrossdb.backing;
 
 import autocrossdb.component.Award;
+import autocrossdb.entities.Events;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
@@ -32,17 +34,26 @@ public class AwardsInfoBean
 {
     private static final int PLACES_TO_POPULATE = 5;
     
-    private List<String> rawWins2015;
-    private List<String> paxWins2015;
-    private List<String> coneKillers2015;
-    private List<String> mostEvents2015;
-    private List<String> mostRuns2015;
-    private List<String> rawWinsPercent2015;
-    private List<String> paxWinsPercent2015;
-    private List<String> coneKillersPercent2015;
-    private List<String> biggestClassAtEvent2015;
-    private List<String> mostUniqueDriversInClass2015;
-    private List<String> classJumper2015;
+    private static final int RAW_WINS_AWARD_POSITION = 0;
+    private static final int RAW_PERCENT_WINS_AWARD_POSITION = 1;
+    private static final int PAX_WINS_AWARD_POSITION = 2;
+    private static final int PAX_PERCENT_WINS_AWARD_POSITION = 3;
+    private static final int CONE_KILLER_AWARD_POSITION = 4;
+    private static final int CONE_KILLER_PERCENT_AWARD_POSITION = 5;
+    private static final int MOST_EVENTS_AWARD_POSITION = 6;
+    private static final int MOST_RUNS_AWARD_POSITION = 7;
+    private static final int BIGGEST_CLASS_AWARD_POSITION = 8;
+    private static final int MOST_UNIQUE_DRIVERS_AWARD_POSITION = 9;
+    private static final int CLASS_JUMPER_AWARD_POSITION = 10;
+    
+    private List<List<String>> awards2016;
+    private List<Long> stats2016;
+    private List<List<String>> awards2015;
+    private List<Long> stats2015;
+    private List<List<String>> awards2014;
+    private List<Long> stats2014;
+    private List<List<String>> awards2013;
+    private List<Long> stats2013;
     
     
     @PersistenceContext
@@ -50,96 +61,215 @@ public class AwardsInfoBean
     
     @PostConstruct
     public void init()
-    {     
+    {   
+        awards2014 = getAwardsForYear(2014);
+        stats2014 = getStatsForYear(2014);
+        awards2015 = getAwardsForYear(2015);
+        stats2015 = getStatsForYear(2015);
+        awards2016 = getAwardsForYear(2016);
+        stats2016 = getStatsForYear(2016);
+    }
+    
+    private List<Long> getStatsForYear(int year)
+    {
+        List<Long> stats = new ArrayList<Long>();
+        
         Calendar beginYear = Calendar.getInstance();
         Calendar endYear = Calendar.getInstance();
-        beginYear.set(2015, Calendar.JANUARY, 1);
-        endYear.set(2015, Calendar.DECEMBER, 31);
+        beginYear.set(year, Calendar.JANUARY, 1);
+        endYear.set(year, Calendar.DECEMBER, 31);
+        
+        stats.add((long)em.createQuery("SELECT e FROM Events e where e.eventDate > :begin AND e.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList().size());
+        stats.add((long)em.createQuery("SELECT count(distinct r.runDriverName) FROM Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList().get(0));
+        return stats;
+    }
+    
+    private List<List<String>> getAwardsForYear(int year)
+    {
+        List<List<String>> awards = new ArrayList<List<String>>();
+        
+        Calendar beginYear = Calendar.getInstance();
+        Calendar endYear = Calendar.getInstance();
+        beginYear.set(year, Calendar.JANUARY, 1);
+        endYear.set(year, Calendar.DECEMBER, 31);
         List<Object[]> eventsAttendedQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 group by r.runDriverName having count(r.runDriverName) > 3 order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         List<Object[]> objectQuery = em.createQuery("SELECT count(e.eventRawWinner), e.eventRawWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventRawWinner order by count(e.eventRawWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        rawWins2015 = populateRawList(objectQuery, PLACES_TO_POPULATE);                                                                                                                                 
-        rawWinsPercent2015 = populateRawPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE);
+        
+        //add raw event winners and raw percent wins
+        awards.add(populateRawList(objectQuery, PLACES_TO_POPULATE));
+        awards.add(populateRawPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE));
         
         objectQuery = em.createQuery("SELECT count(e.eventPaxWinner), e.eventPaxWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventPaxWinner order by count(e.eventPaxWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        paxWins2015 = populatePaxList(objectQuery, PLACES_TO_POPULATE);
-        paxWinsPercent2015 = populatePaxPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE);
+        //add pax event winners and pax percent wins
+        awards.add(populatePaxList(objectQuery, PLACES_TO_POPULATE));
+        awards.add(populatePaxPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE));
         
         objectQuery = em.createQuery("SELECT sum(r.runCones), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        coneKillers2015 = populateConesList(objectQuery, PLACES_TO_POPULATE);
-        coneKillersPercent2015 = populateConesPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE);
         
-        mostEvents2015 = populateEventsList(eventsAttendedQuery, PLACES_TO_POPULATE);
+        //add most cones total and most cones per event
+        awards.add(populateConesList(objectQuery, PLACES_TO_POPULATE));
+        awards.add(populateConesPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE));
+        
+        //add most events attended
+        awards.add(populateEventsList(eventsAttendedQuery, PLACES_TO_POPULATE));
         
         objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        mostRuns2015 = populateRunsList(objectQuery, PLACES_TO_POPULATE);
+        //add most runs taken
+        awards.add(populateRunsList(objectQuery, PLACES_TO_POPULATE));
         
         objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runClassName.className, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName, r.runEventUrl order by count(r.runDriverName) desc" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        biggestClassAtEvent2015 = populateEventClassSizeList(objectQuery, PLACES_TO_POPULATE);
+        //add biggest class at event
+        awards.add(populateEventClassSizeList(objectQuery, PLACES_TO_POPULATE));
         
         objectQuery = em.createQuery("SELECT count(distinct r.runDriverName), r.runClassName.className from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName order by count(distinct r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        mostUniqueDriversInClass2015 = populateUniqueDriversList(objectQuery, PLACES_TO_POPULATE);
+        //add most unique drivers in class for the year
+        awards.add(populateUniqueDriversList(objectQuery, PLACES_TO_POPULATE));
         
         objectQuery = em.createQuery("SELECT count(distinct r.runClassName.className), r.runDriverName from Runs r where r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(distinct r.runClassName.className) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        classJumper2015 = populateClassJumper(objectQuery, PLACES_TO_POPULATE);
+        //add class jumper
+        awards.add(populateClassJumper(objectQuery, PLACES_TO_POPULATE));
+        
+        return awards;
     }
     
     private static List<String> populateRawList(List<Object[]> query, int places)
     {
-        List<String> returnList = new ArrayList();
-        
-        for(int x = 0; x < places; x++)
+        if(query.size() == 0)
         {
-            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " raw time wins.");
+            return null;
         }
-        return returnList;
+        
+        List<String> returnList = new ArrayList();
+        try
+        {
+            for(int x = 0; x < places; x++)
+            {
+                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " raw time wins.");
+            }
+            return returnList;
+        }
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
+        
     }
     
     private static List<String> populatePaxList(List<Object[]> query, int places)
     {
+        if(query.size() == 0)
+        {
+            return null;
+        }
+        
         List<String> returnList = new ArrayList();
         
-        for(int x = 0; x < places; x++)
+        try
         {
-            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " pax time wins.");
+            for(int x = 0; x < places; x++)
+            {
+                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " pax time wins.");
+            }
+            return returnList;
         }
-        return returnList;
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<String> populateConesList(List<Object[]> query, int places)
     {
+        if(query.size() == 0)
+        {
+            return null;
+        }
+        
         List<String> returnList = new ArrayList();
         
-        for(int x = 0; x < places; x++)
+        try
         {
-            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " total cones hit.");
+            for(int x = 0; x < places; x++)
+            {
+                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " total cones hit.");
+            }
+            return returnList;
         }
-        return returnList;
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<String> populateEventsList(List<Object[]> query, int places)
     {
+        if(query.size() == 0)
+        {
+            return null;
+        }
+        
         List<String> returnList = new ArrayList();
         
-        for(int x = 0; x < places; x++)
+        try
         {
-            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " events attended.");
+            for(int x = 0; x < places; x++)
+            {
+                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " events attended.");
+            }
+            return returnList;
         }
-        return returnList;
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<String> populateRunsList(List<Object[]> query, int places)
     {
+        if(query.size() == 0)
+        {
+            return null;
+        }
+        
         List<String> returnList = new ArrayList();
         
-        for(int x = 0; x < places; x++)
+        try
         {
-            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " runs taken.");
+            for(int x = 0; x < places; x++)
+            {
+                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " runs taken.");
+            }
+            return returnList;
         }
-        return returnList;
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<Award> calculatePercent(List<Object[]> eventQuery, List<Object[]> rawQuery)
     {
+
         Map<String, Number> rawPercentMap = new TreeMap();
         for(Object[] rawObject : rawQuery)
         {
@@ -173,165 +303,241 @@ public class AwardsInfoBean
     
     private static List<String> populateRawPercentList(List<Award> awardList, int places)
     {
-        List<String> returnList = new ArrayList();
-        Iterator<Award> awardIt = awardList.iterator();
-        for(int x = 0; x < places; x++)
+        if(awardList.size() == 0)
         {
-            Award next = awardIt.next();
-            returnList.add(next.getName() + " had top Raw Time at " + Math.round(next.getValue()) + "% of attended events.");
+            return null;
         }
         
-        return returnList;
+        List<String> returnList = new ArrayList();
+        Iterator<Award> awardIt = awardList.iterator();
+        try
+        {
+            for(int x = 0; x < places; x++)
+            {
+                Award next = awardIt.next();
+                returnList.add(next.getName() + " had top Raw Time at " + Math.round(next.getValue()) + "% of attended events.");
+            }
+
+            return returnList;
+        }
+        catch(NoSuchElementException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<String> populatePaxPercentList(List<Award> awardList, int places)
     {
-        List<String> returnList = new ArrayList();
-        Iterator<Award> awardIt = awardList.iterator();
-        for(int x = 0; x < places; x++)
+        if(awardList.size() == 0)
         {
-            Award next = awardIt.next();
-            returnList.add(next.getName() + " had top Pax Time at " + Math.round(next.getValue()) + "% of attended events.");
+            return null;
         }
         
-        return returnList;
+        List<String> returnList = new ArrayList();
+        Iterator<Award> awardIt = awardList.iterator();
+            
+        try
+        {
+            for(int x = 0; x < places; x++)
+            {
+                Award next = awardIt.next();
+                returnList.add(next.getName() + " had top Pax Time at " + Math.round(next.getValue()) + "% of attended events.");
+            }
+        
+            return returnList;
+        }
+        catch(NoSuchElementException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<String> populateConesPercentList(List<Award> awardList, int places)
     {
-        List<String> returnList = new ArrayList();
-        Iterator<Award> awardIt = awardList.iterator();
-        for(int x = 0; x < places; x++)
+        if(awardList.size() == 0)
         {
-            Award next = awardIt.next();
-            returnList.add(next.getName() + " hit " + String.format("%.3f", next.getValue()/100) + " cones per attended event.");
+            return null;
         }
         
-        return returnList;
+        List<String> returnList = new ArrayList();
+        Iterator<Award> awardIt = awardList.iterator();
+            
+        try
+        {
+            for(int x = 0; x < places; x++)
+            {
+                Award next = awardIt.next();
+                returnList.add(next.getName() + " hit " + String.format("%.3f", next.getValue()/100) + " cones per attended event.");
+            }
+
+            return returnList;
+        }
+        catch(NoSuchElementException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<String> populateEventClassSizeList(List<Object[]> query, int places)
     {
+        if(query.size() == 0)
+        {
+            return null;
+        }
+        
         List<String> returnList = new ArrayList();
         
-        for(int x = 0; x < places; x++)
+        try
         {
-            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " participants at " + query.get(x)[4] + " " + query.get(x)[2] + " " + new SimpleDateFormat("MM/dd/yyyy").format(query.get(x)[3]) + ".");
+            for(int x = 0; x < places; x++)
+            {
+                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " participants at " + query.get(x)[4] + " " + query.get(x)[2] + " " + new SimpleDateFormat("MM/dd/yyyy").format(query.get(x)[3]) + ".");
+            }
+            return returnList;
         }
-        return returnList;
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<String> populateUniqueDriversList(List<Object[]> query, int places)
     {
+        if(query.size() == 0)
+        {
+            return null;
+        }
+        
         List<String> returnList = new ArrayList();
         
-        for(int x = 0; x < places; x++)
+        try
         {
-            returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " unique participants.");
+            for(int x = 0; x < places; x++)
+            {
+                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " unique participants.");
+            }
+            return returnList;
         }
-        return returnList;
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
     
     private static List<String> populateClassJumper(List<Object[]> query, int places)
     {
+        if(query.size() == 0)
+        {
+            return null;
+        }
+        
         List<String> returnList = new ArrayList();
         
-        for(int x = 0; x < places; x++)
+        try
         {
-            returnList.add(query.get(x)[1] + " participated in " + query.get(x)[0] + " different classes.");
+            for(int x = 0; x < places; x++)
+            {
+                returnList.add(query.get(x)[1] + " participated in " + query.get(x)[0] + " different classes.");
+            }
+            return returnList;
         }
-        return returnList;
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
     }
 
-    public List<String> getRawWins2015() {
-        return rawWins2015;
+    public List<List<String>> getAwards2016() {
+        return awards2016;
     }
 
-    public void setRawWins2015(List<String> rawWins2015) {
-        this.rawWins2015 = rawWins2015;
+    public void setAwards2016(List<List<String>> awards2016) {
+        this.awards2016 = awards2016;
     }
 
-    public List<String> getPaxWins2015() {
-        return paxWins2015;
+    public List<List<String>> getAwards2015() {
+        return awards2015;
     }
 
-    public void setPaxWins2015(List<String> paxWins2015) {
-        this.paxWins2015 = paxWins2015;
+    public void setAwards2015(List<List<String>> awards2015) {
+        this.awards2015 = awards2015;
     }
 
-    public List<String> getConeKillers2015() {
-        return coneKillers2015;
+    public List<List<String>> getAwards2014() {
+        return awards2014;
     }
 
-    public List<String> getRawWinsPercent2015() {
-        return rawWinsPercent2015;
+    public void setAwards2014(List<List<String>> awards2014) {
+        this.awards2014 = awards2014;
     }
 
-    public void setRawWinsPercent2015(List<String> rawWinsPercent2015) {
-        this.rawWinsPercent2015 = rawWinsPercent2015;
+    public List<List<String>> getAwards2013() {
+        return awards2013;
     }
 
-    public List<String> getPaxWinsPercent2015() {
-        return paxWinsPercent2015;
+    public void setAwards2013(List<List<String>> awards2013) {
+        this.awards2013 = awards2013;
     }
 
-    public void setPaxWinsPercent2015(List<String> paxWinsPercent2015) {
-        this.paxWinsPercent2015 = paxWinsPercent2015;
+    public List<Long> getStats2016() {
+        return stats2016;
     }
 
-    public List<String> getConeKillersPercent2015() {
-        return coneKillersPercent2015;
+    public void setStats2016(List<Long> stats2016) {
+        this.stats2016 = stats2016;
     }
 
-    public void setConeKillersPercent2015(List<String> coneKillersPercent2015) {
-        this.coneKillersPercent2015 = coneKillersPercent2015;
+    public List<Long> getStats2015() {
+        return stats2015;
+    }
+
+    public void setStats2015(List<Long> stats2015) {
+        this.stats2015 = stats2015;
+    }
+
+    public List<Long> getStats2014() {
+        return stats2014;
+    }
+
+    public void setStats2014(List<Long> stats2014) {
+        this.stats2014 = stats2014;
+    }
+
+    public List<Long> getStats2013() {
+        return stats2013;
+    }
+
+    public void setStats2013(List<Long> stats2013) {
+        this.stats2013 = stats2013;
     }
 
     
-    public void setConeKillers2015(List<String> coneKillers2015) {
-        this.coneKillers2015 = coneKillers2015;
-    }
 
-    public List<String> getMostEvents2015() {
-        return mostEvents2015;
-    }
-
-    public void setMostEvents2015(List<String> mostEvents2015) {
-        this.mostEvents2015 = mostEvents2015;
-    }
-
-    public List<String> getMostRuns2015() {
-        return mostRuns2015;
-    }
-
-    public void setMostRuns2015(List<String> mostRuns2015) {
-        this.mostRuns2015 = mostRuns2015;
-    }
-
-    public List<String> getBiggestClassAtEvent2015() {
-        return biggestClassAtEvent2015;
-    }
-
-    public void setBiggestClassAtEvent2015(List<String> biggestClassAtEvent2015) {
-        this.biggestClassAtEvent2015 = biggestClassAtEvent2015;
-    }
-
-    public List<String> getMostUniqueDriversInClass2015() {
-        return mostUniqueDriversInClass2015;
-    }
-
-    public void setMostUniqueDriversInClass2015(List<String> mostUniqueDriversInClass2015) {
-        this.mostUniqueDriversInClass2015 = mostUniqueDriversInClass2015;
-    }
-
-    public List<String> getClassJumper2015() {
-        return classJumper2015;
-    }
-
-    public void setClassJumper2015(List<String> classJumper2015) {
-        this.classJumper2015 = classJumper2015;
-    }
-
+    
    
     
     

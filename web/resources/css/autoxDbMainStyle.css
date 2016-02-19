@@ -18,9 +18,23 @@ body {
 
 
 /*removes border from the tr and td elements inside the panel grid table */
-.noOutlineGrid.ui-panelgrid>*>tr,
-.noOutlineGrid.ui-panelgrid .ui-panelgrid-cell {
+.noOutlinePanelGrid.ui-panelgrid>*>tr,
+.noOutlinePanelGrid.ui-panelgrid .ui-panelgrid-cell {
     border: 0px;
+}
+
+.centeredPanelGrid {
+    margin: 0 auto;
+}
+
+.headerRow {
+    text-align: center;
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.ourDriverRow {
+    font-weight: bold;
 }
 
 .negativeDiff {

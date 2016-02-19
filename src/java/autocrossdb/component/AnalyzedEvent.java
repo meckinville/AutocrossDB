@@ -26,6 +26,7 @@ import javax.persistence.PersistenceContext;
 public class AnalyzedEvent 
 {
     private DateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private DateFormat webFormat = new SimpleDateFormat("MM-dd-yyyy");
     
     private String eventName;
     private String className;
@@ -33,18 +34,28 @@ public class AnalyzedEvent
     private String classPosition;
     private String rawPosition;
     private String paxPosition;
+    private String bestRunNumber;
+    private String bestTimeIgnoringCones;
+    private String conesKilled;
+    
     
     private List<ClassTableRow> classTable = new ArrayList();
+    private List<ClassTableRow> rawTable = new ArrayList();
+    private List<ClassTableRow> paxTable = new ArrayList();
     
     
-    public AnalyzedEvent(Events e, String driver, String className, String carName, String classPosition, String rawPosition, String paxPosition, List<Object[]> competitorRuns)
+    public AnalyzedEvent(Events e, String driver, String className, String carName, String classPosition, String rawPosition, String paxPosition, String bestRunNumber, long conesKilled, double bestTimeIgnoringCones, List<Object[]> competitorRuns, List<Object[]> rawRuns, List<Object[]> paxRuns)
     {
-        this.eventName = e.getEventLocation() + " " + dbFormat.format(e.getEventDate());
+        this.eventName = e.getEventLocation() + " " + webFormat.format(e.getEventDate());
         this.className = className;
         this.carName = carName;
         this.classPosition = classPosition;
         this.rawPosition = rawPosition;
         this.paxPosition = paxPosition;
+        this.bestRunNumber = bestRunNumber;
+        this.conesKilled = new Long(conesKilled).toString();
+        this.bestTimeIgnoringCones = String.format("%.3f", bestTimeIgnoringCones);
+        
         
         double lastTime = 0;
         double topTime = 0;
@@ -52,17 +63,47 @@ public class AnalyzedEvent
         {
             if(x == 0)
             {
-                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), (double)competitorRuns.get(x)[0], 0.000, 0.000));
+                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, (double)competitorRuns.get(x)[0], 0.000, 0.000));
                 lastTime = (double)competitorRuns.get(x)[0];
                 topTime = (double)competitorRuns.get(x)[0];
                 
             }
             else
             {
-                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), (double)competitorRuns.get(x)[0], lastTime-(double)competitorRuns.get(x)[0], topTime-(double)competitorRuns.get(x)[0]));
+                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, (double)competitorRuns.get(x)[0], lastTime-(double)competitorRuns.get(x)[0], topTime-(double)competitorRuns.get(x)[0]));
                 lastTime = (double)competitorRuns.get(x)[0];
             }
             
+        }
+        
+        for(int x = 0; x < rawRuns.size(); x++)
+        {
+            if(x == 0)
+            {
+                rawTable.add(new ClassTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), (double)rawRuns.get(x)[0], 0.000, 0.000));
+                lastTime = (double)rawRuns.get(x)[0];
+                topTime = (double)rawRuns.get(x)[0];
+            }
+            else
+            {
+                rawTable.add(new ClassTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), (double)rawRuns.get(x)[0], lastTime-(double)rawRuns.get(x)[0], topTime-(double)rawRuns.get(x)[0]));
+                lastTime = (double)rawRuns.get(x)[0];
+            }
+        }
+        
+        for(int x = 0; x < paxRuns.size(); x++)
+        {
+            if(x == 0)
+            {
+                paxTable.add(new ClassTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), (double)paxRuns.get(x)[0], 0.000, 0.000));
+                lastTime = (double)paxRuns.get(x)[0];
+                topTime = (double)paxRuns.get(x)[0];
+            }
+            else
+            {
+                paxTable.add(new ClassTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), (double)paxRuns.get(x)[0], lastTime-(double)paxRuns.get(x)[0], topTime-(double)paxRuns.get(x)[0]));
+                lastTime = (double)paxRuns.get(x)[0];
+            }
         }
     }
     
@@ -120,6 +161,46 @@ public class AnalyzedEvent
 
     public void setClassTable(List<ClassTableRow> classTable) {
         this.classTable = classTable;
+    }
+
+    public List<ClassTableRow> getRawTable() {
+        return rawTable;
+    }
+
+    public void setRawTable(List<ClassTableRow> rawTable) {
+        this.rawTable = rawTable;
+    }
+
+    public List<ClassTableRow> getPaxTable() {
+        return paxTable;
+    }
+
+    public void setPaxTable(List<ClassTableRow> paxTable) {
+        this.paxTable = paxTable;
+    }
+
+    public String getBestRunNumber() {
+        return bestRunNumber;
+    }
+
+    public void setBestRunNumber(String bestRunNumber) {
+        this.bestRunNumber = bestRunNumber;
+    }
+
+    public String getBestTimeIgnoringCones() {
+        return bestTimeIgnoringCones;
+    }
+
+    public void setBestTimeIgnoringCones(String bestTimeIgnoringCones) {
+        this.bestTimeIgnoringCones = bestTimeIgnoringCones;
+    }
+
+    public String getConesKilled() {
+        return conesKilled;
+    }
+
+    public void setConesKilled(String conesKilled) {
+        this.conesKilled = conesKilled;
     }
 
     

@@ -11,73 +11,144 @@
         <f:facet name="last">
             <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
         </f:facet>
-        <p:tabMenu activeIndex="#{param.i}">
-            <p:menuitem value="Home" outcome="index">
-                <f:param name="i" value="0"/>
-            </p:menuitem>
-            <p:menuitem value="Event Info" outcome="eventInfoPage">
-                <f:param name="i" value="1"/>
-            </p:menuitem>
-            <p:menuitem value="New Event" outcome="loadEventPage">
-                <f:param name="i" value="2"/>
-            </p:menuitem>
-            <p:menuitem value="Chart" outcome="comparisonChart">
-                <f:param name="i" value="3" />
-            </p:menuitem>
-            <p:menuitem value="Awards" outcome="awardsPage" >
-                <f:param name="i" value="4" />
-            </p:menuitem>
-            <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
-                <f:param name="i" value="5" />
-            </p:menuitem>
-        </p:tabMenu> 
-        <h:form id="analysisForm">
-            <p:outputLabel value="Driver:" />
-            <p:autoComplete id="driver" forceSelection="true" value="#{driverAnalysis.driver}" completeMethod="#{driverAnalysis.completeDriverText}" />
-            <p:commandButton value="Analyze" update="analysisForm" action="#{driverAnalysis.analyzeDriver}" />
-            <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" itemStyle="text-align:center;" numVisible="4" responsive="true" headerText="Events for #{driverAnalysis.driverLabel}" >
-                <p:panelGrid columns="2" columnClasses="descriptionColumn">
-                    <h:outputText value="Event: " />
-                    <h:outputText value="#{event.eventName}" />
-                    <h:outputText value="Your Car: " />
-                    <h:outputText value="#{event.carName}" />
-                    <h:outputText value="Your Class: " />
-                    <h:outputText value="#{event.className}" />
-                    <h:outputText value="Class Position: " />
-                    <p:commandLink oncomplete="PF('classDetailsOP').show()" update=":analysisForm:classDetails">
-                        <h:outputText value="#{event.classPosition}" />
-                        <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
-                    </p:commandLink>
-                    <h:outputText value="Raw Position: " />
-                    <h:outputText value="#{event.rawPosition}" />
-                    <h:outputText value="Pax Position: " />
-                    <h:outputText value="#{event.paxPosition}" />
-                </p:panelGrid>
-                
-            </p:carousel>
-            <p:overlayPanel widgetVar="classDetailsOP" showCloseIcon="true">
-                <p:outputPanel id="classDetails" >
-                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.classTable}">
-                        <p:column headerText="Position">
-                          #{driver.position}
-                        </p:column>
-                        <p:column headerText="Driver">
-                            #{driver.driver}
-                        </p:column>
-                        <p:column headerText="Car">
-                            #{driver.car}
-                        </p:column>
-                        <p:column headerText="Best Time">
-                            #{driver.time}
-                        </p:column>
-                        <p:column headerText="Time Difference" >
-                            #{driver.diff} (#{driver.leaderDiff})
-                        </p:column>
-                    </p:dataTable>
-                </p:outputPanel>
-            </p:overlayPanel>
-            
-        </h:form>
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="100">
+                <p:tabMenu activeIndex="#{param.i}">
+                    <p:menuitem value="Home" outcome="index">
+                        <f:param name="i" value="0"/>
+                    </p:menuitem>
+                    <p:menuitem value="Event Info" outcome="eventInfoPage">
+                        <f:param name="i" value="1"/>
+                    </p:menuitem>
+                    <p:menuitem value="New Event" outcome="loadEventPage">
+                        <f:param name="i" value="2"/>
+                    </p:menuitem>
+                    <p:menuitem value="Chart" outcome="comparisonChart">
+                        <f:param name="i" value="3" />
+                    </p:menuitem>
+                    <p:menuitem value="Awards" outcome="awardsPage" >
+                        <f:param name="i" value="4" />
+                    </p:menuitem>
+                    <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
+                        <f:param name="i" value="5" />
+                    </p:menuitem>
+                </p:tabMenu> 
+            </p:layoutUnit>
+            <p:layoutUnit position="west" size="400">
+                <h:form id="analysisForm">
+                    <p:panelGrid columns="2" styleClass="noOutlinePanelGrid">
+                        <p:outputLabel value="Driver:" />
+                        <p:autoComplete id="driver" forceSelection="true" value="#{driverAnalysis.driver}" completeMethod="#{driverAnalysis.completeDriverText}" />
+                        <p:commandButton value="Analyze" update="analysisForm analysisCarousel" action="#{driverAnalysis.analyzeDriver}" />
+                    </p:panelGrid>
+                </h:form>
+            </p:layoutUnit>
+            <p:layoutUnit position="center">
+                <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" itemStyle="text-align:center;" numVisible="4" responsive="true" headerText="#{driverAnalysis.driverLabel ne null and driverAnalysis.driverLabel ne '' ? 'Events for '.concat(driverAnalysis.driverLabel) : ''}" >
+                    <p:panelGrid columns="2" columnClasses="descriptionColumn">
+                        <h:outputText value="Event: " />
+                        <h:outputText value="#{event.eventName}" />
+                        <h:outputText value="Your Car: " />
+                        <h:outputText value="#{event.carName}" />
+                        <h:outputText value="Your Class: " />
+                        <h:outputText value="#{event.className}" />
+                        <h:outputText value="Class Position: " />
+                        <p:commandLink oncomplete="PF('classDetailsOP').show()" update="classDetails">
+                            <h:outputText value="#{event.classPosition}" />
+                            <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
+                        </p:commandLink>
+                        <h:outputText value="Raw Position: " />
+                        <p:commandLink oncomplete="PF('rawDetailsOP').show()" update="rawDetails">
+                            <h:outputText value="#{event.rawPosition}" />
+                            <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
+                        </p:commandLink>
+                        <h:outputText value="Pax Position: " />
+                        <p:commandLink oncomplete="PF('paxDetailsOP').show()" update="paxDetails">
+                            <h:outputText value="#{event.paxPosition}" />
+                            <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
+                        </p:commandLink>
+                        <h:outputText value="Best Run Number:" />
+                        <h:outputText value="#{event.bestRunNumber}" />
+                        <h:outputText value="Cones Killed:" />
+                        <h:outputText value="#{event.conesKilled}" />
+                        <h:outputText value="Best Time Ignoring Cones:" />
+                        <h:outputText value="#{event.bestTimeIgnoringCones}" />
+                    </p:panelGrid>
+
+                </p:carousel>
+                <p:overlayPanel widgetVar="classDetailsOP" showCloseIcon="true">
+                    <p:outputPanel id="classDetails" >
+                        <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.classTable}">
+                            <p:column colspan="1" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Position" >
+                              #{driver.position}
+                            </p:column>
+                            <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Driver">
+                                #{driver.driver}
+                            </p:column>
+                            <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Car" >
+                                #{driver.car}
+                            </p:column>
+                            <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Best Time" >
+                                #{driver.time}
+                            </p:column>
+                            <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Time Difference" >
+                                #{driver.diff} (#{driver.leaderDiff})
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:overlayPanel>
+
+                <p:overlayPanel widgetVar="rawDetailsOP" showCloseIcon="true">
+                    <p:outputPanel id="rawDetails" >
+                        <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.rawTable}">
+                            <p:column colspan="1" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Position">
+                              #{driver.position}
+                            </p:column>
+                            <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Driver">
+                                #{driver.driver}
+                            </p:column>
+                            <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Class">
+                                #{driver.cls}
+                            </p:column>
+                            <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Car">
+                                #{driver.car}
+                            </p:column>
+                            <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Best Time">
+                                #{driver.time}
+                            </p:column>
+                            <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Time Difference" >
+                                #{driver.diff} (#{driver.leaderDiff})
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:overlayPanel>
+
+                <p:overlayPanel widgetVar="paxDetailsOP" showCloseIcon="true">
+                    <p:outputPanel id="paxDetails" >
+                        <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.paxTable}">
+                            <p:column colspan="1" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Position">
+                              #{driver.position}
+                            </p:column>
+                            <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Driver">
+                                #{driver.driver}
+                            </p:column>
+                            <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Class">
+                                #{driver.cls}
+                            </p:column>
+                            <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Car">
+                                #{driver.car}
+                            </p:column>
+                            <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Best Time">
+                                #{driver.time}
+                            </p:column>
+                            <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driverLabel ? 'ourDriverRow' : null}" headerText="Time Difference" >
+                                #{driver.diff} (#{driver.leaderDiff})
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:overlayPanel>
+            </p:layoutUnit>
+        </p:layout>
     </h:body>
 </html>
 

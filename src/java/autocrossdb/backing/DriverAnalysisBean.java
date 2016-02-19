@@ -10,18 +10,12 @@ import autocrossdb.entities.Runs;
 import autocrossdb.component.AnalyzedEvent;
 import autocrossdb.component.Nemesis;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -59,6 +53,7 @@ public class DriverAnalysisBean
             List<Runs> yourRuns = em.createQuery("SELECT r FROM Runs r where r.runDriverName = :driver and r.runEventUrl = :url", Runs.class).setParameter("driver", driver).setParameter("url", e).getResultList();
             List<Object[]> competitorRuns = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runCarName FROM Runs r WHERE r.runClassName.className = :class AND r.runEventUrl = :url AND r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime)", Object[].class).setParameter("class", yourRuns.get(0).getRunClassName().getClassName()).setParameter("url", e).getResultList();
             String classPosition = "";
+            double ourRunTime = 0;
             
             boolean beatingUs = true;
             for(int x = 0; x < competitorRuns.size(); x++)
@@ -67,6 +62,7 @@ public class DriverAnalysisBean
                 {
                     beatingUs = false;
                     classPosition = x+1 + "/" + competitorRuns.size();
+                    ourRunTime = (double)competitorRuns.get(x)[0];
                 }
                 else if(beatingUs)
                 {
@@ -84,7 +80,7 @@ public class DriverAnalysisBean
             }
             
             String rawPosition = "";
-            List<Object[]> rawRuns = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runCarName FROM Runs r WHERE r.runEventUrl = :url AND r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime)", Object[].class).setParameter("url", e).getResultList();
+            List<Object[]> rawRuns = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runCarName, r.runClassName.className FROM Runs r WHERE r.runEventUrl = :url AND r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime)", Object[].class).setParameter("url", e).getResultList();
             for(int x = 0; x < rawRuns.size(); x++)
             {
                 if(rawRuns.get(x)[1].equals(driver))
@@ -95,7 +91,7 @@ public class DriverAnalysisBean
             }
             
             String paxPosition = "";
-            List<Object[]> paxRuns = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName, r.runCarName FROM Runs r WHERE r.runEventUrl = :url AND r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime)", Object[].class).setParameter("url", e).getResultList();
+            List<Object[]> paxRuns = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName, r.runCarName, r.runClassName.className FROM Runs r WHERE r.runEventUrl = :url AND r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime)", Object[].class).setParameter("url", e).getResultList();
             for(int x = 0; x < paxRuns.size(); x++)
             {
                 if(paxRuns.get(x)[1].equals(driver))
@@ -105,8 +101,24 @@ public class DriverAnalysisBean
                 
             }
             
-            List<Runs> classRuns =  em.createQuery("SELECT r FROM Runs r WHERE r.runClassName.className = :class AND r.runEventUrl = :url AND r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime)", Runs.class).setParameter("class", yourRuns.get(0).getRunClassName().getClassName()).setParameter("url", e).getResultList();
-            events.add(new AnalyzedEvent(e, driver, yourRuns.get(0).getRunClassName().getClassName(), yourRuns.get(0).getRunCarName(), classPosition, rawPosition, paxPosition, competitorRuns));
+            List<Integer> bestRunQuery = em.createQuery("SELECT r.runNumber FROM Runs r WHERE r.runDriverName = :driver and r.runTime = :runTime").setParameter("driver", driver).setParameter("runTime", ourRunTime).getResultList();
+            long conesKilled = (long)em.createQuery("SELECT sum(r.runCones) FROM Runs r where r.runDriverName = :driver AND r.runEventUrl = :url").setParameter("driver", driver).setParameter("url", e).getResultList().get(0);
+            
+            double bestTimeIgnoringCones = yourRuns.get(0).getRunTime();
+            for(int x = 1; x < yourRuns.size(); x++)
+            {
+                if(yourRuns.get(x).getRunOffcourse().equals("N"))
+                {
+                    double newRunTime = yourRuns.get(x).getRunTime();
+                    newRunTime -= 2 * yourRuns.get(x).getRunCones();
+                    if(newRunTime < bestTimeIgnoringCones)
+                    {
+                        bestTimeIgnoringCones = newRunTime;
+                    }
+                }      
+            }
+            
+            events.add(new AnalyzedEvent(e, driver, yourRuns.get(0).getRunClassName().getClassName(), yourRuns.get(0).getRunCarName(), classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns));
         }
         driver = "";
     }
