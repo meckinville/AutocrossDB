@@ -5,10 +5,6 @@
  */
 package autocrossdb.component;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -20,16 +16,18 @@ public class ClassTableRow
     private String driver;
     private String car;
     private String cls;
+    private int cones;
     private String time;
     private String diff;
     private String leaderDiff;
     
 
-    public ClassTableRow(int position, String driver, String car, String cls, double time, double diff, double leaderDiff) {
+    public ClassTableRow(int position, String driver, String car, String cls, int cones, double time, double diff, double leaderDiff) {
         this.position = position;
         this.driver = driver;
         this.car = car;
         this.cls = cls;
+        this.cones = cones;
         this.time = String.format("%.3f", time);
         this.diff = String.format("%.3f", diff);
         this.leaderDiff = String.format("%.3f", leaderDiff);
@@ -94,6 +92,14 @@ public class ClassTableRow
 
     public void setCls(String cls) {
         this.cls = cls;
+    }
+
+    public int getCones() {
+        return cones;
+    }
+
+    public void setCones(int cones) {
+        this.cones = cones;
     }
 
     

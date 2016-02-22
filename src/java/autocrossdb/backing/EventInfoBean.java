@@ -6,7 +6,6 @@
 package autocrossdb.backing;
 
 import autocrossdb.entities.Events;
-import autocrossdb.entities.Runs;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

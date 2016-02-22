@@ -10,14 +10,15 @@ import autocrossdb.entities.Runs;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.faces.bean.ManagedBean;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import java.util.Map;
+
 
 /**
  *
@@ -42,9 +43,11 @@ public class AnalyzedEvent
     private List<ClassTableRow> classTable = new ArrayList();
     private List<ClassTableRow> rawTable = new ArrayList();
     private List<ClassTableRow> paxTable = new ArrayList();
+    private List<ClassTableRow> noConesTable = new ArrayList();
     
+    private Map<String,Double> noConesMap;
     
-    public AnalyzedEvent(Events e, String driver, String className, String carName, String classPosition, String rawPosition, String paxPosition, String bestRunNumber, long conesKilled, double bestTimeIgnoringCones, List<Object[]> competitorRuns, List<Object[]> rawRuns, List<Object[]> paxRuns)
+    public AnalyzedEvent(Events e, String driver, String className, String carName, String classPosition, String rawPosition, String paxPosition, String bestRunNumber, long conesKilled, double bestTimeIgnoringCones, List<Object[]> competitorRuns, List<Object[]> rawRuns, List<Object[]> paxRuns, List<Runs> noConesQuery)
     {
         this.eventName = e.getEventLocation() + " " + webFormat.format(e.getEventDate());
         this.className = className;
@@ -63,14 +66,14 @@ public class AnalyzedEvent
         {
             if(x == 0)
             {
-                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, (double)competitorRuns.get(x)[0], 0.000, 0.000));
+                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, 0, (double)competitorRuns.get(x)[0], 0.000, 0.000));
                 lastTime = (double)competitorRuns.get(x)[0];
                 topTime = (double)competitorRuns.get(x)[0];
                 
             }
             else
             {
-                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, (double)competitorRuns.get(x)[0], lastTime-(double)competitorRuns.get(x)[0], topTime-(double)competitorRuns.get(x)[0]));
+                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, 0, (double)competitorRuns.get(x)[0], lastTime-(double)competitorRuns.get(x)[0], topTime-(double)competitorRuns.get(x)[0]));
                 lastTime = (double)competitorRuns.get(x)[0];
             }
             
@@ -80,13 +83,13 @@ public class AnalyzedEvent
         {
             if(x == 0)
             {
-                rawTable.add(new ClassTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), (double)rawRuns.get(x)[0], 0.000, 0.000));
+                rawTable.add(new ClassTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), 0, (double)rawRuns.get(x)[0], 0.000, 0.000));
                 lastTime = (double)rawRuns.get(x)[0];
                 topTime = (double)rawRuns.get(x)[0];
             }
             else
             {
-                rawTable.add(new ClassTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), (double)rawRuns.get(x)[0], lastTime-(double)rawRuns.get(x)[0], topTime-(double)rawRuns.get(x)[0]));
+                rawTable.add(new ClassTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), 0, (double)rawRuns.get(x)[0], lastTime-(double)rawRuns.get(x)[0], topTime-(double)rawRuns.get(x)[0]));
                 lastTime = (double)rawRuns.get(x)[0];
             }
         }
@@ -95,16 +98,96 @@ public class AnalyzedEvent
         {
             if(x == 0)
             {
-                paxTable.add(new ClassTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), (double)paxRuns.get(x)[0], 0.000, 0.000));
+                paxTable.add(new ClassTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), 0, (double)paxRuns.get(x)[0], 0.000, 0.000));
                 lastTime = (double)paxRuns.get(x)[0];
                 topTime = (double)paxRuns.get(x)[0];
             }
             else
             {
-                paxTable.add(new ClassTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), (double)paxRuns.get(x)[0], lastTime-(double)paxRuns.get(x)[0], topTime-(double)paxRuns.get(x)[0]));
+                paxTable.add(new ClassTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), 0, (double)paxRuns.get(x)[0], lastTime-(double)paxRuns.get(x)[0], topTime-(double)paxRuns.get(x)[0]));
                 lastTime = (double)paxRuns.get(x)[0];
             }
         }
+        
+        noConesMap = new HashMap();
+        List<Runs> runsList = new ArrayList();
+        for(int x = 0; x < noConesQuery.size(); x++)
+        {
+            if(noConesMap.get(noConesQuery.get(x).getRunDriverName()) == null)
+            {
+                noConesMap.put(noConesQuery.get(x).getRunDriverName(), noConesQuery.get(x).getRunTime() - (2 * noConesQuery.get(x).getRunCones()));
+                runsList.add(noConesQuery.get(x));
+            }
+            else
+            {
+                if(noConesMap.get(noConesQuery.get(x).getRunDriverName()) > (noConesQuery.get(x).getRunTime() - (2 * noConesQuery.get(x).getRunCones())))
+                {
+                    noConesMap.put(noConesQuery.get(x).getRunDriverName(), noConesQuery.get(x).getRunTime() - (2 * noConesQuery.get(x).getRunCones()));
+                    runsList.add(noConesQuery.get(x));
+                }
+            }
+        }
+        noConesMap = sortByComparator(noConesMap);
+        int x = 0;
+        for(Map.Entry<String,Double> row : noConesMap.entrySet())
+        {
+            String car = "";
+            String cls = "";
+            int cones = 0;
+            
+            for(int y = 0; y < runsList.size(); y++)
+            {
+                if(runsList.get(y).getRunDriverName().equals(row.getKey()))
+                {
+                    car = runsList.get(y).getRunCarName();
+                    cls = runsList.get(y).getRunClassName().getClassName();
+                    
+                    if(runsList.get(y).getRunTime() - (2 * runsList.get(y).getRunCones()) == row.getValue())
+                    {
+                        cones = runsList.get(y).getRunCones();
+                    }
+                }
+            }
+            if(x == 0)
+            {
+                
+                
+                noConesTable.add(new ClassTableRow(x+1, row.getKey(), car, cls, cones, row.getValue(), 0.000, 0.000));
+                lastTime = row.getValue();
+                topTime = row.getValue();
+            }
+            else
+            {
+                noConesTable.add(new ClassTableRow(x+1, row.getKey(), car, cls, cones, row.getValue(), lastTime-row.getValue(), topTime-row.getValue()));
+                lastTime = row.getValue();
+            }
+            x++;
+        }
+    }
+    
+    private static Map<String, Double> sortByComparator(Map<String, Double> unsortMap) 
+    {
+
+        // Convert Map to List
+        List<Map.Entry<String, Double>> list = new LinkedList<Map.Entry<String, Double>>(unsortMap.entrySet());
+
+        // Sort list with comparator, to compare the Map values
+        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() 
+        {
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) 
+            {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        // Convert sorted map back to a Map
+        Map<String, Double> sortedMap = new LinkedHashMap<String, Double>();
+        for (Iterator<Map.Entry<String, Double>> it = list.iterator(); it.hasNext();) 
+        {
+            Map.Entry<String, Double> entry = it.next();
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
     }
     
     public String getEventName() {
@@ -203,9 +286,18 @@ public class AnalyzedEvent
         this.conesKilled = conesKilled;
     }
 
-    
+    public List<ClassTableRow> getNoConesTable() {
+        return noConesTable;
+    }
 
+    public void setNoConesTable(List<ClassTableRow> noConesTable) {
+        this.noConesTable = noConesTable;
+    }
+
+    
+    
  
     
     
 }
+

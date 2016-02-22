@@ -7,6 +7,7 @@ package autocrossdb.backing;
 
 import autocrossdb.component.Award;
 import autocrossdb.entities.Events;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,6 +33,8 @@ import javax.persistence.PersistenceContext;
 @ApplicationScoped
 public class AwardsInfoBean 
 {
+    private static final DateFormat webFormat = new SimpleDateFormat("MM-dd-yyyy");
+    
     private static final int PLACES_TO_POPULATE = 5;
     
     private static final int RAW_WINS_AWARD_POSITION = 0;
@@ -45,6 +48,7 @@ public class AwardsInfoBean
     private static final int BIGGEST_CLASS_AWARD_POSITION = 8;
     private static final int MOST_UNIQUE_DRIVERS_AWARD_POSITION = 9;
     private static final int CLASS_JUMPER_AWARD_POSITION = 10;
+    private static final int DIRTIEST_RUN_AWARD_POSITION = 11;
     
     private List<List<String>> awards2016;
     private List<Long> stats2016;
@@ -128,6 +132,10 @@ public class AwardsInfoBean
         objectQuery = em.createQuery("SELECT count(distinct r.runClassName.className), r.runDriverName from Runs r where r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(distinct r.runClassName.className) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add class jumper
         awards.add(populateClassJumper(objectQuery, PLACES_TO_POPULATE));
+        
+        objectQuery = em.createQuery("SELECT max(r.runCones), r.runDriverName, r.runEventUrl, r.runNumber from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runOffcourse = 'N' group by r.runId order by max(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add dirtiest run
+        awards.add(populateDirtiestRun(objectQuery, PLACES_TO_POPULATE));
         
         return awards;
     }
@@ -403,7 +411,7 @@ public class AwardsInfoBean
         {
             for(int x = 0; x < places; x++)
             {
-                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " participants at " + query.get(x)[4] + " " + query.get(x)[2] + " " + new SimpleDateFormat("MM/dd/yyyy").format(query.get(x)[3]) + ".");
+                returnList.add(query.get(x)[1] + " with " + query.get(x)[0] + " participants at " + query.get(x)[2] + " " + webFormat.format(query.get(x)[3]) + ".");
             }
             return returnList;
         }
@@ -458,6 +466,34 @@ public class AwardsInfoBean
             for(int x = 0; x < places; x++)
             {
                 returnList.add(query.get(x)[1] + " participated in " + query.get(x)[0] + " different classes.");
+            }
+            return returnList;
+        }
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < places)
+            {
+                returnList.add("No other eligible drivers.");
+            }
+            return returnList;
+        }
+    }
+    
+    private static List<String> populateDirtiestRun(List<Object[]> query, int places)
+    {
+        if(query.size() == 0)
+        {
+            return null;
+        }
+        
+        List<String> returnList = new ArrayList();
+        
+        try
+        {
+            for(int x = 0; x < places; x++)
+            {
+                Events e = (Events)query.get(x)[2];
+                returnList.add(query.get(x)[1] + " hit  " + query.get(x)[0] + " cones on run #" + query.get(x)[3] + " at " + e.getEventLocation() + " " + webFormat.format(e.getEventDate()) + ".");
             }
             return returnList;
         }

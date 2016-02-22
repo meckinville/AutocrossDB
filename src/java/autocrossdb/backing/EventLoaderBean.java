@@ -62,13 +62,11 @@ public class EventLoaderBean
     private Collection<Runs> runsCollection;
     
     private DateFormat webFormat;
-    private DateFormat shortFormat;
     
     @PostConstruct
     public void init()
     {
         webFormat = new SimpleDateFormat("MM-dd-yyyy");
-        shortFormat = new SimpleDateFormat("MM-dd-yy");
     }
     
     public void loadEvent()

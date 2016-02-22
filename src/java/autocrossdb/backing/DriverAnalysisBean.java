@@ -10,6 +10,8 @@ import autocrossdb.entities.Runs;
 import autocrossdb.component.AnalyzedEvent;
 import autocrossdb.component.Nemesis;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,8 +29,9 @@ import javax.persistence.PersistenceContext;
 @ViewScoped
 public class DriverAnalysisBean 
 {
-    private String driver;
-    private String driverLabel = "";
+    private String driver = "";
+    private Date endDate;
+    private Date startDate;
     
     private List<AnalyzedEvent> events;
     private AnalyzedEvent selectedEvent;
@@ -41,12 +44,16 @@ public class DriverAnalysisBean
     public void init()
     {
         events = new ArrayList();
+        Calendar now = Calendar.getInstance();
+        endDate = now.getTime();
+        now.set(Calendar.MONTH, now.get(Calendar.MONTH)-8);
+        startDate = now.getTime();
     }
     
     public void analyzeDriver()
     {
-        driverLabel = driver;
-        List<Events> rawEventList = em.createQuery("SELECT e from Events e JOIN e.runsCollection r WHERE r.runDriverName = :driver AND r.runNumber = 1 ORDER BY e.eventDate desc", Events.class).setParameter("driver", this.driver).getResultList();
+        events = new ArrayList();
+        List<Events> rawEventList = em.createQuery("SELECT e from Events e JOIN e.runsCollection r WHERE r.runDriverName = :driver AND r.runNumber = 1 AND e.eventDate > :start AND e.eventDate < :end ORDER BY e.eventDate desc", Events.class).setParameter("driver", this.driver).setParameter("start", startDate).setParameter("end", endDate).getResultList();
 
         for(Events e : rawEventList)
         {
@@ -117,10 +124,10 @@ public class DriverAnalysisBean
                     }
                 }      
             }
+            List<Runs> noConesQuery = em.createQuery("SELECT r FROM Runs r where r.runEventUrl = :url and r.runClassName.className = :class and r.runOffcourse = 'N'").setParameter("url", e).setParameter("class", yourRuns.get(0).getRunClassName().getClassName()).getResultList();
             
-            events.add(new AnalyzedEvent(e, driver, yourRuns.get(0).getRunClassName().getClassName(), yourRuns.get(0).getRunCarName(), classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns));
+            events.add(new AnalyzedEvent(e, driver, yourRuns.get(0).getRunClassName().getClassName(), yourRuns.get(0).getRunCarName(), classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery));
         }
-        driver = "";
     }
     
     public List<String> completeDriverText(String query)
@@ -161,12 +168,20 @@ public class DriverAnalysisBean
         this.selectedEvent = selectedEvent;
     }
 
-    public String getDriverLabel() {
-        return driverLabel;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setDriverLabel(String driverLabel) {
-        this.driverLabel = driverLabel;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
     
     

@@ -34,11 +34,14 @@
                     <p:menuitem value="Chart" outcome="comparisonChart">
                         <f:param name="i" value="3" />
                     </p:menuitem>
-                    <p:menuitem value="Awards" outcome="awardsPage" >
+                    <p:menuitem value="Individual Awards" outcome="awardsPage" >
                         <f:param name="i" value="4" />
                     </p:menuitem>
-                    <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
+                    <p:menuitem value="Event Awards" outcome="eventAwardsPage" >
                         <f:param name="i" value="5" />
+                    </p:menuitem>
+                    <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
+                        <f:param name="i" value="6" />
                     </p:menuitem>
                 </p:tabMenu> 
             </p:layoutUnit>
@@ -70,8 +73,8 @@
                 <p:panelGrid id="statisticsGrid" styleClass="centeredPanelGrid">
                     <p:row>
                         <p:column styleClass="descriptionColumn headerRow" colspan="3">Statistic</p:column>
-                        <p:column styleClass="headerRow" colspan="2">#{comparisonChart.driver1}</p:column>
-                        <p:column styleClass="headerRow" colspan="2">#{comparisonChart.driver2}</p:column>
+                        <p:column styleClass="headerRow" colspan="2">#{comparisonChart.driver1 ne null and comparisonChart.driver1 ne '' ? comparisonChart.driver1 : 'Driver 1'}</p:column>
+                        <p:column styleClass="headerRow" colspan="2">#{comparisonChart.driver2 ne null and comparisonChart.driver2 ne '' ? comparisonChart.driver2 : 'Driver 2'}</p:column>
                     </p:row>
                     <p:row>
                         <p:column styleClass="descriptionColumn" colspan="3">Total Events Attended in this Time</p:column>

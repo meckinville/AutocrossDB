@@ -24,11 +24,14 @@
             <p:menuitem value="Chart" outcome="comparisonChart">
                 <f:param name="i" value="3" />
             </p:menuitem>
-            <p:menuitem value="Awards" outcome="awardsPage" >
+            <p:menuitem value="Individual Awards" outcome="awardsPage" >
                 <f:param name="i" value="4" />
             </p:menuitem>
-            <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
+            <p:menuitem value="Event Awards" outcome="eventAwardsPage" >
                 <f:param name="i" value="5" />
+            </p:menuitem>
+            <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
+                <f:param name="i" value="6" />
             </p:menuitem>
         </p:tabMenu> 
         <p:tabView>
@@ -85,6 +88,12 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2016.get(11)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Dirtiest Run
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
                     <p:dataList value="#{awardsInfo.awards2016.get(8)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Largest Class Attendance
@@ -103,6 +112,7 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
+                    
                 </p:panelGrid>
             </p:tab>
             <p:tab title="2015 Awards" >
@@ -158,6 +168,12 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2015.get(11)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Dirtiest Run
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
                     <p:dataList value="#{awardsInfo.awards2015.get(8)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Largest Class Attendance
@@ -176,6 +192,7 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
+                    
                 </p:panelGrid>
             </p:tab>
             <p:tab title="2014 Awards" >
@@ -231,6 +248,12 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
+                    <p:dataList value="#{awardsInfo.awards2014.get(11)}" var="driver" type="ordered" >
+                        <f:facet name="header" >
+                            Dirtiest Run
+                        </f:facet>
+                        #{driver} 
+                    </p:dataList>
                     <p:dataList value="#{awardsInfo.awards2014.get(8)}" var="driver" type="ordered" >
                         <f:facet name="header" >
                             Largest Class Attendance
@@ -249,6 +272,7 @@
                         </f:facet>
                         #{driver} 
                     </p:dataList>
+                    
                 </p:panelGrid>
             </p:tab>
         </p:tabView>

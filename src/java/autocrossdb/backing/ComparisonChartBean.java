@@ -5,17 +5,13 @@
  */
 package autocrossdb.backing;
 
-import autocrossdb.entities.Events;
-import autocrossdb.entities.Runs;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -26,7 +22,6 @@ import javax.persistence.PersistenceContext;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.CategoryAxis;
-import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
@@ -82,8 +77,6 @@ public class ComparisonChartBean implements Serializable
         series.set("Event Date", 50.5);
         lineModel.addSeries(series);
         lineModel.getAxes().put(AxisType.X, new CategoryAxis("Events"));
-        driver1 = "Driver 1";
-        driver2 = "Driver 2";
     }
 
     public List<String> completeDriverText(String query)
