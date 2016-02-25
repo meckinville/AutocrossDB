@@ -26,14 +26,11 @@
                     <p:menuitem value="Chart" outcome="comparisonChart">
                         <f:param name="i" value="3" />
                     </p:menuitem>
-                    <p:menuitem value="Individual Awards" outcome="awardsPage" >
+                    <p:menuitem value="Awards" outcome="awardsPage" >
                         <f:param name="i" value="4" />
                     </p:menuitem>
-                    <p:menuitem value="Event Awards" outcome="eventAwardsPage" >
-                        <f:param name="i" value="5" />
-                    </p:menuitem>
                     <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
-                        <f:param name="i" value="6" />
+                        <f:param name="i" value="5" />
                     </p:menuitem>
                 </p:tabMenu> 
             </p:layoutUnit>
@@ -46,7 +43,11 @@
                         <p:calendar id="start" mode="popup" required="true" value="#{driverAnalysis.startDate}" />
                         <p:outputLabel value="End Date:" />
                         <p:calendar id="end" mode="popup" required="true" value="#{driverAnalysis.endDate}" />
-                        <p:commandButton value="Analyze" update="analysisForm analysisCarousel" action="#{driverAnalysis.analyzeDriver}" />
+                        <p:commandButton id="analyzeButton" onclick="PF('pbAjax').start();PF('analyzeButton').disable()" widgetVar="analyzeButton" value="Analyze" update="analysisForm analysisCarousel" action="#{driverAnalysis.analyzeDriver}" />
+                        <h:outputText value=""/>
+                        <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="500" widgetVar="pbAjax" value="#{driverAnalysis.progress}" style="width:300px" >
+                            <p:ajax event="complete" listener="#{driverAnalysis.onCompleteLoad}" oncomplete="PF('analyzeButton').enable()" update="progressBar" />
+                        </p:progressBar>
                     </p:panelGrid>
                 </h:form>
             </p:layoutUnit>

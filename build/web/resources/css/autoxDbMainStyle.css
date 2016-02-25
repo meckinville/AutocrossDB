@@ -23,6 +23,15 @@ body {
     border: 0px;
 }
 
+.award.ui-panelgrid>*>*>td {
+    width: 50%;
+}
+
+
+.award.ui-panelgrid>*>tr {
+    width: 100%;
+}
+
 .centeredPanelGrid {
     margin: 0 auto;
 }
@@ -43,4 +52,8 @@ body {
 
 .positiveDiff {
     color: red
+}
+
+.ui-tabs-left > .ui-tabs-nav {
+    height: auto;
 }

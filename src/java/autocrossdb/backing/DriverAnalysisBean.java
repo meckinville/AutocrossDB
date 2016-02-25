@@ -32,6 +32,7 @@ public class DriverAnalysisBean
     private String driver = "";
     private Date endDate;
     private Date startDate;
+    private long progress;
     
     private List<AnalyzedEvent> events;
     private AnalyzedEvent selectedEvent;
@@ -126,8 +127,11 @@ public class DriverAnalysisBean
             }
             List<Runs> noConesQuery = em.createQuery("SELECT r FROM Runs r where r.runEventUrl = :url and r.runClassName.className = :class and r.runOffcourse = 'N'").setParameter("url", e).setParameter("class", yourRuns.get(0).getRunClassName().getClassName()).getResultList();
             
-            events.add(new AnalyzedEvent(e, driver, yourRuns.get(0).getRunClassName().getClassName(), yourRuns.get(0).getRunCarName(), classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery));
+            events.add(new AnalyzedEvent(e, yourRuns, classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery));
+            progress += 100 / rawEventList.size();
         }
+        progress = 100;
+        
     }
     
     public List<String> completeDriverText(String query)
@@ -142,6 +146,23 @@ public class DriverAnalysisBean
             }
         }
         return results;
+    }
+    
+    public void onCompleteLoad()
+    {
+        progress = 0;
+    }
+
+    public long getProgress() {
+        if(progress > 100)
+        {
+            progress = 100;
+        }
+        return progress;
+    }
+
+    public void setProgress(long progress) {
+        this.progress = progress;
     }
 
     public List<AnalyzedEvent> getEvents() {

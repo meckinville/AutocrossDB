@@ -47,11 +47,11 @@ public class AnalyzedEvent
     
     private Map<String,Double> noConesMap;
     
-    public AnalyzedEvent(Events e, String driver, String className, String carName, String classPosition, String rawPosition, String paxPosition, String bestRunNumber, long conesKilled, double bestTimeIgnoringCones, List<Object[]> competitorRuns, List<Object[]> rawRuns, List<Object[]> paxRuns, List<Runs> noConesQuery)
+    public AnalyzedEvent(Events e, List<Runs> yourRuns, String classPosition, String rawPosition, String paxPosition, String bestRunNumber, long conesKilled, double bestTimeIgnoringCones, List<Object[]> competitorRuns, List<Object[]> rawRuns, List<Object[]> paxRuns, List<Runs> noConesQuery)
     {
         this.eventName = e.getEventLocation() + " " + webFormat.format(e.getEventDate());
-        this.className = className;
-        this.carName = carName;
+        this.className = yourRuns.get(0).getRunClassName().getClassName();
+        this.carName = yourRuns.get(0).getRunCarName();
         this.classPosition = classPosition;
         this.rawPosition = rawPosition;
         this.paxPosition = paxPosition;
@@ -189,7 +189,7 @@ public class AnalyzedEvent
         }
         return sortedMap;
     }
-    
+
     public String getEventName() {
         return eventName;
     }
