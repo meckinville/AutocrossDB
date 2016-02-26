@@ -278,59 +278,162 @@ public class EventLoaderBean
         {
             progress = 0;
             Document results = Jsoup.connect(url).get();
-            Date raceDate;
             
             Elements tables = results.select("table");
-            /*
-            Element headerTable = tables.first();
-            Elements dateRows = headerTable.select("span:matchesOwn([0-9][0-9]-[0-9][0-9]");
-            Element dateSpan = dateRows.first();
-            String dateSubstring = dateSpan.text().substring(dateSpan.text().length()-10);
-            dateSubstring = dateSubstring.trim();
-            while(!Character.isDigit(dateSubstring.charAt(0)))
-            {
-                dateSubstring = dateSubstring.substring(1);
-            }
-            if(dateSubstring.substring(0,dateSubstring.indexOf("-")).length() < 2)
-            {
-                dateSubstring = "0" + dateSubstring;
-            }
-            if(dateSubstring.length() == 8)
-            {
-                raceDate = shortFormat.parse(dateSubstring);
-            }
-            else
-            {
-                raceDate = webFormat.parse(dateSubstring);
-            }
-            eventToWrite = new Events(url, club, null, raceDate, points);
-            */
-            Element driverTable = tables.get(1);
-            Elements driverRows = driverTable.select("tr");
-            String driverName = "";
-            String carName = "";
-            String clsStr = "";
+            Element table = tables.get(1);
             
-            for(Element row : driverRows)
+            Elements rows = table.select("tr");
+            
+            String eventDate = "";
+            String eventLocation = "";
+            String eventClub = "";
+            String driverName = "";
+            String clsName = "";
+            String carName = "";
+            int runNumber = 1;
+            Classes classToWrite = new Classes();
+            
+            ArrayList<Runs> runsCollection = new ArrayList();
+            
+            for(Element row : rows)
             {
-                Elements driverCells = row.select("td");
-                for(Element cell : driverCells)
+                Elements columns = row.select("td");
+                if(columns.first().text().length() > 0)
                 {
-                    if(cell.hasAttr("colspan"))
+                    if(Character.isDigit(columns.first().text().charAt(0)))
                     {
-                        clsStr = cell.select("a[name]").first().attr("name");
-                        System.out.println(clsStr);
-                        break;
+                        runNumber = 1;
+                        clsName = columns.get(1).select("span").text();
+                        classToWrite = classesFacade.find(clsName);
+                        driverName = columns.get(3).select("span").text();
+                        carName = columns.get(4).select("span").text();
+                        System.out.println("Class = " + columns.get(1).select("span").text());
+                        System.out.println("Driver = " + columns.get(3).select("span").text());
+                        System.out.println("Car = " + columns.get(4).select("span").text());
+                        
+                        for(int x = 5; x < columns.size()-1; x++)
+                        {
+                            String columnText = columns.get(x).select("span").text();
+
+                            //if the column has a period it must be a time
+                            if(columnText.contains("."))
+                            {
+                                //if the time contains a + sign it must have a cone count or off course
+                                if(columnText.contains("+"))
+                                {
+                                    //check for offcourse
+                                    if(columnText.substring(columnText.indexOf("+")+1).equals("OFF"))
+                                    {
+                                        String runTime = columnText;
+                                        double paxTime = 0;
+                                        if(eventDate.contains("2016"))
+                                        {
+                                            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2016Pax();
+                                        }
+                                        if(eventDate.contains("2015"))
+                                        {
+                                            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2015Pax();
+                                        }
+                                        if(eventDate.contains("2014"))
+                                        {
+                                            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2014Pax();
+                                        }
+                                        if(eventDate.contains("2013"))
+                                        {
+                                            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2013Pax();
+                                        }
+                                        runsCollection.add(new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "Y", 0));
+                                    }
+                                    //else if not off course it must be cones
+                                    else
+                                    {
+                                        int cones = Integer.parseInt(columnText.substring(columnText.indexOf("+")+1));
+                                        double runTime = Double.parseDouble(columnText);
+                                        runTime += 2 * cones;
+                                        double paxTime = 0;
+                                        if(eventDate.contains("2016"))
+                                        {
+                                            paxTime = runTime * classToWrite.getClass2016Pax();
+                                        }
+                                        if(eventDate.contains("2015"))
+                                        {
+                                            paxTime = runTime * classToWrite.getClass2015Pax();
+                                        }
+                                        if(eventDate.contains("2014"))
+                                        {
+                                            paxTime = runTime * classToWrite.getClass2014Pax();
+                                        }
+                                        if(eventDate.contains("2013"))
+                                        {
+                                            paxTime = runTime * classToWrite.getClass2013Pax();
+                                        }
+                                        runsCollection.add(new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, runTime, paxTime, "N", cones));
+                                    
+                                    }
+                                }
+                                else
+                                {
+                                    String runTime = columnText;
+                                    double paxTime = 0;
+                                    if(eventDate.contains("2016"))
+                                    {
+                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2016Pax();
+                                    }
+                                    if(eventDate.contains("2015"))
+                                    {
+                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2015Pax();
+                                    }
+                                    if(eventDate.contains("2014"))
+                                    {
+                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2014Pax();
+                                    }
+                                    if(eventDate.contains("2013"))
+                                    {
+                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2013Pax();
+                                    }
+                                    runsCollection.add(new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "N", 0));
+                                    runNumber++;
+                                }
+                                
+                            }
+                            //else if the column does not have a period but it says OFF it is an off course
+                            else if(columnText.equalsIgnoreCase("OFF"))
+                            {
+                                runsCollection.add(new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, 999.999, 999.999, "Y", 0));
+                                runNumber++;
+                            }
+                        }
                     }
-                    else if(cell.text().contains(" "))
+                }
+                
+                /*
+                YOU LEFT OFF HERE RYAN
+                
+                NEED TO ADD TO RUNS COLLECTION FOR THESE EXTRA COLUMN VALUES
+                */
+                else
+                {
+                    Elements extraColumns = row.select("td");
+                    for(int y = 0; y < extraColumns.size()-1; y++)
                     {
-                        driverName = cell.text();
-                        System.out.println("Driver Name: " + driverName);
+                        String columnText = columns.get(y).select("span").text();
+
+                        if(columnText.contains("."))
+                        {
+                            System.out.println("Run Time = " + columnText);
+                            runNumber++;
+                        }
+
+                        else if(columnText.equalsIgnoreCase("OFF"))
+                        {
+                            System.out.println("Off course = " + columnText);
+                            runNumber++;
+                        }
                     }
                 }
             }
             
-            //regex to find run times .?[0-9][0-9][.][0-9][0-9][0-9]
+            
             
             progress = 100;
         }

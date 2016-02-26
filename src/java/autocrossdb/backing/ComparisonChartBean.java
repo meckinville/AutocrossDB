@@ -76,7 +76,10 @@ public class ComparisonChartBean implements Serializable
         LineChartSeries series = new LineChartSeries();
         series.set("Event Date", 50.5);
         lineModel.addSeries(series);
-        lineModel.getAxes().put(AxisType.X, new CategoryAxis("Events"));
+        CategoryAxis xAxis = new CategoryAxis("Events");
+        xAxis.setTickAngle(-50);
+        lineModel.getAxes().put(AxisType.X, xAxis);
+        
     }
 
     public List<String> completeDriverText(String query)
