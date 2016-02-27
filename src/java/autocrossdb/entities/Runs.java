@@ -212,7 +212,7 @@ public class Runs implements Serializable {
 
     @Override
     public String toString() {
-        return "autocrossdb.entities.Runs[ runId=" + runId + " ]";
+        return "autocrossdb.entities.Runs[driverName = " + runDriverName + " carName = " + runCarName + " className = " + runClassName.getClassName() + " runNumber = " + runNumber + " runTime = " + runTime + " paxTime = " + runPaxTime + " cones = " + runCones + " offcourse = " + runOffcourse + "]";
     }
     
     

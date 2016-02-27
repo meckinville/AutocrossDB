@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "events")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Events.findAll", query = "SELECT e FROM Events e"),
+    @NamedQuery(name = "Events.findAll", query = "SELECT e FROM Events e ORDER BY e.eventClubName, e.eventDate"),
     @NamedQuery(name = "Events.findByEventUrl", query = "SELECT e FROM Events e WHERE e.eventUrl = :eventUrl"),
     @NamedQuery(name = "Events.findByEventClubName", query = "SELECT e FROM Events e WHERE e.eventClubName = :eventClubName"),
     @NamedQuery(name = "Events.findByEventLocation", query = "SELECT e FROM Events e WHERE e.eventLocation = :eventLocation"),
@@ -43,7 +43,7 @@ public class Events implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 70)
+    @Size(min = 1, max = 120)
     @Column(name = "EVENT_URL")
     private String eventUrl;
     @Basic(optional = false)

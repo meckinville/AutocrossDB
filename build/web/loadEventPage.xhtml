@@ -39,6 +39,10 @@
             <p:outputLabel for="url" value="Results URL"></p:outputLabel>
             <p:inputText id="club" value="#{eventLoader.club}"></p:inputText>
             <p:outputLabel for="club" value="Club Name"></p:outputLabel>
+            <p:inputText id="location" value="#{eventLoader.location}" />
+            <p:outputLabel for="location" value="Event Location" />
+            <p:calendar id="date" value="#{eventLoader.date}"/>
+            <p:outputLabel for="date" value="Event Date" />
             <p:selectOneRadio id="points" value="#{eventLoader.points}">
                 <f:selectItem id="pointsCheckBox" itemLabel="Points" itemValue="POINTS"></f:selectItem>
                 <f:selectItem id="practiceCheckBox" itemLabel="Practice" itemValue="PRACTICE"></f:selectItem>

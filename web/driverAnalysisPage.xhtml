@@ -44,11 +44,10 @@
                         <p:outputLabel value="End Date:" />
                         <p:calendar id="end" mode="popup" required="true" value="#{driverAnalysis.endDate}" />
                         <p:commandButton id="analyzeButton" onclick="PF('pbAjax').start();PF('analyzeButton').disable()" widgetVar="analyzeButton" value="Analyze" update="analysisForm analysisCarousel" action="#{driverAnalysis.analyzeDriver}" />
-                        <h:outputText value=""/>
-                        <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="500" widgetVar="pbAjax" value="#{driverAnalysis.progress}" style="width:300px" >
-                            <p:ajax event="complete" listener="#{driverAnalysis.onCompleteLoad}" oncomplete="PF('analyzeButton').enable()" update="progressBar" />
-                        </p:progressBar>
                     </p:panelGrid>
+                    <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="500" widgetVar="pbAjax" value="#{driverAnalysis.progress}" style="width:300px" >
+                        <p:ajax event="complete" listener="#{driverAnalysis.onCompleteLoad}" oncomplete="PF('analyzeButton').enable()" update="progressBar" />
+                    </p:progressBar>
                 </h:form>
             </p:layoutUnit>
             <p:layoutUnit position="center">
