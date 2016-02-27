@@ -81,6 +81,10 @@ public class EventLoaderBean
         {
             loadMartinEvent();
         }
+        else if(url.contains("buccaneerregion"))
+        {
+            loadBuccaneerEvent();
+        }
     }
     
     public void loadCFREvent()
@@ -210,23 +214,7 @@ public class EventLoaderBean
                                 time = Double.toString(tempRunTime);
                             }
                         }
-                        if(webFormat.format(date).contains("2016"))
-                        {
-                            paxTime = Double.parseDouble(time) * classToWrite.getClass2016Pax();
-                        }
-                        if(webFormat.format(date).contains("2015"))
-                        {
-                            paxTime = Double.parseDouble(time) * classToWrite.getClass2015Pax();
-                        }
-                        if(webFormat.format(date).contains("2014"))
-                        {
-                            paxTime = Double.parseDouble(time) * classToWrite.getClass2014Pax();
-                        }
-                        if(webFormat.format(date).contains("2013"))
-                        {
-                            paxTime = Double.parseDouble(time) * classToWrite.getClass2013Pax();
-                        }
-                        paxTime = (double)Math.round(paxTime * 1000d)/1000d;
+                        paxTime = calculatePax(classToWrite, time);
                         
                         if(time.length() > 0)
                         {
@@ -295,6 +283,7 @@ public class EventLoaderBean
             Events eventToWrite = new Events(url, club, location, date, points);
             Element classHeaderRow = null;
             ArrayList<Runs> runsCollection = new ArrayList();
+            completeProgress = rows.size() * 2;
             for(Element row : rows)
             { 
                 Elements columns = row.select("td");
@@ -360,6 +349,9 @@ public class EventLoaderBean
                             }
                             
                         }
+                        driverName = driverName.replace("'", "");
+                        driverName = driverName.replace(".", "");
+                        
                         carName = columns.get(4).select("span").text();
                         if(carName.length() == 0)
                         {
@@ -399,24 +391,7 @@ public class EventLoaderBean
                                     if(columnText.substring(columnText.indexOf("+")+1).trim().equals("OFF"))
                                     {
                                         String runTime = columnText.substring(0,columnText.indexOf("+"));
-                                        double paxTime = 0;
-                                        if(webFormat.format(date).contains("2016"))
-                                        {
-                                            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2016Pax();
-                                        }
-                                        if(webFormat.format(date).contains("2015"))
-                                        {
-                                            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2015Pax();
-                                        }
-                                        if(webFormat.format(date).contains("2014"))
-                                        {
-                                            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2014Pax();
-                                        }
-                                        if(webFormat.format(date).contains("2013"))
-                                        {
-                                            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2013Pax();
-                                        }
-                                        paxTime = (double)Math.round(paxTime * 1000d)/1000d;
+                                        double paxTime = calculatePax(classToWrite, runTime);
                                         runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "Y", 0);
                                         runToWrite.setRunClassName(classToWrite);
                                         runToWrite.setRunEventUrl(eventToWrite);
@@ -429,24 +404,7 @@ public class EventLoaderBean
                                         int cones = Integer.parseInt(columnText.substring(columnText.indexOf("+")+1).trim());
                                         double runTime = Double.parseDouble(columnText.substring(0,columnText.indexOf("+")));
                                         runTime += 2 * cones;
-                                        double paxTime = 0;
-                                        if(webFormat.format(date).contains("2016"))
-                                        {
-                                            paxTime = runTime * classToWrite.getClass2016Pax();
-                                        }
-                                        if(webFormat.format(date).contains("2015"))
-                                        {
-                                            paxTime = runTime * classToWrite.getClass2015Pax();
-                                        }
-                                        if(webFormat.format(date).contains("2014"))
-                                        {
-                                            paxTime = runTime * classToWrite.getClass2014Pax();
-                                        }
-                                        if(webFormat.format(date).contains("2013"))
-                                        {
-                                            paxTime = runTime * classToWrite.getClass2013Pax();
-                                        }
-                                        paxTime = (double)Math.round(paxTime * 1000d)/1000d;
+                                        double paxTime = calculatePax(classToWrite, String.valueOf(runTime));
                                         runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, runTime, paxTime, "N", cones);
                                         runToWrite.setRunClassName(classToWrite);
                                         runToWrite.setRunEventUrl(eventToWrite);
@@ -457,24 +415,7 @@ public class EventLoaderBean
                                 else
                                 {
                                     String runTime = columnText;
-                                    double paxTime = 0;
-                                    if(webFormat.format(date).contains("2016"))
-                                    {
-                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2016Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2015"))
-                                    {
-                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2015Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2014"))
-                                    {
-                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2014Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2013"))
-                                    {
-                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2013Pax();
-                                    }
-                                    paxTime = (double)Math.round(paxTime * 1000d)/1000d;
+                                    double paxTime = calculatePax(classToWrite, runTime);
                                     runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "N", 0);
                                     runToWrite.setRunClassName(classToWrite);
                                     runToWrite.setRunEventUrl(eventToWrite);
@@ -515,24 +456,7 @@ public class EventLoaderBean
                                 if(columnText.substring(columnText.indexOf("+")+1).trim().equals("OFF"))
                                 {
                                     String runTime = columnText.substring(0,columnText.indexOf("+"));
-                                    double paxTime = 0;
-                                    if(webFormat.format(date).contains("2016"))
-                                    {
-                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2016Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2015"))
-                                    {
-                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2015Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2014"))
-                                    {
-                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2014Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2013"))
-                                    {
-                                        paxTime = Double.parseDouble(runTime) * classToWrite.getClass2013Pax();
-                                    }
-                                    paxTime = (double)Math.round(paxTime * 1000d)/1000d;
+                                    double paxTime = calculatePax(classToWrite, runTime);
                                     runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "Y", 0);
                                     runToWrite.setRunClassName(classToWrite);
                                     runToWrite.setRunEventUrl(eventToWrite);
@@ -545,24 +469,7 @@ public class EventLoaderBean
                                     int cones = Integer.parseInt(columnText.substring(columnText.indexOf("+")+1).trim());
                                     double runTime = Double.parseDouble(columnText.substring(0,columnText.indexOf("+")));
                                     runTime += 2 * cones;
-                                    double paxTime = 0;
-                                    if(webFormat.format(date).contains("2016"))
-                                    {
-                                        paxTime = runTime * classToWrite.getClass2016Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2015"))
-                                    {
-                                        paxTime = runTime * classToWrite.getClass2015Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2014"))
-                                    {
-                                        paxTime = runTime * classToWrite.getClass2014Pax();
-                                    }
-                                    if(webFormat.format(date).contains("2013"))
-                                    {
-                                        paxTime = runTime * classToWrite.getClass2013Pax();
-                                    }
-                                    paxTime = (double)Math.round(paxTime * 1000d)/1000d;
+                                    double paxTime = calculatePax(classToWrite, String.valueOf(runTime));
                                     runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, runTime, paxTime, "N", cones);
                                     runToWrite.setRunClassName(classToWrite);
                                     runToWrite.setRunEventUrl(eventToWrite);
@@ -574,24 +481,8 @@ public class EventLoaderBean
                             else
                             {
                                 String runTime = columnText;
-                                double paxTime = 0;
-                                if(webFormat.format(date).contains("2016"))
-                                {
-                                    paxTime = Double.parseDouble(runTime) * classToWrite.getClass2016Pax();
-                                }
-                                if(webFormat.format(date).contains("2015"))
-                                {
-                                    paxTime = Double.parseDouble(runTime) * classToWrite.getClass2015Pax();
-                                }
-                                if(webFormat.format(date).contains("2014"))
-                                {
-                                    paxTime = Double.parseDouble(runTime) * classToWrite.getClass2014Pax();
-                                }
-                                if(webFormat.format(date).contains("2013"))
-                                {
-                                    paxTime = Double.parseDouble(runTime) * classToWrite.getClass2013Pax();
-                                }
-                                paxTime = (double)Math.round(paxTime * 1000d)/1000d;
+                                double paxTime = calculatePax(classToWrite, runTime);
+                                
                                 runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "N", 0);
                                 runToWrite.setRunClassName(classToWrite);
                                 runToWrite.setRunEventUrl(eventToWrite);
@@ -641,6 +532,157 @@ public class EventLoaderBean
         {
             e.printStackTrace();
         }
+    }
+    
+    public void loadBuccaneerEvent()
+    {
+        try
+        {
+            progress = 0;
+            Events eventToWrite = new Events(url, club, location, date, points);
+            Document results = Jsoup.connect(url).get();
+            Element table = results.select("table").first();
+            Elements rows = table.select("tr:has(td)");
+            completeProgress = rows.size() * 2;
+            
+            ArrayList<Runs> runsCollection = new ArrayList();
+            for(Element row : rows)
+            {
+                Elements columns = row.select("td");
+                if(columns.get(0).text().length() > 0)
+                {
+                    if(Character.isDigit(columns.get(0).text().charAt(0)))
+                    {
+                        String className = columns.get(1).text();
+                        if(className.startsWith("p") || className.startsWith("P") || className.startsWith("t") || className.startsWith("T"))
+                        {
+                            className = className.substring(1);
+                        }
+                        if(className.charAt(className.length()-1) == 'l' || className.charAt(className.length()-1) == 'L')
+                        {
+                            className = className.substring(0,className.length()-1);
+                        }
+                        if(className.equals("camc"))
+                        {
+                            className = "CAM-C";
+                        }
+                        if(className.equals("camt"))
+                        {
+                            className = "CAM-T";
+                        }
+                        if(className.equals("cams"))
+                        {
+                            className = "CAM-S";
+                        }
+
+
+                        Classes classToWrite = classesFacade.find(className);
+                        String driverName = columns.get(3).text();
+                        //if driver names are backwards (mcconville, ryan) flip them back around
+                        if(driverName.contains(","))
+                        {
+                            String[] driverNames = driverName.split(", ");
+                            driverName = driverNames[driverNames.length-1];
+                            for(int x = 0; x < driverNames.length-1; x++)
+                            {
+                                driverName += " " + driverNames[x];
+                            }
+                        }
+                        driverName = driverName.replace("'", "");
+                        driverName = driverName.replace(".", "");
+                        String carName = columns.get(4).text();
+
+                        
+                        int runNumber = 1;
+                        for(int x = 5; x < columns.size()-1; x++)
+                        {
+                            int cones = 0;
+                            String offcourse = "N";
+                            String runTime = columns.get(x).text();
+                            if(runTime.length() > 5)
+                            {
+                                //check the run time for a + sign to see if theres cones or off course
+                                if(runTime.contains("+"))
+                                {
+                                    //check for offcourse
+                                    if(runTime.substring(runTime.indexOf("+")+1).equalsIgnoreCase("dnf"))
+                                    {
+                                        offcourse = "Y";
+                                        runTime = runTime.substring(0,runTime.indexOf("+"));
+                                    }
+                                    //else it must be cones
+                                    else
+                                    {
+                                        cones = Integer.parseInt(runTime.substring(runTime.indexOf("+")));
+                                        runTime = runTime.substring(0,runTime.indexOf("+"));
+                                    }
+                                }
+                                double paxTime = calculatePax(classToWrite, runTime);
+                                runToWrite = new Runs(null, driverName.toUpperCase(), carName.toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, offcourse, cones);
+                                runToWrite.setRunClassName(classToWrite);
+                                runToWrite.setRunEventUrl(eventToWrite);
+                                runsCollection.add(runToWrite);
+                                runNumber++;
+                            }
+                        }
+                    }
+                }
+            }
+            eventToWrite.setRunsCollection(runsCollection);
+            if(eventsFacade.find(eventToWrite.getEventUrl()) == null)
+            {
+                eventsFacade.create(eventToWrite);
+                Iterator<Runs> it = runsCollection.iterator();
+                while(it.hasNext())
+                {
+                    runsFacade.edit(it.next());
+                    progDoub += 100.0 / completeProgress;
+                    progress = Math.round(progDoub);
+                }
+                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
+                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
+                eventToWrite.setPaxWinner(paxWinner);
+                eventToWrite.setRawWinner(rawWinner);
+                eventsFacade.edit(eventToWrite);
+                        
+                progress = 100;
+                growlMessage = "Loaded Event: " + eventToWrite.getEventLocation() + " " + webFormat.format(eventToWrite.getEventDate());
+            }
+            else
+            {
+                progress = 100;
+                growlMessage = eventToWrite.getEventLocation() + " " + webFormat.format(eventToWrite.getEventDate()) + " has already been loaded.";
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public double calculatePax(Classes classToWrite, String runTime)
+    {
+        double paxTime = 0;
+        
+        if(webFormat.format(date).contains("2016"))
+        {
+            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2016Pax();
+        }
+        if(webFormat.format(date).contains("2015"))
+        {
+            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2015Pax();
+        }
+        if(webFormat.format(date).contains("2014"))
+        {
+            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2014Pax();
+        }
+        if(webFormat.format(date).contains("2013"))
+        {
+            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2013Pax();
+        }
+        paxTime = (double)Math.round(paxTime * 1000d)/1000d;
+        
+        return paxTime;
     }
     
     public long getProgress()
