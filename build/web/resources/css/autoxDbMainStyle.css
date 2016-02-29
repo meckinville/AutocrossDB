@@ -15,7 +15,9 @@ body {
 .descriptionColumn {
     font-weight: bold;
 }
-
+.ui-overlaypanel {
+    margin: 10px;
+}
 
 /*removes border from the tr and td elements inside the panel grid table */
 .noOutlinePanelGrid.ui-panelgrid>*>tr,

@@ -575,7 +575,7 @@ public class EventLoaderBean
                             className = "CAM-S";
                         }
 
-
+                        className = className.toUpperCase();
                         Classes classToWrite = classesFacade.find(className);
                         String driverName = columns.get(3).text();
                         //if driver names are backwards (mcconville, ryan) flip them back around

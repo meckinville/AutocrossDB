@@ -69,7 +69,7 @@ public class DriverAnalysisBean
                 if(competitorRuns.get(x)[1].equals(driver))
                 {
                     beatingUs = false;
-                    classPosition = x+1 + "/" + competitorRuns.size();
+                    classPosition = String.valueOf(x+1);
                     ourRunTime = (double)competitorRuns.get(x)[0];
                 }
                 else if(beatingUs)
@@ -93,7 +93,8 @@ public class DriverAnalysisBean
             {
                 if(rawRuns.get(x)[1].equals(driver))
                 {
-                    rawPosition = x+1 + "/" + rawRuns.size();
+                    rawPosition = String.valueOf(x+1);
+                    break;
                 }
                 
             }
@@ -104,7 +105,8 @@ public class DriverAnalysisBean
             {
                 if(paxRuns.get(x)[1].equals(driver))
                 {
-                    paxPosition = x+1 + "/" + paxRuns.size();
+                    paxPosition = String.valueOf(x+1);
+                    break;
                 }
                 
             }

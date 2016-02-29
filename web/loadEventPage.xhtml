@@ -35,22 +35,44 @@
         
         <h:form id="loadEventForm">
             <p:growl id="messages" severity="info"/>
-            <p:inputText id="url" value="#{eventLoader.url}"></p:inputText>
-            <p:outputLabel for="url" value="Results URL"></p:outputLabel>
-            <p:inputText id="club" value="#{eventLoader.club}"></p:inputText>
-            <p:outputLabel for="club" value="Club Name"></p:outputLabel>
-            <p:inputText id="location" value="#{eventLoader.location}" />
-            <p:outputLabel for="location" value="Event Location" />
-            <p:calendar id="date" value="#{eventLoader.date}"/>
-            <p:outputLabel for="date" value="Event Date" />
-            <p:selectOneRadio id="points" value="#{eventLoader.points}">
-                <f:selectItem id="pointsCheckBox" itemLabel="Points" itemValue="POINTS"></f:selectItem>
-                <f:selectItem id="practiceCheckBox" itemLabel="Practice" itemValue="PRACTICE"></f:selectItem>
-            </p:selectOneRadio>
-            <p:commandButton onclick="PF('pbAjax').start();PF('loadEventButton').disable()" widgetVar="loadEventButton" value="Load Event" action="#{eventLoader.loadEvent}"/>
-            <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="500" widgetVar="pbAjax" value="#{eventLoader.progress}" style="width:300px" >
-                <p:ajax event="complete" listener="#{eventLoader.onCompleteLoad}" oncomplete="PF('loadEventButton').enable()" update="messages progressBar" />
-            </p:progressBar>
+            <p:panelGrid columns="2" styleClass="noOutlinePanelGrid">
+                <p:outputLabel for="url" value="Results URL:"></p:outputLabel>
+                <p:inputText id="url" value="#{eventLoader.url}" required="true" />
+                <p:outputLabel for="club" value="Club Name:"></p:outputLabel>
+                <p:selectOneMenu id="club" value="#{eventLoader.club}" required="true" >
+                    <f:selectItem itemLabel="Buccaneer Region SCCA" itemValue="BUCCANEER" />
+                    <f:selectItem itemLabel="Central Florida SCCA" itemValue="CFRSCCA" />
+                    <f:selectItem itemLabel="Martin SCC" itemValue="MARTINSCC" />
+                </p:selectOneMenu>
+                <p:outputLabel for="location" value="Event Location:" />
+                <p:selectOneMenu id="location" value="#{eventLoader.location}" required="true" >
+                    <f:selectItem itemLabel="Amelia Island" itemValue="AMELIA" />
+                    <f:selectItem itemLabel="Brooksville" itemValue="BROOKSVILLE" />
+                    <f:selectItem itemLabel="Buckingham Airfield" itemValue="BUCKINGHAM" />
+                    <f:selectItem itemLabel="Daytona" itemValue="DAYTONA" />
+                    <f:selectItem itemLabel="Deland" itemValue="DELAND" />
+                    <f:selectItem itemLabel="EFSC (Melbourne)" itemValue="EFSC" />
+                    <f:selectItem itemLabel="The FIRM" itemValue="FIRM" />
+                    <f:selectItem itemLabel="Gainesville" itemValue="GAINESVILLE" />
+                    <f:selectItem itemLabel="Geneva" itemValue="GENEVA" />
+                    <f:selectItem itemLabel="Hutchinson Island" itemValue="HUTCHINSON" />
+                    <f:selectItem itemLabel="Lake Tech" itemValue="LAKE TECH" />
+                    <f:selectItem itemLabel="OCCC" itemValue="OCCC" /> 
+                    <f:selectItem itemLabel="Roebling Road" itemValue="ROEBLING" />
+                    <f:selectItem itemLabel="Sebring" itemValue="SEBRING" />
+               </p:selectOneMenu>
+                <p:outputLabel for="date" value="Event Date:" />
+                <p:calendar id="date" value="#{eventLoader.date}" required="true"/>
+                <p:outputLabel for="points" value="Event Type:" />
+                <p:selectOneRadio id="points" value="#{eventLoader.points}" required="true">
+                    <f:selectItem id="pointsCheckBox" itemLabel="Points" itemValue="POINTS"></f:selectItem>
+                    <f:selectItem id="practiceCheckBox" itemLabel="Practice" itemValue="PRACTICE"></f:selectItem>
+                </p:selectOneRadio>
+                <p:commandButton onclick="PF('pbAjax').start();PF('loadEventButton').disable()" widgetVar="loadEventButton" value="Load Event" action="#{eventLoader.loadEvent}"/>
+                <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="500" widgetVar="pbAjax" value="#{eventLoader.progress}" style="width:300px" >
+                    <p:ajax event="complete" listener="#{eventLoader.onCompleteLoad}" oncomplete="PF('loadEventButton').enable()" update="messages progressBar" />
+                </p:progressBar>
+            </p:panelGrid>
         </h:form>
     </h:body>
 </html>
