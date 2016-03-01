@@ -23,8 +23,10 @@ public class HomePageBean
     public void init()
     {
         images = new ArrayList<String>();
-        images.add("1.jpg");
-        images.add("2.jpg");
+        for(int x = 1; x <= 9; x++)
+        {
+            images.add(x + ".jpg");
+        }
     }
 
     public List<String> getImages() {
