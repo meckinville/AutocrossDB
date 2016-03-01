@@ -25,6 +25,14 @@ body {
     border: 0px;
 }
 
+.analysisDataTable>*>*>*>tr>td {
+    font-size: 14px;
+}
+
+.analysisDataTable>*>*>*>tr>th {
+    font-size: 16px;
+}
+
 .award.ui-panelgrid>*>*>td {
     width: 50%;
 }

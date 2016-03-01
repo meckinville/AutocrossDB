@@ -7,7 +7,7 @@ package autocrossdb.backing;
 
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
-import autocrossdb.component.AnalyzedEvent;
+import autocrossdb.component.AnalyzedDriver;
 import autocrossdb.component.Nemesis;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,9 +34,15 @@ public class DriverAnalysisBean
     private Date startDate;
     private long progress;
     
-    private List<AnalyzedEvent> events;
-    private AnalyzedEvent selectedEvent;
+    private List<AnalyzedDriver> events;
+    private AnalyzedDriver selectedEvent;
     Set<Nemesis> nemesisList = new TreeSet();
+    
+    private double avgClassPercent;
+    private double avgRawPercent;
+    private double avgPaxPercent;
+    private double avgCones;
+    private double avgBestRun;
     
     @PersistenceContext
     private EntityManager em;
@@ -129,11 +135,26 @@ public class DriverAnalysisBean
             }
             List<Runs> noConesQuery = em.createQuery("SELECT r FROM Runs r where r.runEventUrl = :url and r.runClassName.className = :class and r.runOffcourse = 'N'").setParameter("url", e).setParameter("class", yourRuns.get(0).getRunClassName().getClassName()).getResultList();
             
-            events.add(new AnalyzedEvent(e, yourRuns, classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery));
+            AnalyzedDriver eventToAdd = new AnalyzedDriver(e, yourRuns, classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery);
+            events.add(eventToAdd);
+            avgClassPercent += Double.parseDouble(eventToAdd.getClassPercent().substring(0, eventToAdd.getClassPercent().length()-1));
+            avgRawPercent += Double.parseDouble(eventToAdd.getRawPercent().substring(0, eventToAdd.getRawPercent().length()-1));
+            avgPaxPercent += Double.parseDouble(eventToAdd.getPaxPercent().substring(0, eventToAdd.getPaxPercent().length()-1));
+            avgBestRun += bestRunQuery.get(0);
+            avgCones += Double.parseDouble(eventToAdd.getConesKilled());
             progress += 100 / rawEventList.size();
         }
+        avgClassPercent /= rawEventList.size();
+        avgClassPercent = (double)Math.round(avgClassPercent * 10d)/10d;
+        avgRawPercent /= rawEventList.size();
+        avgRawPercent = (double)Math.round(avgRawPercent * 10d)/10d;
+        avgPaxPercent /= rawEventList.size();
+        avgPaxPercent = (double)Math.round(avgPaxPercent * 10d)/10d;
+        avgBestRun /= rawEventList.size();
+        avgBestRun = (double)Math.round(avgBestRun * 10d)/10d;
+        avgCones /= rawEventList.size();
+        avgCones = (double)Math.round(avgCones * 10d)/10d;
         progress = 100;
-        
     }
     
     public List<String> completeDriverText(String query)
@@ -167,11 +188,11 @@ public class DriverAnalysisBean
         this.progress = progress;
     }
 
-    public List<AnalyzedEvent> getEvents() {
+    public List<AnalyzedDriver> getEvents() {
         return events;
     }
 
-    public void setEvents(List<AnalyzedEvent> events) {
+    public void setEvents(List<AnalyzedDriver> events) {
         this.events = events;
     }
 
@@ -183,11 +204,11 @@ public class DriverAnalysisBean
         this.driver = driver;
     }
 
-    public AnalyzedEvent getSelectedEvent() {
+    public AnalyzedDriver getSelectedEvent() {
         return selectedEvent;
     }
 
-    public void setSelectedEvent(AnalyzedEvent selectedEvent) {
+    public void setSelectedEvent(AnalyzedDriver selectedEvent) {
         this.selectedEvent = selectedEvent;
     }
 
@@ -205,6 +226,46 @@ public class DriverAnalysisBean
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public double getAvgClassPercent() {
+        return avgClassPercent;
+    }
+
+    public void setAvgClassPercent(double avgClassPercent) {
+        this.avgClassPercent = avgClassPercent;
+    }
+
+    public double getAvgRawPercent() {
+        return avgRawPercent;
+    }
+
+    public void setAvgRawPercent(double avgRawPercent) {
+        this.avgRawPercent = avgRawPercent;
+    }
+
+    public double getAvgPaxPercent() {
+        return avgPaxPercent;
+    }
+
+    public void setAvgPaxPercent(double avgPaxPercent) {
+        this.avgPaxPercent = avgPaxPercent;
+    }
+
+    public double getAvgCones() {
+        return avgCones;
+    }
+
+    public void setAvgCones(double avgCones) {
+        this.avgCones = avgCones;
+    }
+
+    public double getAvgBestRun() {
+        return avgBestRun;
+    }
+
+    public void setAvgBestRun(double avgBestRun) {
+        this.avgBestRun = avgBestRun;
     }
     
     

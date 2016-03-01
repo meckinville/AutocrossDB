@@ -43,14 +43,14 @@
                         <p:calendar id="start" mode="popup" required="true" value="#{driverAnalysis.startDate}" />
                         <p:outputLabel value="End Date:" />
                         <p:calendar id="end" mode="popup" required="true" value="#{driverAnalysis.endDate}" />
-                        <p:commandButton id="analyzeButton" onclick="PF('pbAjax').start();PF('analyzeButton').disable()" widgetVar="analyzeButton" value="Analyze" update="analysisForm analysisCarousel" action="#{driverAnalysis.analyzeDriver}" />
+                        <p:commandButton id="analyzeButton" onclick="PF('pbAjax').start();PF('analyzeButton').disable();" widgetVar="analyzeButton" value="Analyze" update="analysisForm analysisCarousel" action="#{driverAnalysis.analyzeDriver}" />
                     </p:panelGrid>
                     <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="500" widgetVar="pbAjax" value="#{driverAnalysis.progress}" style="width:300px" >
-                        <p:ajax event="complete" listener="#{driverAnalysis.onCompleteLoad}" oncomplete="PF('analyzeButton').enable()" update="progressBar" />
+                        <p:ajax event="complete" listener="#{driverAnalysis.onCompleteLoad}" oncomplete="PF('analyzeButton').enable();PF('averagesOP').show()" update="progressBar averages" />
                     </p:progressBar>
                 </h:form>
             </p:layoutUnit>
-            <p:layoutUnit position="center">
+            <p:layoutUnit position="south" size="450">
                 <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" numVisible="3" headerText="#{driverAnalysis.driver ne null and driverAnalysis.driver ne '' ? 'Events for '.concat(driverAnalysis.driver) : ''}" >
                     <p:panelGrid columns="2" columnClasses="descriptionColumn">
                         <h:outputText value="Event: " />
@@ -64,22 +64,22 @@
                             <h:outputText value="#{event.classPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                         </p:commandLink>
-                        <h:outputText value="Class Percentage:" />
-                        <h:outputText value="#{event.classPercent}" />
+                        <h:outputText value="Class Percentile:" />
+                        <h:outputText value="#{event.classPercent}%" />
                         <h:outputText value="Raw Position: " />
                         <p:commandLink oncomplete="PF('classDetailsOP').hide();PF('rawDetailsOP').show();PF('paxDetailsOP').hide();PF('noConesDetailsOP').hide()" update="rawDetails">
                             <h:outputText value="#{event.rawPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                         </p:commandLink>
-                        <h:outputText value="Raw Percentage:" />
-                        <h:outputText value="#{event.rawPercent}" />
+                        <h:outputText value="Raw Percentile:" />
+                        <h:outputText value="#{event.rawPercent}%" />
                         <h:outputText value="Pax Position: " />
                         <p:commandLink oncomplete="PF('classDetailsOP').hide();PF('rawDetailsOP').hide();PF('paxDetailsOP').show();PF('noConesDetailsOP').hide()" update="paxDetails">
                             <h:outputText value="#{event.paxPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                         </p:commandLink>
-                        <h:outputText value="Pax Percentage:" />
-                        <h:outputText value="#{event.paxPercent}" />
+                        <h:outputText value="Pax Percentile:" />
+                        <h:outputText value="#{event.paxPercent}%" />
                         <h:outputText value="Best Run Number:" />
                         <h:outputText value="#{event.bestRunNumber}" />
                         <h:outputText value="Cones Killed:" />
@@ -93,10 +93,26 @@
 
                 </p:carousel>
             </p:layoutUnit>
-            <p:layoutUnit resizable="true" position="south" size="300" >
-                <p:overlayPanel id="classDetails" dismissable="false" showCloseIcon="true" widgetVar="classDetailsOP">
-                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.classTable}">
-                        <p:column colspan="1" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position" >
+            <p:layoutUnit position="east" size="400">
+                <p:overlayPanel id="averages" dismissable="false" widgetVar="averagesOP">
+                    <p:panelGrid columns="2" >
+                        <h:outputText value="Average Class Percentile:" />
+                        <h:outputText value="#{driverAnalysis.avgClassPercent}%" />
+                        <h:outputText value="Average Raw Percentile:" />
+                        <h:outputText value="#{driverAnalysis.avgRawPercent}%" />
+                        <h:outputText value="Average Pax Percentile:" />
+                        <h:outputText value="#{driverAnalysis.avgPaxPercent}%" />
+                        <h:outputText value="Average Cones Hit:" />
+                        <h:outputText value="#{driverAnalysis.avgCones}" />
+                        <h:outputText value="Average Best Run Number:" />
+                        <h:outputText value="#{driverAnalysis.avgBestRun}" />
+                    </p:panelGrid>
+                </p:overlayPanel>
+            </p:layoutUnit>
+            <p:layoutUnit position="center">
+                <p:overlayPanel id="classDetails" dismissable="false" widgetVar="classDetailsOP" >
+                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.classTable}" styleClass="analysisDataTable">
+                        <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position" >
                           #{driver.position}
                         </p:column>
                         <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Driver">
@@ -114,9 +130,9 @@
                     </p:dataTable>
                 </p:overlayPanel>
 
-                <p:overlayPanel id="rawDetails" dismissable="false" showCloseIcon="true" widgetVar="rawDetailsOP">
-                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.rawTable}">
-                        <p:column colspan="1" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
+                <p:overlayPanel id="rawDetails" dismissable="false" widgetVar="rawDetailsOP" >
+                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.rawTable}" styleClass="analysisDataTable">
+                        <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
                           #{driver.position}
                         </p:column>
                         <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Driver">
@@ -137,9 +153,9 @@
                     </p:dataTable>
                 </p:overlayPanel>
 
-                <p:overlayPanel id="paxDetails" dismissable="false" showCloseIcon="true" widgetVar="paxDetailsOP" >
-                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.paxTable}">
-                        <p:column colspan="1" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
+                <p:overlayPanel id="paxDetails" dismissable="false" widgetVar="paxDetailsOP" >
+                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.paxTable}" styleClass="analysisDataTable">
+                        <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
                           #{driver.position}
                         </p:column>
                         <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Driver">
@@ -160,9 +176,9 @@
                     </p:dataTable>
                 </p:overlayPanel>
                 
-                <p:overlayPanel id="noConesDetails" dismissable="false" showCloseIcon="true" widgetVar="noConesDetailsOP" >
-                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.noConesTable}">
-                        <p:column colspan="1" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
+                <p:overlayPanel id="noConesDetails" dismissable="false" widgetVar="noConesDetailsOP" >
+                    <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.noConesTable}" styleClass="analysisDataTable">
+                        <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
                           #{driver.position}
                         </p:column>
                         <p:column colspan="3" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Driver">
