@@ -539,15 +539,38 @@ public class EventLoaderBean
         try
         {
             progress = 0;
-            Events eventToWrite = new Events(url, club, location, date, points);
+            
             Document results = Jsoup.connect(url).get();
             Element table = results.select("table").first();
             Elements rows = table.select("tr:has(td)");
+            
             completeProgress = rows.size() * 2;
+            Events eventToWrite = new Events(url, club, location, date, points);
+            Classes classToWrite =  new Classes();
+            String driverName = "";
+            String carName = "";
+            int runNumber = 1;
+            
+            //we check the header row's last column for the word diff
+            //if it has the word diff that means we need to stop getting times at
+            //size-2. if it does not say diff we stop getting times at size-1.
+            Element headerRow = table.select("tr:has(th)").first();
+            Element finalHeaderColumn = headerRow.select("th").last();
+            int lastTimeColumn = 1;
+            if(finalHeaderColumn.text().toLowerCase().contains("diff"))
+            {
+                lastTimeColumn = 2;
+            }
             
             ArrayList<Runs> runsCollection = new ArrayList();
             for(Element row : rows)
             {
+                //noCarOffset is initialized at 0. if there is no car information in the results table then the times will start in column 4
+                //if there is car information times will start at column 5. if there is no car information we set noCarOffset to 1. noCarOffset is
+                //then subtracted from the iterator in the for loop that grabs run times
+                int noCarOffset = 0;
+                
+                
                 Elements columns = row.select("td");
                 if(columns.get(0).text().length() > 0)
                 {
@@ -576,8 +599,8 @@ public class EventLoaderBean
                         }
 
                         className = className.toUpperCase();
-                        Classes classToWrite = classesFacade.find(className);
-                        String driverName = columns.get(3).text();
+                        classToWrite = classesFacade.find(className);
+                        driverName = columns.get(3).text();
                         //if driver names are backwards (mcconville, ryan) flip them back around
                         if(driverName.contains(","))
                         {
@@ -590,11 +613,19 @@ public class EventLoaderBean
                         }
                         driverName = driverName.replace("'", "");
                         driverName = driverName.replace(".", "");
-                        String carName = columns.get(4).text();
-
+                        carName = columns.get(4).text();
+                        if(carName.length() > 5)
+                        {
+                            if(carName.substring(0,6).matches("[0-9][0-9].[0-9][0-9][0-9]") || carName.substring(0,6).matches("[0-9][0-9][0-9].[0-9][0-9]") )
+                            {
+                                carName = "";
+                                noCarOffset = 1;
+                            }
+                        }
                         
-                        int runNumber = 1;
-                        for(int x = 5; x < columns.size()-1; x++)
+                        
+                        runNumber = 1;
+                        for(int x = 5-noCarOffset; x < columns.size()-lastTimeColumn; x++)
                         {
                             int cones = 0;
                             String offcourse = "N";
@@ -615,9 +646,9 @@ public class EventLoaderBean
                                     {
                                         cones = Integer.parseInt(runTime.substring(runTime.indexOf("+")));
                                         runTime = runTime.substring(0,runTime.indexOf("+"));
-										double tempRunTime = Double.parseDouble(runTime);
-										tempRunTime += cones * 2;
-										runTime = String.valueOf(tempRunTime);
+                                        double tempRunTime = Double.parseDouble(runTime);
+                                        tempRunTime += cones * 2;
+                                        runTime = String.valueOf(tempRunTime);
                                     }
                                 }
                                 double paxTime = calculatePax(classToWrite, runTime);
@@ -627,6 +658,43 @@ public class EventLoaderBean
                                 runsCollection.add(runToWrite);
                                 runNumber++;
                             }
+                        }
+                    }
+                }
+                else
+                {
+                    for(int y = 5-noCarOffset; y < columns.size()-lastTimeColumn; y++)
+                    {
+                        int cones = 0;
+                        String offcourse = "N";
+                        String runTime = columns.get(y).text();
+                        if(runTime.length() > 5)
+                        {
+                            //check the run time for a + sign to see if theres cones or off course
+                            if(runTime.contains("+"))
+                            {
+                                //check for offcourse
+                                if(runTime.substring(runTime.indexOf("+")+1).equalsIgnoreCase("dnf"))
+                                {
+                                    offcourse = "Y";
+                                    runTime = runTime.substring(0,runTime.indexOf("+"));
+                                }
+                                //else it must be cones
+                                else
+                                {
+                                    cones = Integer.parseInt(runTime.substring(runTime.indexOf("+")));
+                                    runTime = runTime.substring(0,runTime.indexOf("+"));
+                                    double tempRunTime = Double.parseDouble(runTime);
+                                    tempRunTime += cones * 2;
+                                    runTime = String.valueOf(tempRunTime);
+                                }
+                            }
+                            double paxTime = calculatePax(classToWrite, runTime);
+                            runToWrite = new Runs(null, driverName.toUpperCase(), carName.toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, offcourse, cones);
+                            runToWrite.setRunClassName(classToWrite);
+                            runToWrite.setRunEventUrl(eventToWrite);
+                            runsCollection.add(runToWrite);
+                            runNumber++;
                         }
                     }
                 }
