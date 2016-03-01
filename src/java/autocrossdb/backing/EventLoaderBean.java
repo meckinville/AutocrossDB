@@ -615,6 +615,9 @@ public class EventLoaderBean
                                     {
                                         cones = Integer.parseInt(runTime.substring(runTime.indexOf("+")));
                                         runTime = runTime.substring(0,runTime.indexOf("+"));
+										double tempRunTime = Double.parseDouble(runTime);
+										tempRunTime += cones * 2;
+										runTime = String.valueOf(tempRunTime);
                                     }
                                 }
                                 double paxTime = calculatePax(classToWrite, runTime);
