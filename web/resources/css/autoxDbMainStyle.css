@@ -25,6 +25,10 @@ body {
     border: 0px;
 }
 
+.ui-datagrid-column {
+    width: 25%;
+}
+
 .analysisDataTable>*>*>*>tr>td {
     font-size: 14px;
 }

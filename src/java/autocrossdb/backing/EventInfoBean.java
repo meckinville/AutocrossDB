@@ -69,7 +69,6 @@ public class EventInfoBean
         List<Object[]> paxResults = em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
         List<Object[]> coneKillerResults = em.createNamedQuery("Runs.findTopConeKiller", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
         List<Object[]> noviceResults = em.createNamedQuery("Runs.findNoviceChamp", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
-        System.out.println("done with queries");
         selectedAnalyzedEvent.setTopRawName(rawResults.get(0)[0].toString());
         selectedAnalyzedEvent.setTopRawCar(rawResults.get(0)[1].toString());
         selectedAnalyzedEvent.setTopRawClass(rawResults.get(0)[2].toString());
@@ -99,8 +98,6 @@ public class EventInfoBean
             selectedAnalyzedEvent.setNoviceChampClass(noviceResults.get(0)[2].toString());
             selectedAnalyzedEvent.setNoviceChampTime(noviceResults.get(0)[3].toString());
         }
-        System.out.println("end of analyzed event");
-        System.out.println(selectedAnalyzedEvent.getTopRawName() + " " + selectedAnalyzedEvent.getTopRawCar() + " " + selectedAnalyzedEvent.getTopRawClass() + " " + selectedAnalyzedEvent.getTopRawTime());
     }
 
     public List<AnalyzedEvent> getAnalyzedEvents() {
