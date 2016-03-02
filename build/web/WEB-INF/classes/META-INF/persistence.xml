@@ -7,6 +7,6 @@
     <class>autocrossdb.entities.Events</class>
     <class>autocrossdb.entities.Runs</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <properties/>
+    <properties />
   </persistence-unit>
 </persistence>

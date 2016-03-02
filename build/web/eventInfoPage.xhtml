@@ -11,8 +11,8 @@
         <f:facet name="last">
             <h:outputStylesheet library="css" name="autoxDbMainStyle.css"  />
         </f:facet>
-        <p:layout fullPage="true" >
-            <p:layoutUnit position="north" size="100"> 
+        <p:layout>
+            <p:layoutUnit position="north" size="100" >
                 <p:tabMenu activeIndex="#{param.i}">
                     <p:menuitem value="Home" outcome="index">
                         <f:param name="i" value="0"/>
@@ -35,34 +35,64 @@
                 </p:tabMenu> 
             </p:layoutUnit>
             <p:layoutUnit position="center" >
-                <p:dataGrid var="analyzedEvent" value="#{eventInfo.analyzedEvents}" rows="8" columns="4" paginator="true">
-                    <f:facet name="header">
-                        Events List
-                    </f:facet>
-                    
-                    <p:panel header="#{analyzedEvent.neglectedEvent.eventLocation}" style="text-align:center;" >
-                        <p:panelGrid columns="1" styleClass="noOutlinePanelGrid" style="width: 100%;" >
-                            <h:outputText value="#{analyzedEvent.neglectedEvent.eventDate}" >
-                                <f:convertDateTime type="date" pattern="MM/dd/yy" />
-                            </h:outputText>
-                            <h:outputText value="#{analyzedEvent.neglectedEvent.eventClubName}" />
-                            <h:outputText value="Raw Winner: #{analyzedEvent.neglectedEvent.rawWinner}" />
-                            <h:outputText value="Pax Winner: #{analyzedEvent.neglectedEvent.paxWinner}" />
-                            <h:outputText value="Total Drivers: #{analyzedEvent.totalDrivers}" />
-                            <h:outputText value="Average Run Time: #{analyzedEvent.avgRunTime}" />
-                            <p:commandLink update="eventDetail" oncomplete="PF('eventDetail').show()" >
-                                <h:outputText styleClass="ui-icon ui-icon-search" />
-                                <f:setPropertyActionListener value="#{analyzedEvent}" target="#{eventInfo.analyzedEvent}" />
-                            </p:commandLink>
-                        </p:panelGrid>
-                    </p:panel>
-                </p:dataGrid>
+                <h:form id="eventDetails">
+                    <p:dataGrid var="event" value="#{eventInfo.analyzedEvents}" rows="8" columns="4" paginator="true">
+                        <f:facet name="header">
+                            Events List
+                        </f:facet>
+
+                        <p:panel header="#{event.neglectedEvent.eventLocation}" style="text-align:center;" >
+                               
+                            <p:panelGrid columns="1" styleClass="noOutlinePanelGrid" style="width: 100%;" >
+
+                                <h:outputText value="#{event.neglectedEvent.eventDate}" >
+                                    <f:convertDateTime type="date" pattern="MM/dd/yy" />
+                                </h:outputText>
+                                <h:outputText value="#{event.neglectedEvent.eventClubName}" />
+                                <h:outputText value="Raw Winner: #{event.neglectedEvent.rawWinner}" />
+                                <h:outputText value="Pax Winner: #{event.neglectedEvent.paxWinner}" />
+                                <h:outputText value="Total Drivers: #{event.totalDrivers}" />
+                                <h:outputText value="Average Run Time: #{event.avgRunTime}" />
+                                <h:outputText value="Cones Killed: #{event.totalCones}" /> 
+                                <p:commandLink update="eventDetails eventPopup" oncomplete="PF('eventDialog').show();" action="#{eventInfo.analyzeEvent}" >
+                                    <h:outputText value="More Info" />
+                                    <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
+                                </p:commandLink>
+                            </p:panelGrid>
+                            
+                        </p:panel>
+                    </p:dataGrid>
+                </h:form>
             </p:layoutUnit>
         </p:layout>
-        <p:dialog header="Event Info" widgetVar="eventDialog" >
-            <p:outputPanel id="eventDetail" >
-                <p:panelGrid columns="2" >
-                    <h:outputText />
+        <p:dialog id="eventPopup" header="Event Info" widgetVar="eventDialog" >
+            <p:outputPanel>
+                <p:panelGrid columns="5" columnClasses="descriptionColumn">
+                    <h:outputText value="" />
+                    <h:outputText value="Driver" styleClass="eventInfoHeaderRow" />
+                    <h:outputText value="Car" styleClass="eventInfoHeaderRow" />
+                    <h:outputText value="Class" styleClass="eventInfoHeaderRow" />
+                    <h:outputText value="Time/Cones" styleClass="eventInfoHeaderRow" />
+                    <h:outputText value="Raw Winner" />
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topRawName}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topRawCar}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topRawClass}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topRawTime}"/>
+                    <h:outputText value="Pax Winner" />
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topPaxName}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topPaxCar}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topPaxClass}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topPaxTime}"/>
+                    <h:outputText value="Cone Killer" />
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topConeKillerName}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topConeKillerCar}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topConeKillerClass}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topConeKillerCones}"/>
+                    <h:outputText value="Novice Champ" />
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampName}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampCar}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampClass}"/>
+                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampTime}"/>
                 </p:panelGrid>
             </p:outputPanel>
         </p:dialog>

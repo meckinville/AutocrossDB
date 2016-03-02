@@ -7,9 +7,6 @@ package autocrossdb.component;
 
 import autocrossdb.entities.Events;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 /**
  *
@@ -40,59 +37,44 @@ public class AnalyzedEvent
     private String noviceChampCar;
     private String noviceChampClass;
     
-    private EntityManagerFactory emf;
-    private EntityManager em;
-    
-    
-    public void AnalyzedEvent()
-    {
-        
-    }
-    
     public AnalyzedEvent(Events e)
     {
-        emf = Persistence.createEntityManagerFactory("AutoxDBPU");
-        em = emf.createEntityManager();
         this.neglectedEvent = e;
-        this.totalDrivers = em.createNamedQuery("Runs.findTotalDriversAtEvent", Object[].class).setParameter("eventUrl", e.getEventUrl()).getResultList().size();
-        List<Double> doubleResults = em.createQuery("SELECT min(r.runTime) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse='N' group by r.runDriverName order by min(r.runTime) asc", Double.class).setParameter("eventUrl", e.getEventUrl()).getResultList();
-        double sum = 0;
-        for(Double d : doubleResults)
-        {
-            sum += d;
-        }
-        double tempAvg = sum / doubleResults.size();
-        tempAvg = (double)Math.round(tempAvg * 1000d)/1000d;
-        this.avgRunTime = tempAvg;
-        
-        List<Long> coneResults = em.createNamedQuery("Runs.findTotalConesHitAtEvent", Long.class).setParameter("eventUrl", e.getEventUrl()).getResultList();
-        totalCones = coneResults.get(0);
     }
     
-    public void analyzeEvent()
+    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones)
     {
-        List<Object[]> rawResults = em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", neglectedEvent.getEventUrl()).getResultList();
+        this.neglectedEvent = e;
+        this.totalDrivers = totalDrivers;
+        this.avgRunTime = avgRunTime;
+        this.totalCones = totalCones;
+    }
+    
+    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones, List<Object[]> rawResults, List<Object[]> paxResults, List<Object[]> coneKillerResults, List<Object[]> noviceResults)
+    {
+        this.neglectedEvent = e;
+        this.totalDrivers = totalDrivers;
+        this.avgRunTime = avgRunTime;
+        this.totalCones = totalCones;
+        
         this.topRawName = rawResults.get(0)[0].toString();
         this.topRawCar = rawResults.get(0)[1].toString();
         this.topRawClass = rawResults.get(0)[2].toString();
         this.topRawTime = rawResults.get(0)[3].toString();
         
-        List<Object[]> paxResults = em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", neglectedEvent.getEventUrl()).getResultList();
         this.topPaxName = paxResults.get(0)[0].toString();
         this.topPaxCar = paxResults.get(0)[1].toString();
         this.topPaxClass = paxResults.get(0)[2].toString();
         this.topPaxTime = paxResults.get(0)[3].toString();
         
-        List<Object[]> coneKillerResults = em.createNamedQuery("Runs.findTopConeKiller", Object[].class).setParameter("eventUrl", neglectedEvent.getEventUrl()).getResultList();
         this.topConeKillerName = coneKillerResults.get(0)[0].toString();
         this.topConeKillerCar = coneKillerResults.get(0)[1].toString();
         this.topConeKillerClass = coneKillerResults.get(0)[2].toString();
         this.topConeKillerCones = coneKillerResults.get(0)[3].toString();
         
-        List<Object[]> noviceResults = em.createNamedQuery("Runs.findNoviceChamp", Object[].class).setParameter("eventUrl", neglectedEvent.getEventUrl()).getResultList();
         if(noviceResults.size() == 0)
         {
-            this.noviceChampName = "No this.novices.";
+            this.noviceChampName = "No novices.";
             this.noviceChampTime = "N/A";
             this.noviceChampClass = "N/A";
             this.noviceChampCar = "N/A";
@@ -105,7 +87,6 @@ public class AnalyzedEvent
             this.noviceChampTime = noviceResults.get(0)[3].toString();
         }
     }
-
 
     public String getTopRawName() {
         return topRawName;

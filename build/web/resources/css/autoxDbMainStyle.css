@@ -37,6 +37,9 @@ body {
     width: 50%;
 }
 
+.eventInfoHeaderRow {
+    font-weight: bold;
+}
 
 .award.ui-panelgrid>*>tr {
     width: 100%;

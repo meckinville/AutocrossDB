@@ -50,7 +50,6 @@ public class DriverAnalysisBean
     @PostConstruct
     public void init()
     {
-        events = new ArrayList();
         Calendar now = Calendar.getInstance();
         endDate = now.getTime();
         now.set(Calendar.MONTH, now.get(Calendar.MONTH)-8);
