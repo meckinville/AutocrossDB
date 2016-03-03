@@ -147,8 +147,17 @@ public class AwardsInfoBean
         beginYear.set(year, Calendar.JANUARY, 1);
         endYear.set(year, Calendar.DECEMBER, 31);
         
-        List<Object[]> objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runNumber = 1 group by r.runEventUrl order by count(r.runDriverName) desc").getResultList();
+        List<Object[]> objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add biggest event
         awards.add(populateBiggestEvent(objectQuery, PLACES_TO_POPULATE));
+        
+        objectQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add cone carnage
+        awards.add(populateConeCarnage(objectQuery, PLACES_TO_POPULATE));
+        
+        objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as average, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by average desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add average cones per driver
+        awards.add(populateAverageConesPerDriver(objectQuery, PLACES_TO_POPULATE));
         
         return awards;
     }
@@ -171,6 +180,62 @@ public class AwardsInfoBean
         
         
         return awards;
+    }
+    
+    private static List<String> populateAverageConesPerDriver(List<Object[]> query, int places)
+    {
+        if(query.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            List<String> returnList = new ArrayList();
+            try
+            {
+                for(int x = 0; x < places; x++)
+                {
+                    returnList.add(String.format("%.1f", query.get(x)[0]) + " cones hit per driver at " + query.get(x)[1] + " " + webFormat.format(query.get(x)[2]) + " with " + query.get(x)[3] + ".");
+                }
+                return returnList;
+            }
+            catch(IndexOutOfBoundsException e)
+            {
+                while(returnList.size() < places)
+                {
+                    returnList.add("No other eligible drivers.");
+                }
+                return returnList;
+            }
+        }
+    }
+    
+    private static List<String> populateConeCarnage(List<Object[]> query, int places)
+    {
+        if(query.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            List<String> returnList = new ArrayList();
+            try
+            {
+                for(int x = 0; x < places; x++)
+                {
+                    returnList.add(query.get(x)[0] + " cones hit at " + query.get(x)[1] + " " + webFormat.format(query.get(x)[2]) + " with " + query.get(x)[3]);
+                }
+                return returnList;
+            }
+            catch(IndexOutOfBoundsException e)
+            {
+                while(returnList.size() < places)
+                {
+                    returnList.add("No other eligible drivers.");
+                }
+                return returnList;
+            }
+        }
     }
     
     private static List<String> populateBiggestEvent(List<Object[]> query, int places)
