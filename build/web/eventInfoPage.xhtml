@@ -44,7 +44,7 @@
                         <p:panel header="#{event.neglectedEvent.eventLocation}" style="text-align:center;" > 
                               
                             <p:panelGrid columns="1" styleClass="noOutlinePanelGrid" style="width: 100%;" >
-
+                                <p:graphicImage name="images/sites/#{event.neglectedEvent.eventLocation}.jpg" alt="#{event.neglectedEvent.eventLocation}" style="width: auto; height: 200px;" />
                                 <h:outputText value="#{event.neglectedEvent.eventDate}" >
                                     <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
                                 </h:outputText>

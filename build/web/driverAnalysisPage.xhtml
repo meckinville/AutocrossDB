@@ -51,7 +51,7 @@
                 </h:form>
             </p:layoutUnit>
             <p:layoutUnit position="south" size="450">
-                <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" numVisible="3" headerText="#{driverAnalysis.driver ne null and driverAnalysis.driver ne '' ? 'Events for '.concat(driverAnalysis.driver) : ''}" >
+                <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" numVisible="3" responsive="true" headerText="#{driverAnalysis.driver ne null and driverAnalysis.driver ne '' ? 'Events for '.concat(driverAnalysis.driver) : ''}" >
                     <p:panelGrid columns="2" columnClasses="descriptionColumn">
                         <h:outputText value="Event: " />
                         <h:outputText value="#{event.eventName}" />
