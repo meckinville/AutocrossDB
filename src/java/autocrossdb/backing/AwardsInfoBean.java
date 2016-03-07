@@ -41,18 +41,22 @@ public class AwardsInfoBean
     private List<List<String>> classAwards2016;
     private List<List<String>> eventAwards2016;
     private List<Long> stats2016;
+    
     private List<List<String>> individualAwards2015;
     private List<List<String>> classAwards2015;
     private List<List<String>> eventAwards2015;
     private List<Long> stats2015;
+    
     private List<List<String>> individualAwards2014;
     private List<List<String>> classAwards2014;
     private List<List<String>> eventAwards2014;
     private List<Long> stats2014;
+    
     private List<List<String>> individualAwards2013;
     private List<List<String>> classAwards2013;
     private List<List<String>> eventAwards2013;
     private List<Long> stats2013;
+    
     
     
     @PersistenceContext
@@ -151,6 +155,10 @@ public class AwardsInfoBean
         //add biggest event
         awards.add(populateBiggestEvent(objectQuery, PLACES_TO_POPULATE));
         
+        objectQuery = em.createQuery("SELECT max(r.runNumber), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runEventUrl order by max(r.runNumber) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add most runs at an event
+        awards.add(populateMostRunsEvent(objectQuery, PLACES_TO_POPULATE));
+        
         objectQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add cone carnage
         awards.add(populateConeCarnage(objectQuery, PLACES_TO_POPULATE));
@@ -158,6 +166,8 @@ public class AwardsInfoBean
         objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as average, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by average desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add average cones per driver
         awards.add(populateAverageConesPerDriver(objectQuery, PLACES_TO_POPULATE));
+        
+        
         
         return awards;
     }
@@ -177,9 +187,70 @@ public class AwardsInfoBean
         objectQuery = em.createQuery("SELECT count(distinct r.runDriverName), r.runClassName.className from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName order by count(distinct r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add most unique drivers in class for the year
         awards.add(populateUniqueDriversList(objectQuery, PLACES_TO_POPULATE));
-        
+         
+       objectQuery = em.createQuery("SELECT count(r), r.runClassName.className from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName order by count(r) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        long totalEvents = em.createQuery("SELECT e FROM Events e where e.eventDate > :begin AND e.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList().size();
+        //highest average participation
+        awards.add(populateHighestAvgParticipation(objectQuery, totalEvents, PLACES_TO_POPULATE));
         
         return awards;
+    }
+    
+    private static List<String> populateHighestAvgParticipation(List<Object[]> query, long events, int places)
+    {
+        if(query.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            List<String> returnList = new ArrayList();
+            try
+            {
+                for(int x = 0; x < places; x++)
+                {
+                    double average = new Double((long)query.get(x)[0])/new Double(events);
+                    returnList.add(query.get(x)[1] + " had an average of " + String.format("%.1f",average) + " participants.");
+                }
+                return returnList;
+            }
+            catch(IndexOutOfBoundsException e)
+            {
+                while(returnList.size() < places)
+                {
+                    returnList.add("No other eligible classes.");
+                }
+                return returnList;
+            }
+        }
+    }
+    
+    private static List<String> populateMostRunsEvent(List<Object[]> query, int places)
+    {
+        if(query.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            List<String> returnList = new ArrayList();
+            try
+            {
+                for(int x = 0; x < places; x++)
+                {
+                    returnList.add(query.get(x)[0] + " runs at " + query.get(x)[1] + " " + webFormat.format(query.get(x)[3]) + " with " + query.get(x)[2] + ".");
+                }
+                return returnList;
+            }
+            catch(IndexOutOfBoundsException e)
+            {
+                while(returnList.size() < places)
+                {
+                    returnList.add("No other eligible events.");
+                }
+                return returnList;
+            }
+        }
     }
     
     private static List<String> populateAverageConesPerDriver(List<Object[]> query, int places)
@@ -203,7 +274,7 @@ public class AwardsInfoBean
             {
                 while(returnList.size() < places)
                 {
-                    returnList.add("No other eligible drivers.");
+                    returnList.add("No other eligible events.");
                 }
                 return returnList;
             }
@@ -231,7 +302,7 @@ public class AwardsInfoBean
             {
                 while(returnList.size() < places)
                 {
-                    returnList.add("No other eligible drivers.");
+                    returnList.add("No other eligible events.");
                 }
                 return returnList;
             }
@@ -259,7 +330,7 @@ public class AwardsInfoBean
             {
                 while(returnList.size() < places)
                 {
-                    returnList.add("No other eligible drivers.");
+                    returnList.add("No other eligible events.");
                 }
                 return returnList;
             }
