@@ -12,9 +12,14 @@ body {
     font-family: Arial;
 }
 
-.ui-icon.fa {
+.ui-tabmenuitem>a>span.fa {
     margin: 3px;
     font-size: 13px;
+    overflow: visible;
+}
+
+td>a>span.fa-trophy {
+    color: #ffcc00;
 }
 
 .descriptionColumn {

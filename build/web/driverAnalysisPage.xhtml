@@ -4,7 +4,8 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <title>Autocross DB</title>
     </h:head>
@@ -64,6 +65,9 @@
                         <p:commandLink oncomplete="PF('classDetailsOP').show();PF('rawDetailsOP').hide();PF('paxDetailsOP').hide();PF('noConesDetailsOP').hide()" update="classDetails">
                             <h:outputText value="#{event.classPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
+                            <ui:fragment rendered="#{event.classPercent eq '100'}" > 
+                                <span class="fa fa-trophy" />
+                            </ui:fragment>
                         </p:commandLink>
                         <h:outputText value="Class Percentile" />
                         <h:outputText value="#{event.classPercent}%" />
@@ -71,6 +75,9 @@
                         <p:commandLink oncomplete="PF('classDetailsOP').hide();PF('rawDetailsOP').show();PF('paxDetailsOP').hide();PF('noConesDetailsOP').hide()" update="rawDetails">
                             <h:outputText value="#{event.rawPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
+                            <ui:fragment rendered="#{event.rawPercent eq '100'}" > 
+                                <span class="fa fa-trophy" />
+                            </ui:fragment>
                         </p:commandLink>
                         <h:outputText value="Raw Percentile" />
                         <h:outputText value="#{event.rawPercent}%" />
@@ -78,6 +85,9 @@
                         <p:commandLink oncomplete="PF('classDetailsOP').hide();PF('rawDetailsOP').hide();PF('paxDetailsOP').show();PF('noConesDetailsOP').hide()" update="paxDetails">
                             <h:outputText value="#{event.paxPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
+                            <ui:fragment rendered="#{event.paxPercent eq '100'}" > 
+                                <span class="fa fa-trophy" />
+                            </ui:fragment>
                         </p:commandLink>
                         <h:outputText value="Pax Percentile" />
                         <h:outputText value="#{event.paxPercent}%" />
@@ -92,7 +102,7 @@
                         </p:commandLink>
                     </p:panelGrid>
                     <f:facet name="footer">
-                        #{fn:length(driverAnalysis.events) eq 0 ? '0' : fn:length(driverAnalysis.events)} events
+                        #{fn:length(driverAnalysis.events)} events
                     </f:facet>
 
                 </p:carousel>
