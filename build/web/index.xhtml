@@ -34,9 +34,16 @@
         </p:tabMenu> 
         <p:imageSwitch effect="fade" id="homeImageCarousel">
             <ui:repeat value="#{homePage.images}" var="image" id="homeImageCarouselImages">
-                <p:graphicImage name="images/#{image}" id="image" />
+                <p:graphicImage name="images/#{image}" id="image" style="width: 1890px; height: 1050px;"/>
             </ui:repeat>
         </p:imageSwitch>
+        <p:panelGrid columns="5" style="padding: 5px; margin-top: 5px;">
+            <h:outputText value="Autocross DB (v1)" />
+            <h:outputText value="#{homePage.eventCount} events" />
+            <h:outputText value="#{homePage.clubCount} clubs" />
+            <h:outputText value="#{homePage.driverCount} drivers" />
+            <h:outputText value="#{homePage.runCount} runs" />
+        </p:panelGrid>
     </h:body>
 </html>
 
