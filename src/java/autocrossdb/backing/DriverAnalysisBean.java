@@ -38,11 +38,11 @@ public class DriverAnalysisBean
     private AnalyzedDriver selectedEvent;
     Set<Nemesis> nemesisList = new TreeSet();
     
-    private double avgClassPercent;
-    private double avgRawPercent;
-    private double avgPaxPercent;
-    private double avgCones;
-    private double avgBestRun;
+    private double avgClassPercent = 0;
+    private double avgRawPercent = 0;
+    private double avgPaxPercent = 0;
+    private double avgCones = 0;
+    private double avgBestRun = 0;
     
     @PersistenceContext
     private EntityManager em;
@@ -58,6 +58,12 @@ public class DriverAnalysisBean
     
     public void analyzeDriver()
     {
+        avgClassPercent = 0;
+        avgRawPercent = 0;
+        avgPaxPercent = 0;
+        avgCones = 0;
+        avgBestRun = 0;
+        
         events = new ArrayList();
         List<Events> rawEventList = em.createQuery("SELECT e from Events e JOIN e.runsCollection r WHERE r.runDriverName = :driver AND r.runNumber = 1 AND e.eventDate > :start AND e.eventDate < :end ORDER BY e.eventDate desc", Events.class).setParameter("driver", this.driver).setParameter("start", startDate).setParameter("end", endDate).getResultList();
 
@@ -136,9 +142,9 @@ public class DriverAnalysisBean
             
             AnalyzedDriver eventToAdd = new AnalyzedDriver(e, yourRuns, classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery);
             events.add(eventToAdd);
-            avgClassPercent += Double.parseDouble(eventToAdd.getClassPercent().substring(0, eventToAdd.getClassPercent().length()-1));
-            avgRawPercent += Double.parseDouble(eventToAdd.getRawPercent().substring(0, eventToAdd.getRawPercent().length()-1));
-            avgPaxPercent += Double.parseDouble(eventToAdd.getPaxPercent().substring(0, eventToAdd.getPaxPercent().length()-1));
+            avgClassPercent += Double.parseDouble(eventToAdd.getClassPercent());
+            avgRawPercent += Double.parseDouble(eventToAdd.getRawPercent());
+            avgPaxPercent += Double.parseDouble(eventToAdd.getPaxPercent());
             avgBestRun += bestRunQuery.get(0);
             avgCones += Double.parseDouble(eventToAdd.getConesKilled());
             progress += 100 / rawEventList.size();

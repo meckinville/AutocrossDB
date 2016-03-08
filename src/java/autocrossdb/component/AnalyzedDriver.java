@@ -56,11 +56,33 @@ public class AnalyzedDriver
         this.className = yourRuns.get(0).getRunClassName().getClassName();
         this.carName = yourRuns.get(0).getRunCarName();
         this.classPosition = classPosition + "/" + competitorRuns.size();
-        this.classPercent = String.format("%.1f", (100 - (Double.parseDouble(classPosition) / competitorRuns.size()) * 100));
+        if(classPosition.equals("1"))
+        {
+            this.classPercent = "100";
+        }
+        else
+        {
+            this.classPercent = String.format("%.1f", (100 - (Double.parseDouble(classPosition) / competitorRuns.size()) * 100));
+        }
         this.rawPosition = rawPosition + "/" + rawRuns.size();
-        this.rawPercent = String.format("%.1f", (100 - (Double.parseDouble(rawPosition) / rawRuns.size()) * 100));
+        if(rawPosition.equals("1"))
+        {
+            this.rawPercent = "100";
+        }
+        else
+        {
+            this.rawPercent = String.format("%.1f", (100 - (Double.parseDouble(rawPosition) / rawRuns.size()) * 100));
+        }
         this.paxPosition = paxPosition + "/" + paxRuns.size();
-        this.paxPercent = String.format("%.1f", (100 - (Double.parseDouble(paxPosition) / paxRuns.size()) * 100));
+        if(paxPosition.equals("1"))
+        {
+            this.paxPercent = "100";
+        }
+        else
+        {
+            this.paxPercent = String.format("%.1f", (100 - (Double.parseDouble(paxPosition) / paxRuns.size()) * 100));
+        }
+        
         this.bestRunNumber = bestRunNumber;
         this.conesKilled = new Long(conesKilled).toString();
         this.bestTimeIgnoringCones = String.format("%.3f", bestTimeIgnoringCones);

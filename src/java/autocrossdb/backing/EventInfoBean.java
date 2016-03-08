@@ -46,14 +46,15 @@ public class EventInfoBean
                 for(Double d : doubleResults)
                 {
                     sum += d;
-                }
+                } 
                 double tempAvg = sum / doubleResults.size();
                 tempAvg = (double)Math.round(tempAvg * 1000d)/1000d;
                 double avgRunTime = tempAvg;
                
                 long totalCones = em.createNamedQuery("Runs.findTotalConesHitAtEvent", Long.class).setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
-                
-                analyzedEvents.add(new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones));
+                int runs = (int)em.createQuery("SELECT max(r.runNumber) from Runs r where r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
+                long offCourseRuns = (long)em.createQuery("SELECT count(r) from Runs r where r.runOffcourse = 'Y' and r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
+                analyzedEvents.add(new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns));
 
             }
         }

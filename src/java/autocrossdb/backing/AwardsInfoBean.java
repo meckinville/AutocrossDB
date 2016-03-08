@@ -193,7 +193,39 @@ public class AwardsInfoBean
         //highest average participation
         awards.add(populateHighestAvgParticipation(objectQuery, totalEvents, PLACES_TO_POPULATE));
         
+        //objectQuery = em.createQuery("").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //dirtiest class
+        //awards.add(populateDirtiestClass(objectQuery, PLACES_TO_POPULATE));
+        
         return awards;
+    }
+    
+    private static List<String> populateDirtiestClass(List<Object[]> query, int places)
+    {
+        if(query.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            List<String> returnList = new ArrayList();
+            try
+            {
+                for(int x = 0; x < places; x++)
+                {
+                    returnList.add(query.get(x)[0] + " cones per event per driver for  " + query.get(x)[1]);
+                }
+                return returnList;
+            }
+            catch(IndexOutOfBoundsException e)
+            {
+                while(returnList.size() < places)
+                {
+                    returnList.add("No other eligible classes.");
+                }
+                return returnList;
+            }
+        }
     }
     
     private static List<String> populateHighestAvgParticipation(List<Object[]> query, long events, int places)

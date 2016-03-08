@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <h:head>
         <title>Autocross DB</title>
     </h:head>
@@ -14,22 +15,22 @@
         <p:layout fullPage="true">
             <p:layoutUnit position="north" size="100">
                 <p:tabMenu activeIndex="#{param.i}">
-                    <p:menuitem value="Home" outcome="index">
+                    <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
                         <f:param name="i" value="0"/>
                     </p:menuitem>
-                    <p:menuitem value="Event Info" outcome="eventInfoPage">
+                    <p:menuitem value="Event Info" outcome="eventInfoPage" icon="fa fa-calendar">
                         <f:param name="i" value="1"/>
                     </p:menuitem>
-                    <p:menuitem value="New Event" outcome="loadEventPage">
+                    <p:menuitem value="New Event" outcome="loadEventPage" icon="fa fa-upload">
                         <f:param name="i" value="2"/>
                     </p:menuitem>
-                    <p:menuitem value="Chart" outcome="comparisonChart">
+                    <p:menuitem value="Chart" outcome="comparisonChart" icon="fa fa-line-chart">
                         <f:param name="i" value="3" />
                     </p:menuitem>
-                    <p:menuitem value="Awards" outcome="awardsPage" >
+                    <p:menuitem value="Awards" outcome="awardsPage" icon="fa fa-trophy" >
                         <f:param name="i" value="4" />
                     </p:menuitem>
-                    <p:menuitem value="Analysis" outcome="driverAnalysisPage" >
+                    <p:menuitem value="Driver Analysis" outcome="driverAnalysisPage" icon="fa fa-search">
                         <f:param name="i" value="5" />
                     </p:menuitem>
                 </p:tabMenu> 
@@ -50,61 +51,67 @@
                     </p:progressBar>
                 </h:form>
             </p:layoutUnit>
-            <p:layoutUnit position="south" size="450">
+            <p:layoutUnit position="south" size="480">
                 <p:carousel id="analysisCarousel" value="#{driverAnalysis.events}" var="event" numVisible="3" responsive="true" headerText="#{driverAnalysis.driver ne null and driverAnalysis.driver ne '' ? 'Events for '.concat(driverAnalysis.driver) : ''}" >
-                    <p:panelGrid columns="2" columnClasses="descriptionColumn">
-                        <h:outputText value="Event: " />
+                    <p:panelGrid columns="2" columnClasses="descriptionColumn" styleClass="analysisGrid">
+                        <h:outputText value="Event" />
                         <h:outputText value="#{event.eventName}" />
-                        <h:outputText value="Your Car: " />
+                        <h:outputText value="Your Car" />
                         <h:outputText value="#{event.carName}" />
-                        <h:outputText value="Your Class: " />
+                        <h:outputText value="Your Class" />
                         <h:outputText value="#{event.className}" />
-                        <h:outputText value="Class Position: " />
+                        <h:outputText value="Class Position" />
                         <p:commandLink oncomplete="PF('classDetailsOP').show();PF('rawDetailsOP').hide();PF('paxDetailsOP').hide();PF('noConesDetailsOP').hide()" update="classDetails">
                             <h:outputText value="#{event.classPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                         </p:commandLink>
-                        <h:outputText value="Class Percentile:" />
+                        <h:outputText value="Class Percentile" />
                         <h:outputText value="#{event.classPercent}%" />
-                        <h:outputText value="Raw Position: " />
+                        <h:outputText value="Raw Position" />
                         <p:commandLink oncomplete="PF('classDetailsOP').hide();PF('rawDetailsOP').show();PF('paxDetailsOP').hide();PF('noConesDetailsOP').hide()" update="rawDetails">
                             <h:outputText value="#{event.rawPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                         </p:commandLink>
-                        <h:outputText value="Raw Percentile:" />
+                        <h:outputText value="Raw Percentile" />
                         <h:outputText value="#{event.rawPercent}%" />
-                        <h:outputText value="Pax Position: " />
+                        <h:outputText value="Pax Position" />
                         <p:commandLink oncomplete="PF('classDetailsOP').hide();PF('rawDetailsOP').hide();PF('paxDetailsOP').show();PF('noConesDetailsOP').hide()" update="paxDetails">
                             <h:outputText value="#{event.paxPosition}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                         </p:commandLink>
-                        <h:outputText value="Pax Percentile:" />
+                        <h:outputText value="Pax Percentile" />
                         <h:outputText value="#{event.paxPercent}%" />
-                        <h:outputText value="Best Run Number:" />
+                        <h:outputText value="Best Run Number" />
                         <h:outputText value="#{event.bestRunNumber}" />
-                        <h:outputText value="Cones Killed:" />
+                        <h:outputText value="Cones Killed" />
                         <h:outputText value="#{event.conesKilled}" />
-                        <h:outputText value="Best Time Ignoring Cones:" />
+                        <h:outputText value="Best Time Ignoring Cones" />
                         <p:commandLink oncomplete="PF('classDetailsOP').hide();PF('rawDetailsOP').hide();PF('paxDetailsOP').hide();PF('noConesDetailsOP').show()" update="noConesDetails">
                             <h:outputText value="#{event.bestTimeIgnoringCones}" />
                             <f:setPropertyActionListener value="#{event}" target="#{driverAnalysis.selectedEvent}" />
                         </p:commandLink>
                     </p:panelGrid>
+                    <f:facet name="footer">
+                        #{fn:length(driverAnalysis.events) eq 0 ? '0' : fn:length(driverAnalysis.events)} events
+                    </f:facet>
 
                 </p:carousel>
             </p:layoutUnit>
             <p:layoutUnit position="east" size="400">
-                <p:overlayPanel id="averages" dismissable="false" widgetVar="averagesOP">
-                    <p:panelGrid columns="2" >
-                        <h:outputText value="Average Class Percentile:" />
+                <p:overlayPanel id="averages" dismissable="false" widgetVar="averagesOP" style="width:95%;">
+                    <p:panelGrid columns="2" columnClasses="descriptionColumn" style="width:100%;">
+                        <f:facet name="header" >
+                            Averages for #{driverAnalysis.driver}
+                        </f:facet>
+                        <h:outputText value="Class Percentile" />
                         <h:outputText value="#{driverAnalysis.avgClassPercent}%" />
-                        <h:outputText value="Average Raw Percentile:" />
+                        <h:outputText value="Raw Percentile" />
                         <h:outputText value="#{driverAnalysis.avgRawPercent}%" />
-                        <h:outputText value="Average Pax Percentile:" />
+                        <h:outputText value="Pax Percentile" />
                         <h:outputText value="#{driverAnalysis.avgPaxPercent}%" />
-                        <h:outputText value="Average Cones Hit:" />
+                        <h:outputText value="Cones Hit" />
                         <h:outputText value="#{driverAnalysis.avgCones}" />
-                        <h:outputText value="Average Best Run Number:" />
+                        <h:outputText value="Best Run Number" />
                         <h:outputText value="#{driverAnalysis.avgBestRun}" />
                     </p:panelGrid>
                 </p:overlayPanel>
@@ -112,6 +119,9 @@
             <p:layoutUnit position="center">
                 <p:overlayPanel id="classDetails" dismissable="false" widgetVar="classDetailsOP" >
                     <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.classTable}" styleClass="analysisDataTable">
+                        <f:facet name="header" >
+                            Class Details
+                        </f:facet>
                         <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position" >
                           #{driver.position}
                         </p:column>
@@ -132,6 +142,9 @@
 
                 <p:overlayPanel id="rawDetails" dismissable="false" widgetVar="rawDetailsOP" >
                     <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.rawTable}" styleClass="analysisDataTable">
+                        <f:facet name="header" >
+                            Raw Details
+                        </f:facet>
                         <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
                           #{driver.position}
                         </p:column>
@@ -155,6 +168,9 @@
 
                 <p:overlayPanel id="paxDetails" dismissable="false" widgetVar="paxDetailsOP" >
                     <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.paxTable}" styleClass="analysisDataTable">
+                        <f:facet name="header" >
+                            Pax Details
+                        </f:facet>
                         <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
                           #{driver.position}
                         </p:column>
@@ -178,6 +194,9 @@
                 
                 <p:overlayPanel id="noConesDetails" dismissable="false" widgetVar="noConesDetailsOP" >
                     <p:dataTable var="driver" value="#{driverAnalysis.selectedEvent.noConesTable}" styleClass="analysisDataTable">
+                        <f:facet name="header" >
+                            No Cones Details
+                        </f:facet>
                         <p:column colspan="2" styleClass="#{driver.driver eq driverAnalysis.driver ? 'ourDriverRow' : null}" headerText="Position">
                           #{driver.position}
                         </p:column>

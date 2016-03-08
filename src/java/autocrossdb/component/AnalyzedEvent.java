@@ -17,6 +17,8 @@ public class AnalyzedEvent
     private Events neglectedEvent;
     
     private int totalDrivers;
+    private int runs;
+    private long offCourseRuns;
     private double avgRunTime;
     private long totalCones;
     
@@ -42,12 +44,14 @@ public class AnalyzedEvent
         this.neglectedEvent = e;
     }
     
-    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones)
+    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones, int runs, long offCourseRuns)
     {
         this.neglectedEvent = e;
         this.totalDrivers = totalDrivers;
         this.avgRunTime = avgRunTime;
         this.totalCones = totalCones;
+        this.runs = runs;
+        this.offCourseRuns = offCourseRuns;
     }
     
     public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones, List<Object[]> rawResults, List<Object[]> paxResults, List<Object[]> coneKillerResults, List<Object[]> noviceResults)
@@ -247,6 +251,24 @@ public class AnalyzedEvent
     public void setTotalCones(long totalCones) {
         this.totalCones = totalCones;
     }
+
+    public int getRuns() {
+        return runs;
+    }
+
+    public void setRuns(int runs) {
+        this.runs = runs;
+    }
+
+    public long getOffCourseRuns() {
+        return offCourseRuns;
+    }
+
+    public void setOffCourseRuns(long offCourseRuns) {
+        this.offCourseRuns = offCourseRuns;
+    }
+
+    
 
     
     
