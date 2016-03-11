@@ -25,7 +25,7 @@ import javax.persistence.PersistenceContext;
 
 @ManagedBean(name="statistics")
 @ApplicationScoped
-public class statisticsBean 
+public class StatisticsBean 
 {
     List<DriverStat> drivers;
     
@@ -51,7 +51,12 @@ public class statisticsBean
         LinkedHashMap<String, DriverStat> driverMap = new LinkedHashMap();
         for(Events e : eventList)
         {
-            List<Runs> runsList = em.createQuery("SELECT r From Runs r where e.eventDate = :event").setParameter("event", e).getResultList();
+            List<Runs> runsList = em.createQuery("SELECT r From Runs r where r.eventUrl = :event").setParameter("event", e).getResultList();
+            
+            for(Runs r : runsList)
+            {
+                
+            }
         }
     }
 
