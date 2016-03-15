@@ -37,35 +37,25 @@ public class DriverStat implements Comparable<DriverStat>
         runningCones = 0;
     }
     
+    public DriverStat(DriverStat d)
+    {
+        this.name = d.getName();
+        this.rawPercentile = d.getRawPercentile();
+        this.paxPercentile = d.getPaxPercentile();
+        this.averageCones = d.getAverageCones();
+        this.runningRawPercentile = d.getRunningRawPercentile();
+        this.runningPaxPercentile = d.getRunningPaxPercentile();
+        this.runningAverageCones = d.getRunningAverageCones();
+        this.runningCones = d.getRunningCones();
+        this.eventsAttended = d.getEventsAttended();
+    }
+    
     @Override
     public int compareTo(DriverStat d)
     {
         return this.name.compareTo(d.getName());
     }
     
-    @Override
-    public DriverStat clone() throws CloneNotSupportedException
-    {
-        try
-        {
-            DriverStat newStat = new DriverStat(this.getName());
-            newStat.setRawPercentile(this.getRawPercentile());
-            newStat.setPaxPercentile(this.getPaxPercentile());
-            newStat.setAverageCones(this.getAverageCones());
-            newStat.setRunningRawPercentile(this.getRunningRawPercentile());
-            newStat.setRunningPaxPercentile(this.getRunningPaxPercentile());
-            newStat.setRunningAverageCones(this.getRunningAverageCones());
-            newStat.setRunningCones(this.getRunningCones());
-            newStat.setEventsAttended(this.getEventsAttended());
-            return newStat;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public String getName() {
         return name;
     }
@@ -91,7 +81,7 @@ public class DriverStat implements Comparable<DriverStat>
     }
 
     public double getAverageCones() {
-        return averageCones;
+        return new Double(String.format("%.1f", this.averageCones));
     }
 
     public void setAverageCones(double averageCones) {

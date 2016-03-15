@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -28,29 +29,14 @@ import javax.persistence.PersistenceContext;
 public class StatisticsBean
 {
     List<DriverStat> drivers;
-    List<DriverStat> backupDrivers;
+    List<DriverStat> filteredDrivers;
     
     private Date endDate;
     private Date startDate;
     
-    private boolean eventFilter;
-    private String eventFilterExpression;
-    private int eventFilterAmount;
-    
-    private boolean rawFilter;
-    private String rawFilterExpression;
-    private int rawFilterAmount;
-    
-    private boolean paxFilter;
-    private String paxFilterExpression;
-    private int paxFilterAmount;
-    
-    private boolean conesFilter;
-    private String conesFilterExpression;
-    private int conesFilterAmount;
-    
-    private boolean filter = false;
-    
+    private double progress;
+    private double progressIncrement;
+
     @PersistenceContext
     EntityManager em;
     
@@ -61,6 +47,7 @@ public class StatisticsBean
         endDate = now.getTime();
         now.set(Calendar.MONTH, now.get(Calendar.MONTH)-8);
         startDate = now.getTime();
+        progress = 0;
     }
     
     public void getStatistics()
@@ -68,6 +55,7 @@ public class StatisticsBean
         List<Events> eventList = em.createQuery("SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate ORDER BY e.eventDate asc").setParameter("endDate", endDate).setParameter("startDate", startDate).getResultList();
         
         LinkedHashMap<String, DriverStat> driverMap = new LinkedHashMap();
+        progressIncrement = new Double(50) / (double)eventList.size();
         for(Events e : eventList)
         {
             List<Object[]> rawList = em.createQuery("SELECT min(r.runTime), r.runDriverName From Runs r where r.runEventUrl = :event and r.runOffcourse = 'N' and r.runClassName.className != 'NS' group by r.runDriverName order by min(r.runTime) asc").setParameter("event", e).getResultList();
@@ -145,10 +133,12 @@ public class StatisticsBean
                 }
                 
             }
+            
+            progress += progressIncrement;
         }
         
+        progressIncrement = new Double(50) / (double)driverMap.keySet().size();
         drivers = new ArrayList();
-        backupDrivers = new ArrayList();
         for(String key : driverMap.keySet())
         {
             DriverStat tempStat = driverMap.get(key);
@@ -170,96 +160,38 @@ public class StatisticsBean
                 tempStat.setPaxPercentile(tempStat.getRunningPaxPercentile() / tempStat.getEventsAttended());
             }
             
-            tempStat.setAverageCones(tempStat.getRunningCones() / tempStat.getEventsAttended());
+            tempStat.setAverageCones(tempStat.getRunningCones() / new Double(tempStat.getEventsAttended()));
             drivers.add(tempStat);
-            backupDrivers.add(tempStat);
+            progress += progressIncrement;
         } 
    }
     
-    public void filterList()
+    public boolean filterTable(Object value, Object filter, Locale locale)
     {
-        List<DriverStat> tempList = new ArrayList();
-        for(DriverStat d : drivers)
-        {         
-            if(eventFilter)
-            {
-                if(eventFilterExpression.equals("lt"))
-                {
-                    if(d.getEventsAttended() < eventFilterAmount)
-                    {
-                        tempList.add(d);
-                    }
-                }
-                else
-                {
-                    if(d.getEventsAttended() > eventFilterAmount)
-                    {
-                        tempList.add(d);
-                    }
-                }
-            }
-            
-            if(rawFilter)
-            {
-                if(rawFilterExpression.equals("lt"))
-                {
-                    if(d.getRawPercentile() < rawFilterAmount)
-                    {
-                        tempList.add(d);
-                    }
-                }
-                else
-                {
-                    if(d.getRawPercentile() > rawFilterAmount)
-                    {
-                        tempList.add(d);
-                    }
-                }
-            }
-            
-            if(paxFilter)
-            {
-                if(paxFilterExpression.equals("lt"))
-                {
-                    if(d.getPaxPercentile() < paxFilterAmount)
-                    {
-                        tempList.add(d);
-                    }
-                }
-                else
-                {
-                    if(d.getPaxPercentile() > paxFilterAmount)
-                    {
-                        tempList.add(d);
-                    }
-                }
-            }
-            
-            if(conesFilter)
-            {
-                if(conesFilterExpression.equals("lt"))
-                {
-                    if(d.getAverageCones() < conesFilterAmount)
-                    {
-                        tempList.add(d);
-                    }
-                }
-                else
-                {
-                    if(d.getAverageCones() > conesFilterAmount)
-                    {
-                        tempList.add(d);
-                    }
-                }
-            }
+        if(filter.toString().length() == 0)
+        {
+            return true;
         }
+        int compared = 0;
         
-        drivers = tempList;
+        if(value instanceof Double)
+        {
+            compared = ((Comparable)value).compareTo(new Double(filter.toString()));
+        }
+        else if(value instanceof Integer)
+        {
+            compared = ((Comparable)value).compareTo(new Integer(filter.toString()));
+        }
+        else if(value instanceof String)
+        {
+            return value.toString().contains(filter.toString().toUpperCase());
+        }
+        return (compared == 0 || compared > 0);
     }
     
-    public void unfilterList()
+    public void onComplete()
     {
-        drivers = backupDrivers;
+        progress = 0;
     }
 
     public List<DriverStat> getDrivers() {
@@ -286,109 +218,22 @@ public class StatisticsBean
         this.startDate = startDate;
     }
 
-    public String getEventFilterExpression() {
-        return eventFilterExpression;
+    public List<DriverStat> getFilteredDrivers() {
+        return filteredDrivers;
     }
 
-    public void setEventFilterExpression(String eventFilterExpression) {
-        this.eventFilterExpression = eventFilterExpression;
+    public void setFilteredDrivers(List<DriverStat> filteredDrivers) {
+        this.filteredDrivers = filteredDrivers;
     }
 
-    public int getEventFilterAmount() {
-        return eventFilterAmount;
+    public double getProgress() {
+        return (progress > 100 ? 100 : progress);
     }
 
-    public void setEventFilterAmount(int eventFilterAmount) {
-        this.eventFilterAmount = eventFilterAmount;
+    public void setProgress(double progress) {
+        this.progress = progress;
     }
 
-    public boolean isEventFilter() {
-        return eventFilter;
-    }
-
-    public void setEventFilter(boolean eventFilter) {
-        this.eventFilter = eventFilter;
-    }
-
-    public boolean isRawFilter() {
-        return rawFilter;
-    }
-
-    public void setRawFilter(boolean rawFilter) {
-        this.rawFilter = rawFilter;
-    }
-
-    public String getRawFilterExpression() {
-        return rawFilterExpression;
-    }
-
-    public void setRawFilterExpression(String rawFilterExpression) {
-        this.rawFilterExpression = rawFilterExpression;
-    }
-
-    public int getRawFilterAmount() {
-        return rawFilterAmount;
-    }
-
-    public void setRawFilterAmount(int rawFilterAmount) {
-        this.rawFilterAmount = rawFilterAmount;
-    }
-
-    public boolean isPaxFilter() {
-        return paxFilter;
-    }
-
-    public void setPaxFilter(boolean paxFilter) {
-        this.paxFilter = paxFilter;
-    }
-
-    public String getPaxFilterExpression() {
-        return paxFilterExpression;
-    }
-
-    public void setPaxFilterExpression(String paxFilterExpression) {
-        this.paxFilterExpression = paxFilterExpression;
-    }
-
-    public int getPaxFilterAmount() {
-        return paxFilterAmount;
-    }
-
-    public void setPaxFilterAmount(int paxFilterAmount) {
-        this.paxFilterAmount = paxFilterAmount;
-    }
-
-    public boolean isConesFilter() {
-        return conesFilter;
-    }
-
-    public void setConesFilter(boolean conesFilter) {
-        this.conesFilter = conesFilter;
-    }
-
-    public String getConesFilterExpression() {
-        return conesFilterExpression;
-    }
-
-    public void setConesFilterExpression(String conesFilterExpression) {
-        this.conesFilterExpression = conesFilterExpression;
-    }
-
-    public int getConesFilterAmount() {
-        return conesFilterAmount;
-    }
-
-    public void setConesFilterAmount(int conesFilterAmount) {
-        this.conesFilterAmount = conesFilterAmount;
-    }
-
-    public boolean isFilter() {
-        return filter;
-    }
-
-    public void setFilter(boolean filter) {
-        this.filter = filter;
-    }
     
     
 }
