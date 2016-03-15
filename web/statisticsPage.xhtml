@@ -39,69 +39,38 @@
                 </p:tabMenu> 
             </p:layoutUnit>
             <p:layoutUnit position="center" >
-                <p:dataTable id="statisticsTable" var="driver" value="#{statistics.drivers}">
-                    <p:column sortBy="#{driver.name}" headerText="Name" >
-                        <h:outputText value="#{driver.name}" />
-                    </p:column>
-                    <p:column sortBy="#{driver.rawPercentile}" headerText="Raw Percentile" >
-                        <h:outputText value="#{driver.rawPercentile}%" />
-                    </p:column>
-                    <p:column sortBy="#{driver.paxPercentile}" headerText="Pax Percentile" >
-                        <h:outputText value="#{driver.paxPercentile}%" />
-                    </p:column>
-                    <p:column sortBy="#{driver.averageCones}" headerText="Average Cones" >
-                        <h:outputText value="#{driver.averageCones}" />
-                    </p:column>
-                    <p:column sortBy="#{driver.eventsAttended}" headerText="Events Attended" >
-                        <h:outputText value="#{driver.eventsAttended}" />
-                    </p:column>
-                </p:dataTable>
+                <h:form id="statisticsTable" >
+                    <p:dataTable var="driver" value="#{statistics.drivers}" filteredValue="#{statistics.filteredDrivers}" widgetVar="statTable">
+                        <p:column sortBy="#{driver.name}" filterBy="#{driver.name}" headerText="Name" filterFunction="#{statistics.filterTable}" >
+                            <h:outputText value="#{driver.name}" />
+                        </p:column>
+                        <p:column sortBy="#{driver.rawPercentile}" filterBy="#{driver.rawPercentile}" headerText="Raw Percentile" filterFunction="#{statistics.filterTable}" >
+                            <h:outputText value="#{driver.rawPercentile}%" />
+                        </p:column>
+                        <p:column sortBy="#{driver.paxPercentile}" filterBy="#{driver.paxPercentile}" headerText="Pax Percentile" filterFunction="#{statistics.filterTable}">
+                            <h:outputText value="#{driver.paxPercentile}%" />
+                        </p:column>
+                        <p:column sortBy="#{driver.averageCones}" filterBy="#{driver.averageCones}" headerText="Average Cones" filterFunction="#{statistics.filterTable}">
+                            <h:outputText value="#{driver.averageCones}" />
+                        </p:column>
+                        <p:column sortBy="#{driver.eventsAttended}" filterBy="#{driver.eventsAttended}" headerText="Events Attended" filterFunction="#{statistics.filterTable}">
+                            <h:outputText value="#{driver.eventsAttended}" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
             </p:layoutUnit>
             <p:layoutUnit position="west" size="390" >
-                <h:form>
+                <h:form id="inputForm">
                     <p:panelGrid columns="2" styleClass="noOutlinePanelGrid" >
                         <p:outputLabel value="Start Date:" />
                         <p:calendar id="start" mode="popup" required="true" value="#{statistics.startDate}" />
                         <p:outputLabel value="End Date:" />
                         <p:calendar id="end" mode="popup" required="true" value="#{statistics.endDate}" />
-                        <p:commandButton id="analyzeButton" widgetVar="analyzeButton" value="Analyze" update="statisticsTable" action="#{statistics.getStatistics}"/>
+                        <p:commandButton id="analyzeButton" onclick="PF('analyzeButton').disable();PF('pbAjax').start()" widgetVar="analyzeButton" value="Analyze" update="statisticsTable" action="#{statistics.getStatistics}"/>
                     </p:panelGrid>
-                </h:form>
-            </p:layoutUnit>
-            <p:layoutUnit position="east" size="550">
-                <h:form>
-                    <p:panelGrid id="filterSettings" columns="4" styleClass="noOutlinePanelGrid">
-                        <p:selectBooleanCheckbox value="#{statistics.eventFilter}" />
-                        <h:outputLabel id="eventsFilterLabel" for="eventsFilterExpression" value="Events" />
-                        <p:selectOneMenu id="eventsFilterExpression" value="#{statistics.eventFilterExpression}" >
-                            <f:selectItem itemLabel="less than" itemValue="lt" />
-                            <f:selectItem itemLabel="greater than" itemValue="gt" />
-                        </p:selectOneMenu>
-                        <p:spinner id="eventFilterAmount" value="#{statistics.eventFilterAmount}" min="0" />
-                        <p:selectBooleanCheckbox value="#{statistics.rawFilter}" />
-                        <h:outputLabel id="rawFilterLabel" for="rawFilterExpression" value="Raw" />
-                        <p:selectOneMenu id="rawFilterExpression" value="#{statistics.rawFilterExpression}" >
-                            <f:selectItem itemLabel="less than" itemValue="lt" />
-                            <f:selectItem itemLabel="greater than" itemValue="gt" />
-                        </p:selectOneMenu>
-                        <p:spinner id="rawFilterAmount" value="#{statistics.rawFilterAmount}" min="0" max="100" />
-                        <p:selectBooleanCheckbox value="#{statistics.paxFilter}" />
-                        <h:outputLabel id="paxFilterLabel" for="paxFilterExpression" value="Pax" />
-                        <p:selectOneMenu id="paxFilterExpression" value="#{statistics.paxFilterExpression}" >
-                            <f:selectItem itemLabel="less than" itemValue="lt" />
-                            <f:selectItem itemLabel="greater than" itemValue="gt" />
-                        </p:selectOneMenu>
-                        <p:spinner id="paxFilterAmount" value="#{statistics.paxFilterAmount}" min="0" max="100" />
-                        <p:selectBooleanCheckbox value="#{statistics.conesFilter}" />
-                        <h:outputLabel id="conesFilterLabel" for="conesFilterExpression" value="Cones" />
-                        <p:selectOneMenu id="conesFilterExpression" value="#{statistics.conesFilterExpression}" >
-                            <f:selectItem itemLabel="less than" itemValue="lt" />
-                            <f:selectItem itemLabel="greater than" itemValue="gt" />
-                        </p:selectOneMenu>
-                        <p:spinner id="conesFilterAmount" value="#{statistics.conesFilterAmount}" min="0" />
-                    </p:panelGrid>
-                    <p:commandButton value="Filter" action="#{statistics.filterList}" update="statisticsTable" />
-                    <p:commandButton value="Un-Filter" action="#{statistics.unfilterList}" update="statisticsTable"/>
+                    <p:progressBar id="progressBar" widgetVar="pbAjax" ajax="true" interval="500" value="#{statistics.progress}" labelTemplate="{value}%" >
+                        <p:ajax event="complete" listener="#{statistics.onComplete}" update="progressBar" oncomplete="PF('analyzeButton').enable()" />
+                    </p:progressBar>
                 </h:form>
             </p:layoutUnit>
         </p:layout>
