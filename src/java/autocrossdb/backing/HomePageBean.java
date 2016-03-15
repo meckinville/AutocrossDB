@@ -5,11 +5,13 @@
  */
 package autocrossdb.backing;
 
+import autocrossdb.entities.UpcomingEvents;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -18,10 +20,11 @@ import javax.persistence.PersistenceContext;
  * @author rmcconville
  */
 @ManagedBean(name="homePage")
-@ApplicationScoped
+@ViewScoped
 public class HomePageBean 
 {
     private List<String> images;
+    private List<UpcomingEvents> upcomingEvents;
     
     private long eventCount;
     private long driverCount;
@@ -34,11 +37,19 @@ public class HomePageBean
     @PostConstruct
     public void init()
     {
+        /*
         images = new ArrayList<String>();
         for(int x = 1; x <= 9; x++)
         {
             images.add(x + ".jpg");
         }
+        */
+        upcomingEvents = em.createQuery("SELECT ue from UpcomingEvents ue where ue.upcomingDate > :today order by ue.upcomingDate asc").setParameter("today", Calendar.getInstance().getTime()).getResultList();
+        if(upcomingEvents.size() > 10)
+        {
+            upcomingEvents = upcomingEvents.subList(0,10);
+        }
+        
         
         eventCount = (long)em.createQuery("SELECT count(e) from Events e").getResultList().get(0);
         runCount = (long)em.createQuery("SELECT count(r) from Runs r").getResultList().get(0);
@@ -84,6 +95,14 @@ public class HomePageBean
 
     public void setRunCount(long runCount) {
         this.runCount = runCount;
+    }
+
+    public List<UpcomingEvents> getUpcomingEvents() {
+        return upcomingEvents;
+    }
+
+    public void setUpcomingEvents(List<UpcomingEvents> upcomingEvents) {
+        this.upcomingEvents = upcomingEvents;
     }
 
     

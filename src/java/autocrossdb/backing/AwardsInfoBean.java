@@ -216,7 +216,7 @@ public class AwardsInfoBean
                     {
                         awardText = awardText.replace("[" + String.valueOf(x) + "]", webFormat.format(query.get(i)[x]));
                     }
-                    else if(query.get(i)[x] instanceof Double)
+                    else if(query.get(i)[x] instanceof Double || query.get(i)[x] instanceof Float)
                     {
                         awardText = awardText.replace("[" + String.valueOf(x) + "]", String.format("%.3f", query.get(i)[x]));
                     }

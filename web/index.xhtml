@@ -12,41 +12,70 @@
         <f:facet name="last">
             <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
         </f:facet>
-        <p:tabMenu activeIndex="#{param.i}">
-            <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
-                <f:param name="i" value="0"/>
-            </p:menuitem>
-            <p:menuitem value="Event Info" outcome="eventInfoPage" icon="fa fa-calendar">
-                <f:param name="i" value="1"/>
-            </p:menuitem>
-            <p:menuitem value="New Event" outcome="loadEventPage" icon="fa fa-upload">
-                <f:param name="i" value="2"/>
-            </p:menuitem>
-            <p:menuitem value="Chart" outcome="comparisonChart" icon="fa fa-line-chart">
-                <f:param name="i" value="3" />
-            </p:menuitem>
-            <p:menuitem value="Awards" outcome="awardsPage" icon="fa fa-trophy" >
-                <f:param name="i" value="4" />
-            </p:menuitem>
-            <p:menuitem value="Driver Analysis" outcome="driverAnalysisPage" icon="fa fa-search">
-                <f:param name="i" value="5" />
-            </p:menuitem>
-            <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
-                <f:param name="i" value="6" />
-            </p:menuitem>
-        </p:tabMenu> 
-        <p:imageSwitch effect="fade" id="homeImageCarousel">
-            <ui:repeat value="#{homePage.images}" var="image" id="homeImageCarouselImages">
-                <p:graphicImage name="images/#{image}" id="image" style="width: 1890px; height: 1050px;"/>
-            </ui:repeat>
-        </p:imageSwitch>
-        <p:panelGrid columns="5" style="padding: 5px; margin-top: 5px;">
-            <h:outputText value="Autocross DB (v1)" />
-            <h:outputText value="#{homePage.eventCount} events" />
-            <h:outputText value="#{homePage.clubCount} clubs" />
-            <h:outputText value="#{homePage.driverCount} drivers" />
-            <h:outputText value="#{homePage.runCount} runs" />
-        </p:panelGrid>
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="100" >
+                <p:tabMenu activeIndex="#{param.i}">
+                    <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
+                        <f:param name="i" value="0"/>
+                    </p:menuitem>
+                    <p:menuitem value="Event Info" outcome="eventInfoPage" icon="fa fa-calendar">
+                        <f:param name="i" value="1"/>
+                    </p:menuitem>
+                    <p:menuitem value="New Event" outcome="loadEventPage" icon="fa fa-upload">
+                        <f:param name="i" value="2"/>
+                    </p:menuitem>
+                    <p:menuitem value="Chart" outcome="comparisonChart" icon="fa fa-line-chart">
+                        <f:param name="i" value="3" />
+                    </p:menuitem>
+                    <p:menuitem value="Awards" outcome="awardsPage" icon="fa fa-trophy" >
+                        <f:param name="i" value="4" />
+                    </p:menuitem>
+                    <p:menuitem value="Driver Analysis" outcome="driverAnalysisPage" icon="fa fa-search">
+                        <f:param name="i" value="5" />
+                    </p:menuitem>
+                    <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
+                        <f:param name="i" value="6" />
+                    </p:menuitem>
+                </p:tabMenu> 
+            </p:layoutUnit>
+            <!--p:imageSwitch effect="fade" id="homeImageCarousel">
+                <ui:repeat value="#{homePage.images}" var="image" id="homeImageCarouselImages">
+                    <p:graphicImage name="images/#{image}" id="image" style="width: 800px; height: 600px;"/>
+                </ui:repeat>
+            </p:imageSwitch-->
+            <p:layoutUnit position="center">
+                <p:dataTable var="event" value="#{homePage.upcomingEvents}" >
+                    <p:column headerText="Date" >
+                        <h:outputText value="#{event.upcomingDate}" >
+                            <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Club" >
+                        <h:outputText value="#{event.upcomingClub}" />
+                    </p:column>
+                    <p:column headerText="Location" >
+                        <h:outputText value="#{event.upcomingLocation}" />
+                    </p:column>
+                    <p:column headerText="Type" >
+                        <h:outputText value="#{event.upcomingType}" />
+                    </p:column>
+                    <p:column headerText="Registration" >
+                        <h:outputLink value="#{event.upcomingRegistration}" >
+                            <h:outputText value="#{event.upcomingRegistration ne '' and event.upcomingRegistration ne null ? 'Register' : ''}" />
+                        </h:outputLink>
+                    </p:column>
+                </p:dataTable>
+            </p:layoutUnit>
+            <p:layoutUnit position="south" size="100">
+                <p:panelGrid columns="5" style="padding: 5px; margin-top: 5px;">
+                    <h:outputText value="Autocross DB (v1.1)" />
+                    <h:outputText value="#{homePage.eventCount} events" />
+                    <h:outputText value="#{homePage.clubCount} clubs" />
+                    <h:outputText value="#{homePage.driverCount} drivers" />
+                    <h:outputText value="#{homePage.runCount} runs" />
+                </p:panelGrid>
+            </p:layoutUnit>
+        </p:layout>
     </h:body>
 </html>
 

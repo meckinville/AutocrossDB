@@ -164,6 +164,7 @@ public class StatisticsBean
             drivers.add(tempStat);
             progress += progressIncrement;
         } 
+        progress = 100;
    }
     
     public boolean filterTable(Object value, Object filter, Locale locale)
