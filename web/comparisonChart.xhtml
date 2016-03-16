@@ -58,16 +58,29 @@
                     <p:calendar id="end" mode="popup" value="#{comparisonChart.endDate}" />
                     <p:outputLabel for="type" value="Stat to Compare:" />
                     <p:selectOneRadio id="type" value="#{comparisonChart.type}" required="true" >
-                        <f:selectItem itemLabel="Raw" itemValue="raw" />
-                        <f:selectItem itemLabel="Pax" itemValue="pax" />
-                        <f:selectItem itemLabel="Cones" itemValue="cones" />
+                        <f:selectItem itemLabel="Raw" itemValue="Raw" />
+                        <f:selectItem itemLabel="Pax" itemValue="Pax" />
+                        <f:selectItem itemLabel="Cones" itemValue="Cones" />
                     </p:selectOneRadio>
-                    <p:commandButton id="viewChart" value="View Chart" action="#{comparisonChart.drawComparison}" update="compareChart driverForm statisticsGrid" />
+                    <p:commandButton id="viewChart" value="View Chart" action="#{comparisonChart.drawComparison}" update="compareChart statisticsGrid" />
                 </p:panelGrid>
                 </h:form>
             </p:layoutUnit>
             <p:layoutUnit position="center" >
-                <p:chart id="compareChart" type="line" model="#{comparisonChart.lineModel}" style="height:600px;" />
+                <p:chart id="compareChart" type="line" model="#{comparisonChart.lineModel}" style="height:600px;" >
+                    <p:ajax event="itemSelect" listener="#{comparisonChart.itemSelect}" update="chartDialog" oncomplete="PF('dialog').show()" />
+                </p:chart>
+                <p:dialog id="chartDialog" header="#{comparisonChart.dialogHeader}" widgetVar="dialog" >
+                    <p:panelGrid columns="2" >
+                        <h:outputText value="Driver" style="font-weight: bold;"/>
+                        <h:outputText value="#{comparisonChart.type}" style="font-weight: bold;" />
+                        <h:outputText value="#{comparisonChart.d1DialogName}" />
+                        <h:outputText value="#{comparisonChart.d1DialogStat}" />
+                        <h:outputText value="#{comparisonChart.d2DialogName}" />
+                        <h:outputText value="#{comparisonChart.d2DialogStat}" />
+
+                    </p:panelGrid>
+                </p:dialog>
             </p:layoutUnit>
             <p:layoutUnit position="south" size="220">
                 <p:panelGrid id="statisticsGrid" styleClass="centeredPanelGrid">

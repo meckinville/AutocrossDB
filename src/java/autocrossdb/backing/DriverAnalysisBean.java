@@ -168,7 +168,7 @@ public class DriverAnalysisBean
         List<String> driverList = em.createQuery("SELECT distinct(r.runDriverName) FROM Runs r ", String.class).getResultList();
         for(int x = 0; x < driverList.size(); x++)
         {
-            if(driverList.get(x).startsWith(query.toUpperCase()))
+            if(driverList.get(x).contains(query.toUpperCase()))
             {
                 results.add(driverList.get(x));
             }

@@ -12,13 +12,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.CategoryAxis;
@@ -30,7 +32,7 @@ import org.primefaces.model.chart.LineChartSeries;
  * @author rmcconville
  */
 @ManagedBean(name="comparisonChart")
-@ViewScoped
+@SessionScoped
 public class ComparisonChartBean implements Serializable
 {
     private String driver1;
@@ -51,7 +53,15 @@ public class ComparisonChartBean implements Serializable
     private String d2PaxWins;
     private String d1PaxDiff;
     private String d2PaxDiff;
+    
+    private String dialogHeader;
+    private String dialogText;
+    private String d1DialogName;
+    private String d2DialogName;
+    private String d1DialogStat;
+    private String d2DialogStat;
 
+    
     @PersistenceContext
     private EntityManager em;
     
@@ -88,12 +98,27 @@ public class ComparisonChartBean implements Serializable
         List<String> driverList = em.createQuery("SELECT distinct(r.runDriverName) FROM Runs r ", String.class).getResultList();
         for(int x = 0; x < driverList.size(); x++)
         {
-            if(driverList.get(x).startsWith(query.toUpperCase()))
+            if(driverList.get(x).contains(query.toUpperCase()))
             {
                 results.add(driverList.get(x));
             }
         }
         return results;
+    }
+    
+    public void itemSelect(ItemSelectEvent event)
+    {
+        Map<Object,Number> d1Map = lineModel.getSeries().get(0).getData();
+        Map<Object,Number> d2Map = lineModel.getSeries().get(1).getData();
+        
+        Object[] d1Keys = d1Map.keySet().toArray();
+        Object[] d2Keys = d2Map.keySet().toArray();
+
+        dialogHeader = d1Keys[event.getItemIndex()].toString();
+        d1DialogName = lineModel.getSeries().get(0).getLabel();
+        d2DialogName = lineModel.getSeries().get(1).getLabel();
+        d1DialogStat = d1Map.get(d1Keys[event.getItemIndex()]).toString();
+        d2DialogStat = d2Map.get(d2Keys[event.getItemIndex()]).toString();
     }
     
     public void drawLineChart(List<Object[]> query, String chartTitle, double min, double max, int tickInterval, String yTitle)
@@ -161,12 +186,12 @@ public class ComparisonChartBean implements Serializable
             selectedDrivers.add(driver2);
             lineModel.getSeries().clear();
             
-            if(type.equals("raw"))
+            if(type.equalsIgnoreCase("raw"))
             {
                 List<Object[]> query = em.createNamedQuery("Runs.findCommonEventsForDriversRaw", Object[].class).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("driverList", selectedDrivers).getResultList();
                 drawLineChart(query, "Raw Time Comparison", 100, 0, 3, "Raw Time");
             }
-            else if(type.equals("pax"))
+            else if(type.equalsIgnoreCase("pax"))
             {
                 List<Object[]> query = em.createNamedQuery("Runs.findCommonEventsForDriversPax", Object[].class).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("driverList", selectedDrivers).getResultList();
                 drawLineChart(query, "Pax Time Comparison", 100, 0, 3, "Pax Time");
@@ -414,6 +439,56 @@ public class ComparisonChartBean implements Serializable
     public void setD2PaxDiff(String d2PaxDiff) {
         this.d2PaxDiff = d2PaxDiff;
     }
+
+    public String getDialogText() {
+        return dialogText;
+    }
+
+    public void setDialogText(String dialogText) {
+        this.dialogText = dialogText;
+    }
+
+    public String getDialogHeader() {
+        return dialogHeader;
+    }
+
+    public void setDialogHeader(String dialogHeader) {
+        this.dialogHeader = dialogHeader;
+    }
+
+    public String getD1DialogName() {
+        return d1DialogName;
+    }
+
+    public void setD1DialogName(String d1DialogName) {
+        this.d1DialogName = d1DialogName;
+    }
+
+    public String getD2DialogName() {
+        return d2DialogName;
+    }
+
+    public void setD2DialogName(String d2DialogName) {
+        this.d2DialogName = d2DialogName;
+    }
+
+    public String getD1DialogStat() {
+        return d1DialogStat;
+    }
+
+    public void setD1DialogStat(String d1DialogStat) {
+        this.d1DialogStat = d1DialogStat;
+    }
+
+    public String getD2DialogStat() {
+        return d2DialogStat;
+    }
+
+    public void setD2DialogStat(String d2DialogStat) {
+        this.d2DialogStat = d2DialogStat;
+    }
+
+
 
     
 
