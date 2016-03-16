@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -198,7 +199,36 @@ public class AwardsInfoBean
             tempQuery.add(temp);
         }
         awards.add(populateAward(tempQuery, "[1] had an average of [0] participants.", 1));
-
+        
+        //dirtiest class
+        objectQuery = em.createQuery("SELECT sum(r.runCones) / count(distinct r.runDriverName) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName, r.runEventUrl.eventUrl").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        Map<String, Double[]> dirtiestClassMap = new LinkedHashMap();
+        
+        for(Object[] o : objectQuery)
+        {
+            if(dirtiestClassMap.get(o[1]) == null)
+            {
+                Double[] value = new Double[2];
+                value[0] = new Double((long)o[0]);
+                value[1] = 1.0;
+                dirtiestClassMap.put(o[1].toString(), value);
+            }
+            else
+            {
+                Double[] value = dirtiestClassMap.get(o[1]);
+                value[1] = value[1] + 1;
+                dirtiestClassMap.put(o[1].toString(), value);
+            }
+        }
+        
+        Map<String, Double> dirtiestClassAveragedMap = new LinkedHashMap();
+        for(String key : dirtiestClassMap.keySet())
+        {
+            Double[] value = dirtiestClassMap.get(key);
+            dirtiestClassAveragedMap.put(key, value[0]/value[1]);
+        }
+        awards.add(populateAward(orderMap(dirtiestClassAveragedMap), "[name] hit [value] cones per driver per event."));
+        
         return awards;
     }
 
@@ -238,6 +268,31 @@ public class AwardsInfoBean
             }
         }
         return returnList;
+    }
+    
+    private static List<String> populateAward(List<Award> award, String awardText)
+    {
+        List<String> returnList = new ArrayList();
+        String originalAwardText = awardText;
+        try
+        {
+            for(int i = 0; i < PLACES_TO_POPULATE; i++)
+            {
+                awardText = awardText.replace("[name]", award.get(i).getName());
+                awardText = awardText.replace("[value]", String.format("%.3f" , award.get(i).getValue()));
+                returnList.add(awardText);
+                awardText = originalAwardText;
+            }
+        }
+        catch(IndexOutOfBoundsException e)
+        {
+            while(returnList.size() < PLACES_TO_POPULATE)
+            {
+                returnList.add("No others eligible.");
+            }
+        }
+        return returnList;
+        
     }
     
     private static List<Award> calculatePercent(List<Object[]> eventQuery, List<Object[]> rawQuery)
@@ -363,7 +418,21 @@ public class AwardsInfoBean
         }
     }
     
-    
+    private static List<Award> orderMap(Map<String, Double> map)
+    {
+        Set<String> driverNames = map.keySet();
+        Collection<Double> driverPercents = map.values();
+        List<Award> awardList = new ArrayList();
+        Iterator<String> namesIt = driverNames.iterator();
+        Iterator<Double> percentsIt = driverPercents.iterator();
+        while(namesIt.hasNext())
+        {
+            awardList.add(new Award(percentsIt.next().doubleValue(), namesIt.next()));
+        }
+        
+        Collections.sort(awardList, Collections.reverseOrder());
+        return awardList;
+    }
 
     public List<List<String>> getIndividualAwards2016() {
         return individualAwards2016;
