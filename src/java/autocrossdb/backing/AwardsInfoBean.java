@@ -114,17 +114,17 @@ public class AwardsInfoBean
         
         //add raw event winners and raw percent wins
         awards.add(populateAward(objectQuery, "[1] with [0] raw time wins.", 1));
-        awards.add(populateRawPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE));
+        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "[name] had top raw time at [value]% of attended events."));
         
         objectQuery = em.createQuery("SELECT count(e.eventPaxWinner), e.eventPaxWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventPaxWinner order by count(e.eventPaxWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add pax event winners and pax percent wins
         awards.add(populateAward(objectQuery, "[1] with [0] pax time wins.", 1));
-        awards.add(populatePaxPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE));
+        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "[name] had top pax time at [value]% of attended events."));
         
         objectQuery = em.createQuery("SELECT sum(r.runCones), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add most cones total and most cones per event
         awards.add(populateAward(objectQuery, "[1] with [0] total cones hit.", 1));
-        awards.add(populateConesPercentList(calculatePercent(eventsAttendedQuery, objectQuery), PLACES_TO_POPULATE));
+        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "[name] hit [value] cones per attended event."));
         
         //add most events attended
         awards.add(populateAward(eventsAttendedQuery, "[1] with [0] events attended.", 1));
@@ -279,7 +279,14 @@ public class AwardsInfoBean
             for(int i = 0; i < PLACES_TO_POPULATE; i++)
             {
                 awardText = awardText.replace("[name]", award.get(i).getName());
-                awardText = awardText.replace("[value]", String.format("%.3f" , award.get(i).getValue()));
+                if(awardText.contains("cones per attended event"))
+                {
+                    awardText = awardText.replace("[value]", String.format("%.3f" , award.get(i).getValue()/100));
+                }
+                else
+                {
+                    awardText = awardText.replace("[value]", String.format("%.1f" , award.get(i).getValue()));
+                }
                 returnList.add(awardText);
                 awardText = originalAwardText;
             }
@@ -295,31 +302,33 @@ public class AwardsInfoBean
         
     }
     
-    private static List<Award> calculatePercent(List<Object[]> eventQuery, List<Object[]> rawQuery)
+    private static List<Award> calculatePercent(List<Object[]> eventQuery, List<Object[]> statQuery)
     {
 
-        Map<String, Number> rawPercentMap = new TreeMap();
-        for(Object[] rawObject : rawQuery)
+        Map<String, Number> map = new TreeMap();
+        //go over the list of raw winners from events. add an entry to the map for each unique winner. the value for the key is the number of wins
+        for(Object[] o : statQuery)
         {
-            rawPercentMap.put(String.valueOf(rawObject[1]), new Long(String.valueOf(rawObject[0])).doubleValue());
+            map.put(String.valueOf(o[1]), new Long(String.valueOf(o[0])).doubleValue());
         }
         
-        for(Object[] eventObject : eventQuery)
+        //go through the eventsAttended query. for each raw winner entry, we will divide their wins by their events attended. we then replace the value
+        //in the map with this divided value. 
+        for(Object[] o : eventQuery)
         {
-            if(rawPercentMap.containsKey(String.valueOf(eventObject[1])))
+            if(map.containsKey(String.valueOf(o[1])))
             {
-                double eventsAttended = new Long(String.valueOf(eventObject[0])).doubleValue();
-                double rawWins = rawPercentMap.get(String.valueOf(eventObject[1])).doubleValue();
+                double eventsAttended = new Long(String.valueOf(o[0])).doubleValue();
+                double rawWins = map.get(String.valueOf(o[1])).doubleValue();
                 double percent = rawWins / eventsAttended;
-                rawPercentMap.put(String.valueOf(eventObject[1]), percent * 100);
-                
+                map.put(String.valueOf(o[1]), percent * 100);
             }
         }
-        Set<String> driverNames = rawPercentMap.keySet();
-        Collection<Number> driverPercents = rawPercentMap.values();
+        
+        //we create a new award list that contains an award for each map key/value pair.
         List<Award> awardList = new ArrayList();
-        Iterator<String> namesIt = driverNames.iterator();
-        Iterator<Number> percentsIt = driverPercents.iterator();
+        Iterator<String> namesIt = map.keySet().iterator();
+        Iterator<Number> percentsIt = map.values().iterator();
         while(namesIt.hasNext())
         {
             awardList.add(new Award(percentsIt.next().doubleValue(), namesIt.next()));
@@ -327,95 +336,6 @@ public class AwardsInfoBean
         
         Collections.sort(awardList, Collections.reverseOrder());
         return awardList;
-    }
-    
-    private static List<String> populateRawPercentList(List<Award> awardList, int places)
-    {
-        if(awardList.size() == 0)
-        {
-            return null;
-        }
-        
-        List<String> returnList = new ArrayList();
-        Iterator<Award> awardIt = awardList.iterator();
-        try
-        {
-            for(int x = 0; x < places; x++)
-            {
-                Award next = awardIt.next();
-                returnList.add(next.getName() + " had top Raw Time at " + Math.round(next.getValue()) + "% of attended events.");
-            }
-
-            return returnList;
-        }
-        catch(NoSuchElementException e)
-        {
-            while(returnList.size() < places)
-            {
-                returnList.add("No others eligible.");
-            }
-            return returnList;
-        }
-    }
-    
-    private static List<String> populatePaxPercentList(List<Award> awardList, int places)
-    {
-        if(awardList.size() == 0)
-        {
-            return null;
-        }
-        
-        List<String> returnList = new ArrayList();
-        Iterator<Award> awardIt = awardList.iterator();
-            
-        try
-        {
-            for(int x = 0; x < places; x++)
-            {
-                Award next = awardIt.next();
-                returnList.add(next.getName() + " had top Pax Time at " + Math.round(next.getValue()) + "% of attended events.");
-            }
-        
-            return returnList;
-        }
-        catch(NoSuchElementException e)
-        {
-            while(returnList.size() < places)
-            {
-                returnList.add("No others eligible.");
-            }
-            return returnList;
-        }
-    }
-    
-    private static List<String> populateConesPercentList(List<Award> awardList, int places)
-    {
-        if(awardList.size() == 0)
-        {
-            return null;
-        }
-        
-        List<String> returnList = new ArrayList();
-        Iterator<Award> awardIt = awardList.iterator();
-            
-        try
-        {
-            for(int x = 0; x < places; x++)
-            {
-                Award next = awardIt.next();
-                returnList.add(next.getName() + " hit " + String.format("%.3f", next.getValue()/100) + " cones per attended event.");
-            }
-
-            return returnList;
-        }
-        catch(NoSuchElementException e)
-        {
-            while(returnList.size() < places)
-            {
-                returnList.add("No others eligible.");
-            }
-            return returnList;
-        }
     }
     
     private static List<Award> orderMap(Map<String, Double> map)

@@ -58,8 +58,10 @@ public class ComparisonChartBean implements Serializable
     private String dialogText;
     private String d1DialogName;
     private String d2DialogName;
-    private String d1DialogStat;
-    private String d2DialogStat;
+    private double d1DialogStat;
+    private double d2DialogStat;
+    private double d1DialogDiff;
+    private double d2DialogDiff;
 
     
     @PersistenceContext
@@ -117,8 +119,13 @@ public class ComparisonChartBean implements Serializable
         dialogHeader = d1Keys[event.getItemIndex()].toString();
         d1DialogName = lineModel.getSeries().get(0).getLabel();
         d2DialogName = lineModel.getSeries().get(1).getLabel();
-        d1DialogStat = d1Map.get(d1Keys[event.getItemIndex()]).toString();
-        d2DialogStat = d2Map.get(d2Keys[event.getItemIndex()]).toString();
+        d1DialogStat = d1Map.get(d1Keys[event.getItemIndex()]).doubleValue();
+        d2DialogStat = d2Map.get(d2Keys[event.getItemIndex()]).doubleValue();
+        
+        d1DialogDiff = d1DialogStat - d2DialogStat;
+        d1DialogDiff = (Math.round(d1DialogDiff * 1000d)) / 1000d;
+        d2DialogDiff = d2DialogStat - d1DialogStat;
+        d2DialogDiff = (Math.round(d2DialogDiff * 1000d)) / 1000d;
     }
     
     public void drawLineChart(List<Object[]> query, String chartTitle, double min, double max, int tickInterval, String yTitle)
@@ -472,21 +479,39 @@ public class ComparisonChartBean implements Serializable
         this.d2DialogName = d2DialogName;
     }
 
-    public String getD1DialogStat() {
+    public double getD1DialogStat() {
         return d1DialogStat;
     }
 
-    public void setD1DialogStat(String d1DialogStat) {
+    public void setD1DialogStat(double d1DialogStat) {
         this.d1DialogStat = d1DialogStat;
     }
 
-    public String getD2DialogStat() {
+    public double getD2DialogStat() {
         return d2DialogStat;
     }
 
-    public void setD2DialogStat(String d2DialogStat) {
+    public void setD2DialogStat(double d2DialogStat) {
         this.d2DialogStat = d2DialogStat;
     }
+
+    public double getD1DialogDiff() {
+        return d1DialogDiff;
+    }
+
+    public void setD1DialogDiff(double d1DialogDiff) {
+        this.d1DialogDiff = d1DialogDiff;
+    }
+
+    public double getD2DialogDiff() {
+        return d2DialogDiff;
+    }
+
+    public void setD2DialogDiff(double d2DialogDiff) {
+        this.d2DialogDiff = d2DialogDiff;
+    }
+
+
 
 
 

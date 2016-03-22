@@ -71,14 +71,16 @@
                     <p:ajax event="itemSelect" listener="#{comparisonChart.itemSelect}" update="chartDialog" oncomplete="PF('dialog').show()" />
                 </p:chart>
                 <p:dialog id="chartDialog" header="#{comparisonChart.dialogHeader}" widgetVar="dialog" >
-                    <p:panelGrid columns="2" >
+                    <p:panelGrid columns="3" >
                         <h:outputText value="Driver" style="font-weight: bold;"/>
                         <h:outputText value="#{comparisonChart.type}" style="font-weight: bold;" />
+                        <h:outputText value="Diff" style="font-weight: bold;" />
                         <h:outputText value="#{comparisonChart.d1DialogName}" />
-                        <h:outputText value="#{comparisonChart.d1DialogStat}" />
+                        <h:outputText styleClass="#{comparisonChart.d1DialogStat lt comparisonChart.d2DialogStat ? 'negativeDiff' : comparisonChart.d1DialogStat gt comparisonChart.d2DialogStat ? 'positiveDiff' : ''}" value="#{comparisonChart.d1DialogStat}" />
+                        <h:outputText styleClass="#{comparisonChart.d1DialogDiff lt comparisonChart.d2DialogDiff ? 'negativeDiff' : comparisonChart.d1DialogDiff gt comparisonChart.d2DialogDiff ? 'positiveDiff' : ''}" value="#{comparisonChart.d1DialogDiff}" />
                         <h:outputText value="#{comparisonChart.d2DialogName}" />
-                        <h:outputText value="#{comparisonChart.d2DialogStat}" />
-
+                        <h:outputText styleClass="#{comparisonChart.d2DialogStat lt comparisonChart.d1DialogStat ? 'negativeDiff' : comparisonChart.d2DialogStat gt comparisonChart.d1DialogStat ? 'positiveDiff' : ''}" value="#{comparisonChart.d2DialogStat}" />
+                        <h:outputText styleClass="#{comparisonChart.d2DialogDiff lt comparisonChart.d1DialogDiff ? 'negativeDiff' : comparisonChart.d2DialogDiff gt comparisonChart.d1DialogDiff ? 'positiveDiff' : ''}" value="#{comparisonChart.d2DialogDiff}" />
                     </p:panelGrid>
                 </p:dialog>
             </p:layoutUnit>
