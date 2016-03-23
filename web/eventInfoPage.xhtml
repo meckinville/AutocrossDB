@@ -47,7 +47,6 @@
                         <p:panel header="#{event.neglectedEvent.eventLocation}" style="text-align:center;" > 
                               
                             <p:panelGrid columns="1" styleClass="noOutlinePanelGrid" style="width: 100%;" >
-                                <p:graphicImage name="images/sites/#{event.neglectedEvent.eventLocation}.jpg" alt="#{event.neglectedEvent.eventLocation}" style="width: auto; height: 200px;" />
                                 <h:outputText value="#{event.neglectedEvent.eventDate}" >
                                     <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
                                 </h:outputText>
@@ -73,9 +72,103 @@
                                     <h:outputText value="More Info" />
                                     <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
                                 </p:commandLink>
+                                <br />
+                                <p:commandLink update="classDetails" oncomplete="PF('classDetailsOP').show();PF('rawDetailsOP').hide();PF('paxDetailsOP').hide()" >
+                                    <h:outputText value="Class Standings" />
+                                    <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
+                                </p:commandLink>
+                                <br />
+                                <p:commandLink update="rawDetails" oncomplete="PF('rawDetailsOP').show();PF('paxDetailsOP').hide();PF('classDetailsOP').hide()" >
+                                    <h:outputText value="Raw Standings" />
+                                    <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
+                                </p:commandLink>
+                                <br />
+                                <p:commandLink update="paxDetails" oncomplete="PF('paxDetailsOP').show();PF('classDetailsOP').hide();PF('rawDetailsOP').hide()" >
+                                    <h:outputText value="Pax Standings" />
+                                    <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
+                                </p:commandLink>
                         </p:panel>
                     </p:dataGrid>
                 </h:form>
+            </p:layoutUnit>
+            <p:layoutUnit position="south" size="400">
+                <p:overlayPanel id="classDetails" dismissable="false" widgetVar="classDetailsOP" >
+                    <p:dataTable var="driver" value="#{eventInfo.selectedAnalyzedEvent.classTimes}" styleClass="analysisDataTable" >
+                        <f:facet name="header" >
+                            Class Details #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
+                        </f:facet>
+                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Class">
+                            #{driver.cls}
+                        </p:column>
+                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Position">
+                          #{driver.position}
+                        </p:column>
+                        <p:column colspan="3"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Driver">
+                            #{driver.driver}
+                        </p:column>
+                        <p:column colspan="3"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Car">
+                            #{driver.car}
+                        </p:column>
+                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Best Time">
+                            #{driver.time}
+                        </p:column>
+                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Time Difference" >
+                            #{driver.diff} (#{driver.leaderDiff})
+                        </p:column>
+                    </p:dataTable>
+                </p:overlayPanel>
+
+                <p:overlayPanel id="rawDetails" dismissable="false" widgetVar="rawDetailsOP" >
+                    <p:dataTable var="driver" value="#{eventInfo.selectedAnalyzedEvent.rawTimes}" styleClass="analysisDataTable">
+                        <f:facet name="header" >
+                            Raw Details #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
+                        </f:facet>
+                        <p:column colspan="2"  headerText="Position">
+                          #{driver.position}
+                        </p:column>
+                        <p:column colspan="3"  headerText="Driver">
+                            #{driver.driver}
+                        </p:column>
+                        <p:column colspan="2"  headerText="Class">
+                            #{driver.cls}
+                        </p:column>
+                        <p:column colspan="3"  headerText="Car">
+                            #{driver.car}
+                        </p:column>
+                        <p:column colspan="2"  headerText="Best Time">
+                            #{driver.time}
+                        </p:column>
+                        <p:column colspan="2"  headerText="Time Difference" >
+                            #{driver.diff} (#{driver.leaderDiff})
+                        </p:column>
+                    </p:dataTable>
+                </p:overlayPanel>
+
+                <p:overlayPanel id="paxDetails" dismissable="false" widgetVar="paxDetailsOP" >
+                    <p:dataTable var="driver" value="#{eventInfo.selectedAnalyzedEvent.paxTimes}" styleClass="analysisDataTable">
+                        <f:facet name="header" >
+                            Pax Details for #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
+                        </f:facet>
+                        <p:column colspan="2"  headerText="Position">
+                          #{driver.position}
+                        </p:column>
+                        <p:column colspan="3"  headerText="Driver">
+                            #{driver.driver}
+                        </p:column>
+                        <p:column colspan="2"  headerText="Class">
+                            #{driver.cls}
+                        </p:column>
+                        <p:column colspan="3"  headerText="Car">
+                            #{driver.car}
+                        </p:column>
+                        <p:column colspan="2"  headerText="Best Time">
+                            #{driver.time}
+                        </p:column>
+                        <p:column colspan="2"  headerText="Time Difference" >
+                            #{driver.diff} (#{driver.leaderDiff})
+                        </p:column>
+                    </p:dataTable>
+                </p:overlayPanel>
             </p:layoutUnit>
         </p:layout>
         <p:dialog id="eventPopup" header="#{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} -- #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventClubName}" widgetVar="eventDialog" >

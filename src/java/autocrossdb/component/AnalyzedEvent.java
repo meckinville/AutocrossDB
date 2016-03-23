@@ -6,6 +6,7 @@
 package autocrossdb.component;
 
 import autocrossdb.entities.Events;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +22,10 @@ public class AnalyzedEvent
     private long offCourseRuns;
     private double avgRunTime;
     private long totalCones;
+    
+    private List<ClassTableRow> rawTimes;
+    private List<ClassTableRow> paxTimes;
+    private List<ClassTableRow> classTimes;
     
     private String topRawName;
     private String topRawTime;
@@ -44,7 +49,7 @@ public class AnalyzedEvent
         this.neglectedEvent = e;
     }
     
-    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones, int runs, long offCourseRuns)
+    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones, int runs, long offCourseRuns, List<Object[]> rawTimes, List<Object[]> paxTimes, List<Object[]> classTimes)
     {
         this.neglectedEvent = e;
         this.totalDrivers = totalDrivers;
@@ -52,45 +57,75 @@ public class AnalyzedEvent
         this.totalCones = totalCones;
         this.runs = runs;
         this.offCourseRuns = offCourseRuns;
+        
+        this.rawTimes = new ArrayList();
+        this.paxTimes = new ArrayList();
+        this.classTimes = new ArrayList();
+        
+        double topTime = 0;
+        double lastTime = 0;
+        for(int x = 0; x < rawTimes.size(); x++)
+        {
+            if(x == 0)
+            {
+                this.rawTimes.add(new ClassTableRow(x+1, String.valueOf(rawTimes.get(x)[1]), String.valueOf(rawTimes.get(x)[3]), String.valueOf(rawTimes.get(x)[2]), (int)rawTimes.get(x)[4], (double)rawTimes.get(x)[0], 0.000, 0.000));
+                lastTime = (double)rawTimes.get(x)[0];
+                topTime = (double)rawTimes.get(x)[0];
+            }
+            else
+            {
+                this.rawTimes.add(new ClassTableRow(x+1, String.valueOf(rawTimes.get(x)[1]), String.valueOf(rawTimes.get(x)[3]), String.valueOf(rawTimes.get(x)[2]), (int)rawTimes.get(x)[4], (double)rawTimes.get(x)[0], lastTime-(double)rawTimes.get(x)[0], topTime-(double)rawTimes.get(x)[0]));
+                lastTime = (double)rawTimes.get(x)[0];
+            }
+        }
+        
+        for(int x = 0; x < paxTimes.size(); x++)
+        {
+            if(x == 0)
+            {
+                this.paxTimes.add(new ClassTableRow(x+1, String.valueOf(paxTimes.get(x)[1]), String.valueOf(paxTimes.get(x)[3]), String.valueOf(paxTimes.get(x)[2]), (int)paxTimes.get(x)[4], (double)paxTimes.get(x)[0], 0.000, 0.000));
+                lastTime = (double)paxTimes.get(x)[0];
+                topTime = (double)paxTimes.get(x)[0];
+            }
+            else
+            {
+                this.paxTimes.add(new ClassTableRow(x+1, String.valueOf(paxTimes.get(x)[1]), String.valueOf(paxTimes.get(x)[3]), String.valueOf(paxTimes.get(x)[2]), (int)paxTimes.get(x)[4], (double)paxTimes.get(x)[0], lastTime-(double)paxTimes.get(x)[0], topTime-(double)paxTimes.get(x)[0]));
+                lastTime = (double)paxTimes.get(x)[0];
+            }
+        }
+        
+        String currentClass = "";
+        int classPosition = 1;
+        for(int x = 0; x < classTimes.size(); x++)
+        {
+            
+            
+            if(x == 0)
+            {
+                currentClass = String.valueOf(classTimes.get(x)[2]);
+                this.classTimes.add(new ClassTableRow(1, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], 0.000, 0.000));
+                lastTime = (double)classTimes.get(x)[0];
+                topTime = (double)classTimes.get(x)[0];
+                classPosition = 2;
+            }
+            else if(!(String.valueOf(classTimes.get(x)[2]).equals(currentClass)))
+            {
+                currentClass = String.valueOf(classTimes.get(x)[2]);
+                this.classTimes.add(new ClassTableRow(0, "", "", "", 0, 0.0, 0.0, 0.0));
+                this.classTimes.add(new ClassTableRow(1, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], 0.000, 0.000));
+                lastTime = (double)classTimes.get(x)[0];
+                topTime = (double)classTimes.get(x)[0];
+                classPosition = 2;    
+            }
+            else
+            {
+                this.classTimes.add(new ClassTableRow(classPosition, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], lastTime-(double)classTimes.get(x)[0], topTime-(double)classTimes.get(x)[0]));
+                classPosition++;
+                lastTime = (double)classTimes.get(x)[0];
+            }
+        }
     }
     
-    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones, List<Object[]> rawResults, List<Object[]> paxResults, List<Object[]> coneKillerResults, List<Object[]> noviceResults)
-    {
-        this.neglectedEvent = e;
-        this.totalDrivers = totalDrivers;
-        this.avgRunTime = avgRunTime;
-        this.totalCones = totalCones;
-        
-        this.topRawName = rawResults.get(0)[0].toString();
-        this.topRawCar = rawResults.get(0)[1].toString();
-        this.topRawClass = rawResults.get(0)[2].toString();
-        this.topRawTime = rawResults.get(0)[3].toString();
-        
-        this.topPaxName = paxResults.get(0)[0].toString();
-        this.topPaxCar = paxResults.get(0)[1].toString();
-        this.topPaxClass = paxResults.get(0)[2].toString();
-        this.topPaxTime = paxResults.get(0)[3].toString();
-        
-        this.topConeKillerName = coneKillerResults.get(0)[0].toString();
-        this.topConeKillerCar = coneKillerResults.get(0)[1].toString();
-        this.topConeKillerClass = coneKillerResults.get(0)[2].toString();
-        this.topConeKillerCones = coneKillerResults.get(0)[3].toString();
-        
-        if(noviceResults.size() == 0)
-        {
-            this.noviceChampName = "No novices.";
-            this.noviceChampTime = "N/A";
-            this.noviceChampClass = "N/A";
-            this.noviceChampCar = "N/A";
-        }
-        else
-        {
-            this.noviceChampName = noviceResults.get(0)[0].toString();
-            this.noviceChampCar = noviceResults.get(0)[1].toString();
-            this.noviceChampClass = noviceResults.get(0)[2].toString();
-            this.noviceChampTime = noviceResults.get(0)[3].toString();
-        }
-    }
 
     public String getTopRawName() {
         return topRawName;
@@ -267,6 +302,32 @@ public class AnalyzedEvent
     public void setOffCourseRuns(long offCourseRuns) {
         this.offCourseRuns = offCourseRuns;
     }
+
+    public List<ClassTableRow> getRawTimes() {
+        return rawTimes;
+    }
+
+    public void setRawTimes(List<ClassTableRow> rawTimes) {
+        this.rawTimes = rawTimes;
+    }
+
+    public List<ClassTableRow> getPaxTimes() {
+        return paxTimes;
+    }
+
+    public void setPaxTimes(List<ClassTableRow> paxTimes) {
+        this.paxTimes = paxTimes;
+    }
+
+    public List<ClassTableRow> getClassTimes() {
+        return classTimes;
+    }
+
+    public void setClassTimes(List<ClassTableRow> classTimes) {
+        this.classTimes = classTimes;
+    }
+
+    
 
     
 
