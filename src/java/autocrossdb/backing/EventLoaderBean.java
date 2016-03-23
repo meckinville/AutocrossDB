@@ -85,6 +85,10 @@ public class EventLoaderBean
         {
             loadBuccaneerEvent();
         }
+        else if(url.contains("gulfcoastautocrossers"))
+        {
+            loadGulfCoastEvent();
+        }
     }
     
     public void loadCFREvent()
@@ -716,6 +720,117 @@ public class EventLoaderBean
                 eventToWrite.setRawWinner(rawWinner);
                 eventsFacade.edit(eventToWrite);
                         
+                progress = 100;
+                growlMessage = "Loaded Event: " + eventToWrite.getEventLocation() + " " + webFormat.format(eventToWrite.getEventDate());
+            }
+            else
+            {
+                progress = 100;
+                growlMessage = eventToWrite.getEventLocation() + " " + webFormat.format(eventToWrite.getEventDate()) + " has already been loaded.";
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public void loadGulfCoastEvent()
+    {
+        try
+        {
+            progress = 0;
+            Document results = Jsoup.connect(url).get();
+            Element table = results.select("table:has(tr.rowhigh)").first();
+            Elements driverRows = table.select("tr:has(td)");
+            
+            Events eventToWrite = new Events(url, club, location, date, points);
+            Classes classToWrite =  new Classes();
+            String driverName = "";
+            String carName = "";
+            String className = "";
+            ArrayList<Runs> runsCollection = new ArrayList();
+            completeProgress = driverRows.size();
+            
+            for(Element row : driverRows)
+            {
+                Elements columns = row.select("td");
+                className = columns.get(1).text();
+                if(className.endsWith("L") || className.endsWith("l"))
+                {
+                    className = className.substring(0,className.length()-1);
+                }
+                if(className.endsWith("NL") || className.endsWith("nl"))
+                {
+                    className = "NS";
+                }
+                if(className.endsWith("N") || className.endsWith("n"))
+                {
+                    className = "NS";
+                }
+                classToWrite = classesFacade.find(className);
+                driverName = columns.get(3).text().toUpperCase();
+                carName = columns.get(4).text().toUpperCase();
+                int runNumber = 1;
+                for(int x = 5; x < columns.size()-2; x++)
+                {
+                    String columnText = columns.get(x).text();
+                    
+                    String offCourse = "N";
+                    
+                    int cones = 0;
+                    double runTime = 0;
+                    double paxTime = 0;
+                    if(columnText.length() > 5)
+                    {
+                        if(columnText.substring(0,6).matches("[0-9][0-9].[0-9][0-9][0-9]") || columnText.substring(0,6).matches("[0-9][0-9][0-9].[0-9][0-9]"))
+                        {
+                            if(columnText.contains("+"))
+                            {
+                                if(columnText.substring(columnText.indexOf("+")+1).equals("OC") || columnText.substring(columnText.indexOf("+")+1).equals("DNF"))
+                                {
+                                    offCourse = "Y";
+                                }
+                                else if(columnText.substring(columnText.indexOf("+")+1).equals("`"))
+                                {
+                                    cones = 1;
+                                }
+                                else
+                                {
+                                    cones = Integer.parseInt(columnText.substring(columnText.indexOf("+")+1));
+                                }
+                                columnText = columnText.substring(0, columnText.indexOf("+"));
+                            }
+                            runTime = Double.parseDouble(columnText);
+                            runTime += 2 * cones;
+                            paxTime = calculatePax(classToWrite, String.valueOf(runTime));
+                            
+                            Runs runToWrite = new Runs(null, driverName.toUpperCase(), carName.toUpperCase(), runNumber, runTime, paxTime, offCourse, cones);
+                            runToWrite.setRunClassName(classToWrite);
+                            runToWrite.setRunEventUrl(eventToWrite);
+                            runsCollection.add(runToWrite);
+                            runNumber++;
+                        }
+                    }
+                }
+            }
+            progress = 50;
+            eventToWrite.setRunsCollection(runsCollection);
+            if(eventsFacade.find(eventToWrite.getEventUrl()) == null)
+            {
+                eventsFacade.create(eventToWrite);
+                Iterator<Runs> it = runsCollection.iterator();
+                while(it.hasNext())
+                {
+                    runsFacade.edit(it.next());
+                    progress += runsCollection.size() / 100.0;
+                }
+                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
+                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
+                eventToWrite.setPaxWinner(paxWinner);
+                eventToWrite.setRawWinner(rawWinner);
+                eventsFacade.edit(eventToWrite);
+
                 progress = 100;
                 growlMessage = "Loaded Event: " + eventToWrite.getEventLocation() + " " + webFormat.format(eventToWrite.getEventDate());
             }
