@@ -50,10 +50,12 @@
                             <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
                         </h:outputText>
                     </p:column>
-                    <p:column headerText="Club" >
-                        <h:outputText value="#{event.upcomingClub}" />
+                    <p:column headerText="Club" style="text-align:center;" >
+                        <p:graphicImage name="images/clubs/#{event.upcomingClub}.jpg" style="width:100px; height:48px;" />
                     </p:column>
-                    <p:column headerText="Location" >
+                    <p:column headerText="Location" style="text-align:center;" >
+                        <p:graphicImage name="images/sites/#{event.upcomingLocation}.jpg" style="width:100px; height:48px;" />
+                        <br />
                         <h:outputText value="#{event.upcomingLocation}" />
                     </p:column>
                     <p:column headerText="Type" >

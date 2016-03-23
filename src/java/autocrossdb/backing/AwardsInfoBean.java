@@ -188,7 +188,7 @@ public class AwardsInfoBean
         awards.add(populateAward(objectQuery, "[1] with [0] unique participants.", 1));
          
         //highest average participation
-        objectQuery = em.createQuery("SELECT count(r), r.runClassName.className from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName order by count(r) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT count(r), r.runClassName.className from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runClassName.className != 'NS' group by r.runClassName order by count(r) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         long totalEvents = em.createQuery("SELECT e FROM Events e where e.eventDate > :begin AND e.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList().size();
         List<Object[]> tempQuery = new ArrayList();
         for(Object[] o : objectQuery)
@@ -201,7 +201,9 @@ public class AwardsInfoBean
         awards.add(populateAward(tempQuery, "[1] had an average of [0] participants.", 1));
         
         //dirtiest class
-        objectQuery = em.createQuery("SELECT sum(r.runCones) / count(distinct r.runDriverName) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName, r.runEventUrl.eventUrl").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName having count(distinct r.runDriverName) > 4 order by avgCones desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        awards.add(populateAward(objectQuery, "[1] hit [0] cones per driver per event.", 2));
+        /*
         Map<String, Double[]> dirtiestClassMap = new LinkedHashMap();
         
         for(Object[] o : objectQuery)
@@ -228,7 +230,7 @@ public class AwardsInfoBean
             dirtiestClassAveragedMap.put(key, value[0]/value[1]);
         }
         awards.add(populateAward(orderMap(dirtiestClassAveragedMap), "[name] hit [value] cones per driver per event."));
-        
+        */
         return awards;
     }
 

@@ -47,7 +47,7 @@ public class HomePageBean
         upcomingEvents = em.createQuery("SELECT ue from UpcomingEvents ue where ue.upcomingDate > :today order by ue.upcomingDate asc").setParameter("today", Calendar.getInstance().getTime()).getResultList();
         if(upcomingEvents.size() > 10)
         {
-            upcomingEvents = upcomingEvents.subList(0,10);
+            upcomingEvents = upcomingEvents.subList(0,8);
         }
         
         
