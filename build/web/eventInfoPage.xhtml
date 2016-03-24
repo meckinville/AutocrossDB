@@ -40,22 +40,20 @@
             <p:layoutUnit position="west" size="400" >
                 <h:form>
                     <p:panelGrid columns="2" styleClass="noOutlinePanelGrid" style="margin: 0px auto;" >
-                        <h:outputLabel for="fromDate" value="From:" />
+                        <h:outputLabel for="fromDate" value="Start Date:" />
                         <p:calendar id="fromDate" mode="popup" required="true" value="#{eventInfo.startDate}" />
-                        <h:outputLabel for="toDate" value="To:" />
+                        <h:outputLabel for="toDate" value="End Date:" />
                         <p:calendar id="toDate" mode="popup" required="true" value="#{eventInfo.endDate}" />
+                        <h:outputLabel for="club" value="Club: " />
+                        <p:autoComplete id="club" forceSelection="true" value="#{eventInfo.clubFilter}" completeMethod="#{eventInfo.completeClubText}" />
                         <p:commandButton value="Filter" action="#{eventInfo.getEvents}" update="eventDetails" />
                     </p:panelGrid>
                 </h:form>
             </p:layoutUnit>
-            <p:layoutUnit position="center" >
+            <p:layoutUnit position="south" size="530" >
                 <h:form id="eventDetails">
                     
                     <p:dataGrid var="event" value="#{eventInfo.analyzedEvents}" rows="3" columns="3" paginator="true" paginatorPosition="top" paginatorAlwaysVisible="false" layout="grid">
-                        <f:facet name="header">
-                            Events List
-                        </f:facet>
-
                         <p:panel header="#{event.neglectedEvent.eventLocation}" style="text-align:center;" > 
                               
                             <p:panelGrid columns="1" styleClass="noOutlinePanelGrid" style="width: 100%;" >
@@ -103,28 +101,28 @@
                     </p:dataGrid>
                 </h:form>
             </p:layoutUnit>
-            <p:layoutUnit position="south" size="300">
+            <p:layoutUnit position="center">
                 <p:overlayPanel id="classDetails" dismissable="false" widgetVar="classDetailsOP" >
                     <p:dataTable var="driver" value="#{eventInfo.selectedAnalyzedEvent.classTimes}" styleClass="analysisDataTable" >
                         <f:facet name="header" >
                             Class Details #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
                         </f:facet>
-                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Class">
+                        <p:column colspan="1"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Class">
                             #{driver.cls}
                         </p:column>
-                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Position">
+                        <p:column colspan="1"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Position">
                           #{driver.position}
                         </p:column>
-                        <p:column colspan="3"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Driver">
+                        <p:column colspan="3"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Driver">
                             #{driver.driver}
                         </p:column>
-                        <p:column colspan="3"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Car">
+                        <p:column colspan="3"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Car">
                             #{driver.car}
                         </p:column>
-                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Best Time">
+                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Best Time">
                             #{driver.time}
                         </p:column>
-                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:white;background-color:white;' : ''}" headerText="Time Difference" >
+                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Time Difference" >
                             #{driver.diff} (#{driver.leaderDiff})
                         </p:column>
                     </p:dataTable>
@@ -135,13 +133,13 @@
                         <f:facet name="header" >
                             Raw Details #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
                         </f:facet>
-                        <p:column colspan="2"  headerText="Position">
+                        <p:column colspan="1"  headerText="Position">
                           #{driver.position}
                         </p:column>
                         <p:column colspan="3"  headerText="Driver">
                             #{driver.driver}
                         </p:column>
-                        <p:column colspan="2"  headerText="Class">
+                        <p:column colspan="1"  headerText="Class">
                             #{driver.cls}
                         </p:column>
                         <p:column colspan="3"  headerText="Car">
@@ -161,13 +159,13 @@
                         <f:facet name="header" >
                             Pax Details for #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
                         </f:facet>
-                        <p:column colspan="2"  headerText="Position">
+                        <p:column colspan="1"  headerText="Position">
                           #{driver.position}
                         </p:column>
                         <p:column colspan="3"  headerText="Driver">
                             #{driver.driver}
                         </p:column>
-                        <p:column colspan="2"  headerText="Class">
+                        <p:column colspan="1"  headerText="Class">
                             #{driver.cls}
                         </p:column>
                         <p:column colspan="3"  headerText="Car">

@@ -34,6 +34,8 @@ public class EventInfoBean implements Serializable
     private Date startDate;
     private Date endDate;
     
+    private String clubFilter = "";
+    
     @PersistenceContext
     private EntityManager em;
 
@@ -89,7 +91,17 @@ public class EventInfoBean implements Serializable
         try
         {
             analyzedEvents = new ArrayList();
-            List<Events> eventsList = em.createNamedQuery("Events.findEventsInDateRange", Events.class).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
+            List<Events> eventsList = new ArrayList();
+            
+            if(clubFilter.equals("") || clubFilter == null)
+            {
+                eventsList = em.createNamedQuery("Events.findEventsInDateRange", Events.class).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
+            }
+            else
+            {
+                eventsList = em.createNamedQuery("Events.findClubEventsInDateRange", Events.class).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("clubName", clubFilter).getResultList();
+            }
+            
             for(Events e : eventsList)
             {
                 
@@ -120,6 +132,20 @@ public class EventInfoBean implements Serializable
         {
             e.printStackTrace();
         }
+    }
+    
+    public List<String> completeClubText(String query)
+    {
+        List<String> results = new ArrayList<String>();
+        List<String> driverList = em.createQuery("SELECT distinct(e.eventClubName) FROM Events e ", String.class).getResultList();
+        for(int x = 0; x < driverList.size(); x++)
+        {
+            if(driverList.get(x).contains(query.toUpperCase()))
+            {
+                results.add(driverList.get(x));
+            }
+        }
+        return results;
     }
 
     public List<AnalyzedEvent> getAnalyzedEvents() {
@@ -152,6 +178,14 @@ public class EventInfoBean implements Serializable
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public String getClubFilter() {
+        return clubFilter;
+    }
+
+    public void setClubFilter(String clubFilter) {
+        this.clubFilter = clubFilter;
     }
 
     

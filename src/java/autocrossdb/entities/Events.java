@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Events.findByEventLocation", query = "SELECT e FROM Events e WHERE e.eventLocation = :eventLocation"),
     @NamedQuery(name = "Events.findByEventDate", query = "SELECT e FROM Events e WHERE e.eventDate = :eventDate"),
     @NamedQuery(name = "Events.findByEventType", query = "SELECT e FROM Events e WHERE e.eventType = :eventType"),
-    @NamedQuery(name = "Events.findEventsInDateRange", query = "SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate ORDER BY e.eventDate asc")})
+    @NamedQuery(name = "Events.findEventsInDateRange", query = "SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate ORDER BY e.eventDate desc"),
+    @NamedQuery(name = "Events.findClubEventsInDateRange", query = "SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate and e.eventClubName = :clubName ORDER BY e.eventDate desc")})
 public class Events implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
