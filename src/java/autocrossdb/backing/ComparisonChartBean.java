@@ -16,7 +16,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,7 +32,7 @@ import org.primefaces.model.chart.LineChartSeries;
  * @author rmcconville
  */
 @ManagedBean(name="comparisonChart")
-@SessionScoped
+@ViewScoped
 public class ComparisonChartBean implements Serializable
 {
     private String driver1;
