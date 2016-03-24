@@ -37,9 +37,21 @@
                     </p:menuitem>
                 </p:tabMenu> 
             </p:layoutUnit>
+            <p:layoutUnit position="west" size="400" >
+                <h:form>
+                    <p:panelGrid columns="2" styleClass="noOutlinePanelGrid" style="margin: 0px auto;" >
+                        <h:outputLabel for="fromDate" value="From:" />
+                        <p:calendar id="fromDate" mode="popup" required="true" value="#{eventInfo.startDate}" />
+                        <h:outputLabel for="toDate" value="To:" />
+                        <p:calendar id="toDate" mode="popup" required="true" value="#{eventInfo.endDate}" />
+                        <p:commandButton value="Filter" action="#{eventInfo.getEvents}" update="eventDetails" />
+                    </p:panelGrid>
+                </h:form>
+            </p:layoutUnit>
             <p:layoutUnit position="center" >
                 <h:form id="eventDetails">
-                    <p:dataGrid var="event" value="#{eventInfo.analyzedEvents}" rows="4" columns="4" paginator="true" paginatorPosition="top" paginatorAlwaysVisible="false" layout="grid">
+                    
+                    <p:dataGrid var="event" value="#{eventInfo.analyzedEvents}" rows="3" columns="3" paginator="true" paginatorPosition="top" paginatorAlwaysVisible="false" layout="grid">
                         <f:facet name="header">
                             Events List
                         </f:facet>
@@ -91,7 +103,7 @@
                     </p:dataGrid>
                 </h:form>
             </p:layoutUnit>
-            <p:layoutUnit position="south" size="400">
+            <p:layoutUnit position="south" size="300">
                 <p:overlayPanel id="classDetails" dismissable="false" widgetVar="classDetailsOP" >
                     <p:dataTable var="driver" value="#{eventInfo.selectedAnalyzedEvent.classTimes}" styleClass="analysisDataTable" >
                         <f:facet name="header" >
@@ -171,7 +183,7 @@
                 </p:overlayPanel>
             </p:layoutUnit>
         </p:layout>
-        <p:dialog id="eventPopup" header="#{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} -- #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventClubName}" widgetVar="eventDialog" >
+        <p:dialog id="eventPopup" modal="true" header="#{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} -- #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventClubName}" widgetVar="eventDialog" >
             <p:outputPanel>
                 <p:panelGrid columns="5" columnClasses="descriptionColumn">
                     <h:outputText value="" />

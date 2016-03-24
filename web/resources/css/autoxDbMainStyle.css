@@ -36,7 +36,9 @@ td>a>span.fa-trophy {
 }
 
 .ui-datagrid-column {
-    width: 25%;
+    width: 33%;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .analysisDataTable>*>*>*>tr>td {

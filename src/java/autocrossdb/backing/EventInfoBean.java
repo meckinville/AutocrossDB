@@ -8,9 +8,13 @@ package autocrossdb.backing;
 import autocrossdb.component.AnalyzedEvent;
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.persistence.EntityManager;
@@ -21,11 +25,14 @@ import javax.persistence.PersistenceContext;
  * @author rmcconville
  */
 @ManagedBean(name="eventInfo")
-@ApplicationScoped
-public class EventInfoBean 
+@SessionScoped
+public class EventInfoBean implements Serializable
 {
     private List<AnalyzedEvent> analyzedEvents;
     private AnalyzedEvent selectedAnalyzedEvent;
+    
+    private Date startDate;
+    private Date endDate;
     
     @PersistenceContext
     private EntityManager em;
@@ -33,40 +40,11 @@ public class EventInfoBean
     @PostConstruct
     public void init()
     {
-        try
-        {
-            analyzedEvents = new ArrayList();
-            List<Events> eventsList = em.createNamedQuery("Events.findAll", Events.class).getResultList();
-            for(Events e : eventsList)
-            {
-                
-                int totalDrivers = em.createNamedQuery("Runs.findTotalDriversAtEvent", Object[].class).setParameter("eventUrl", e.getEventUrl()).getResultList().size();
-                
-                List<Double> doubleResults = em.createQuery("SELECT min(r.runTime) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse='N' group by r.runDriverName order by min(r.runTime) asc", Double.class).setParameter("eventUrl", e.getEventUrl()).getResultList();
-                double sum = 0;
-                for(Double d : doubleResults)
-                {
-                    sum += d;
-                } 
-                double tempAvg = sum / doubleResults.size();
-                tempAvg = (double)Math.round(tempAvg * 1000d)/1000d;
-                double avgRunTime = tempAvg;
-               
-                long totalCones = em.createNamedQuery("Runs.findTotalConesHitAtEvent", Long.class).setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
-                int runs = (int)em.createQuery("SELECT max(r.runNumber) from Runs r where r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
-                long offCourseRuns = (long)em.createQuery("SELECT count(r) from Runs r where r.runOffcourse = 'Y' and r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
-                List<Object[]> rawTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
-                List<Object[]> paxTimes = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
-                List<Object[]> classTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by r.runClassName.className, min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
-
-                analyzedEvents.add(new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes));
-
-            }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+        Calendar now = Calendar.getInstance();
+        endDate = now.getTime();
+        now.set(Calendar.MONTH, now.get(Calendar.MONTH)-3);
+        startDate = now.getTime();
+        getEvents();
     }
     
     public void analyzeEvent()
@@ -105,6 +83,44 @@ public class EventInfoBean
             selectedAnalyzedEvent.setNoviceChampTime(noviceResults.get(0)[3].toString());
         }
     }
+    
+    public void getEvents()
+    {
+        try
+        {
+            analyzedEvents = new ArrayList();
+            List<Events> eventsList = em.createNamedQuery("Events.findEventsInDateRange", Events.class).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
+            for(Events e : eventsList)
+            {
+                
+                int totalDrivers = em.createNamedQuery("Runs.findTotalDriversAtEvent", Object[].class).setParameter("eventUrl", e.getEventUrl()).getResultList().size();
+                
+                List<Double> doubleResults = em.createQuery("SELECT min(r.runTime) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse='N' group by r.runDriverName order by min(r.runTime) asc", Double.class).setParameter("eventUrl", e.getEventUrl()).getResultList();
+                double sum = 0;
+                for(Double d : doubleResults)
+                {
+                    sum += d;
+                } 
+                double tempAvg = sum / doubleResults.size();
+                tempAvg = (double)Math.round(tempAvg * 1000d)/1000d;
+                double avgRunTime = tempAvg;
+               
+                long totalCones = em.createNamedQuery("Runs.findTotalConesHitAtEvent", Long.class).setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
+                int runs = (int)em.createQuery("SELECT max(r.runNumber) from Runs r where r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
+                long offCourseRuns = (long)em.createQuery("SELECT count(r) from Runs r where r.runOffcourse = 'Y' and r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
+                List<Object[]> rawTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
+                List<Object[]> paxTimes = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
+                List<Object[]> classTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by r.runClassName.className, min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
+
+                analyzedEvents.add(new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes));
+
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     public List<AnalyzedEvent> getAnalyzedEvents() {
         return analyzedEvents;
@@ -120,6 +136,22 @@ public class EventInfoBean
 
     public void setSelectedAnalyzedEvent(AnalyzedEvent selectedAnalyzedEvent) {
         this.selectedAnalyzedEvent = selectedAnalyzedEvent;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     
