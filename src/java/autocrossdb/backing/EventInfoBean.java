@@ -7,7 +7,6 @@ package autocrossdb.backing;
 
 import autocrossdb.component.AnalyzedEvent;
 import autocrossdb.entities.Events;
-import autocrossdb.entities.Runs;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,8 +14,8 @@ import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -25,16 +24,17 @@ import javax.persistence.PersistenceContext;
  * @author rmcconville
  */
 @ManagedBean(name="eventInfo")
-@SessionScoped
+@ViewScoped
 public class EventInfoBean implements Serializable
 {
     private List<AnalyzedEvent> analyzedEvents;
     private AnalyzedEvent selectedAnalyzedEvent;
+    private long progress;
     
     private Date startDate;
     private Date endDate;
     
-    private String clubFilter = "";
+    private String clubFilter;
     
     @PersistenceContext
     private EntityManager em;
@@ -46,7 +46,7 @@ public class EventInfoBean implements Serializable
         endDate = now.getTime();
         now.set(Calendar.MONTH, now.get(Calendar.MONTH)-3);
         startDate = now.getTime();
-        getEvents();
+        progress = 0;
     }
     
     public void analyzeEvent()
@@ -93,7 +93,7 @@ public class EventInfoBean implements Serializable
             analyzedEvents = new ArrayList();
             List<Events> eventsList = new ArrayList();
             
-            if(clubFilter.equals("") || clubFilter == null)
+            if(clubFilter.equals("ALL") || clubFilter == null)
             {
                 eventsList = em.createNamedQuery("Events.findEventsInDateRange", Events.class).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
             }
@@ -101,6 +101,9 @@ public class EventInfoBean implements Serializable
             {
                 eventsList = em.createNamedQuery("Events.findClubEventsInDateRange", Events.class).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("clubName", clubFilter).getResultList();
             }
+            
+            progress = 0;
+            double progDoub = 0;
             
             for(Events e : eventsList)
             {
@@ -125,12 +128,26 @@ public class EventInfoBean implements Serializable
                 List<Object[]> classTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by r.runClassName.className, min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
 
                 analyzedEvents.add(new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes));
-
+                progDoub += 100 / eventsList.size();
+                progress = (long)progDoub;
             }
+            progress = 100;
         }
         catch(Exception e)
         {
             e.printStackTrace();
+        }
+    }
+    
+    public int getEventsSize()
+    {
+        if(analyzedEvents == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return analyzedEvents.size();
         }
     }
     
@@ -148,6 +165,23 @@ public class EventInfoBean implements Serializable
         return results;
     }
 
+    public void onCompleteLoad()
+    {
+        progress = 0;
+    }
+
+    public long getProgress() {
+        if(progress > 100)
+        {
+            progress = 100;
+        }
+        return progress;
+    }
+
+    public void setProgress(long progress) {
+        this.progress = progress;
+    }
+    
     public List<AnalyzedEvent> getAnalyzedEvents() {
         return analyzedEvents;
     }

@@ -176,6 +176,18 @@ public class DriverAnalysisBean
         return results;
     }
     
+    public int getEventsSize()
+    {
+        if(events == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return events.size();
+        }
+    }
+    
     public void onCompleteLoad()
     {
         progress = 0;

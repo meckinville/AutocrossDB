@@ -29,11 +29,17 @@ td>a>span.fa-trophy {
     margin: 10px;
 }
 
+.inputLayoutUnit {
+    font-size: 12px;
+}
+
 /*removes border from the tr and td elements inside the panel grid table */
 .noOutlinePanelGrid.ui-panelgrid>*>tr,
 .noOutlinePanelGrid.ui-panelgrid .ui-panelgrid-cell {
     border: 0px;
 }
+
+
 
 .ui-datagrid-column {
     width: 33%;
@@ -49,10 +55,10 @@ td>a>span.fa-trophy {
     font-size: 16px;
 }
 
-.analysisGrid {
-    width: inherit;
-    border: 2px solid black;
+.analysisGrid>tbody>tr>td {
+    width: 50%;
 }
+
 
 .award.ui-panelgrid>*>*>td {
     width: 50%;

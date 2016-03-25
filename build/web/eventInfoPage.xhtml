@@ -17,7 +17,7 @@
                     <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
                         <f:param name="i" value="0"/>
                     </p:menuitem>
-                    <p:menuitem value="Event Info" outcome="eventInfoPage" icon="fa fa-calendar">
+                    <p:menuitem value="Event Analysis" outcome="eventInfoPage" icon="fa fa-calendar">
                         <f:param name="i" value="1"/>
                     </p:menuitem>
                     <p:menuitem value="New Event" outcome="loadEventPage" icon="fa fa-upload">
@@ -37,32 +37,43 @@
                     </p:menuitem>
                 </p:tabMenu> 
             </p:layoutUnit>
-            <p:layoutUnit position="west" size="400" >
-                <h:form>
-                    <p:panelGrid columns="2" styleClass="noOutlinePanelGrid" style="margin: 0px auto;" >
+            <p:layoutUnit styleClass="inputLayoutUnit" position="west" size="300" >
+                <h:form id="eventInfoForm" >
+                    <p:panelGrid columns="2" styleClass="noOutlinePanelGrid"  >
                         <h:outputLabel for="fromDate" value="Start Date:" />
                         <p:calendar id="fromDate" mode="popup" required="true" value="#{eventInfo.startDate}" />
                         <h:outputLabel for="toDate" value="End Date:" />
                         <p:calendar id="toDate" mode="popup" required="true" value="#{eventInfo.endDate}" />
                         <h:outputLabel for="club" value="Club: " />
-                        <p:autoComplete id="club" forceSelection="true" value="#{eventInfo.clubFilter}" completeMethod="#{eventInfo.completeClubText}" />
-                        <p:commandButton value="Filter" action="#{eventInfo.getEvents}" update="eventDetails" />
+                        <p:selectOneMenu id="club" value="#{eventInfo.clubFilter}" >
+                            <f:selectItem itemLabel="All Clubs" itemValue="ALL" />
+                            <f:selectItem itemLabel="Buccaneer Region SCCA" itemValue="BUCCANEER" />
+                            <f:selectItem itemLabel="Central Florida SCCA" itemValue="CFRSCCA" />
+                            <f:selectItem itemLabel="Gulf Coast Autocrossers" itemValue="GULFCOAST" />
+                            <f:selectItem itemLabel="Martin SCC" itemValue="MARTINSCC" />
+                        </p:selectOneMenu>
+                        <p:commandButton id="filterButton" widgetVar="filterButton" onclick="PF('pbAjax').start();PF('filterButton').disable();PF('paxDetailsOP').hide();PF('classDetailsOP').hide();PF('rawDetailsOP').hide()" value="Filter" action="#{eventInfo.getEvents}" update="eventDetails eventInfoForm" />
                     </p:panelGrid>
+                    <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="200" widgetVar="pbAjax" value="#{eventInfo.progress}" style="width:auto;" >
+                        <p:ajax event="complete" listener="#{eventInfo.onCompleteLoad}" oncomplete="PF('filterButton').enable()" update="progressBar" />
+                    </p:progressBar>
                 </h:form>
             </p:layoutUnit>
-            <p:layoutUnit position="south" size="530" >
+            <p:layoutUnit position="south" size="520" >
                 <h:form id="eventDetails">
-                    
-                    <p:dataGrid var="event" value="#{eventInfo.analyzedEvents}" rows="3" columns="3" paginator="true" paginatorPosition="top" paginatorAlwaysVisible="false" layout="grid">
+                    <p:dataGrid var="event" value="#{eventInfo.analyzedEvents}" rows="3" columns="3" paginator="true" paginatorPosition="top" layout="grid">
+                        <f:facet name="header" >
+                            #{eventInfo.eventsSize} events
+                        </f:facet>
+                        
                         <p:panel header="#{event.neglectedEvent.eventLocation}" style="text-align:center;" > 
-                              
                             <p:panelGrid columns="1" styleClass="noOutlinePanelGrid" style="width: 100%;" >
                                 <h:outputText value="#{event.neglectedEvent.eventDate}" >
                                     <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
                                 </h:outputText>
                                 <h:outputText value="#{event.neglectedEvent.eventClubName}" />
                             </p:panelGrid>
-                             <p:panelGrid columns="2" style="width: 100%;" columnClasses="descriptionColumn" >
+                             <p:panelGrid styleClass="analysisGrid" columns="2" style="width: 100%;" columnClasses="descriptionColumn" >
                                 <h:outputText value="Total Drivers " />
                                 <h:outputText value="#{event.totalDrivers}" />
                                 <h:outputText value="Runs Per Driver" />

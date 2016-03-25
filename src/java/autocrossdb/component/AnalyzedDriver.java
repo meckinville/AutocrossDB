@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -29,7 +30,8 @@ public class AnalyzedDriver
     private DateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
     private DateFormat webFormat = new SimpleDateFormat("MM-dd-yyyy");
     
-    private String eventName;
+    private String eventLocation;
+    private Date eventDate;
     private String className;
     private String carName;
     private String classPosition;
@@ -52,7 +54,8 @@ public class AnalyzedDriver
     
     public AnalyzedDriver(Events e, List<Runs> yourRuns, String classPosition, String rawPosition, String paxPosition, String bestRunNumber, long conesKilled, double bestTimeIgnoringCones, List<Object[]> competitorRuns, List<Object[]> rawRuns, List<Object[]> paxRuns, List<Runs> noConesQuery)
     {
-        this.eventName = e.getEventLocation() + " " + webFormat.format(e.getEventDate());
+        this.eventLocation = e.getEventLocation();
+        this.eventDate = e.getEventDate();
         this.className = yourRuns.get(0).getRunClassName().getClassName();
         this.carName = yourRuns.get(0).getRunCarName();
         this.classPosition = classPosition + "/" + competitorRuns.size();
@@ -218,13 +221,22 @@ public class AnalyzedDriver
         return sortedMap;
     }
 
-    public String getEventName() {
-        return eventName;
+    public String getEventLocation() {
+        return eventLocation;
     }
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
+    public void setEventLocation(String eventLocation) {
+        this.eventLocation = eventLocation;
     }
+
+    public Date getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(Date eventDate) {
+        this.eventDate = eventDate;
+    }
+
 
     public String getClassName() {
         return className;
