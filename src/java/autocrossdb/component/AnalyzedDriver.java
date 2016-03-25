@@ -32,6 +32,7 @@ public class AnalyzedDriver
     
     private String eventLocation;
     private Date eventDate;
+    private String eventClubName;
     private String className;
     private String carName;
     private String classPosition;
@@ -56,6 +57,7 @@ public class AnalyzedDriver
     {
         this.eventLocation = e.getEventLocation();
         this.eventDate = e.getEventDate();
+        this.eventClubName = e.getEventClubName();
         this.className = yourRuns.get(0).getRunClassName().getClassName();
         this.carName = yourRuns.get(0).getRunCarName();
         this.classPosition = classPosition + "/" + competitorRuns.size();
@@ -356,6 +358,14 @@ public class AnalyzedDriver
 
     public void setPaxPercent(String paxPercent) {
         this.paxPercent = paxPercent;
+    }
+
+    public String getEventClubName() {
+        return eventClubName;
+    }
+
+    public void setEventClubName(String eventClubName) {
+        this.eventClubName = eventClubName;
     }
 
     

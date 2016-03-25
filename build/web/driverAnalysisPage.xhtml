@@ -61,7 +61,7 @@
                         #{driverAnalysis.eventsSize} events
                     </f:facet>
                     
-                    <p:panel style="text-align:center;" header="#{event.eventLocation}">
+                    <p:panel style="text-align:center;" header="#{event.eventLocation} (#{event.eventClubName})">
                         <p:panelGrid columns="1" styleClass="noOutlinePanelGrid" style="width:100%;" >
                             <h:outputText value="#{event.eventDate}" >
                                 <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
