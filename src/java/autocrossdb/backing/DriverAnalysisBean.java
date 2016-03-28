@@ -74,28 +74,22 @@ public class DriverAnalysisBean
             String classPosition = "";
             double ourRunTime = 0;
             
-            boolean beatingUs = true;
             for(int x = 0; x < competitorRuns.size(); x++)
             {
                 if(competitorRuns.get(x)[1].equals(driver))
                 {
-                    beatingUs = false;
                     classPosition = String.valueOf(x+1);
                     ourRunTime = (double)competitorRuns.get(x)[0];
+                    break;
                 }
-                else if(beatingUs)
-                {
-                   Nemesis temp = new Nemesis(String.valueOf(competitorRuns.get(x)[1]), 5);
-                   if(nemesisList.contains(x))
-                   {
-                       
-                   }
-                }
-                else
-                {
-                    
-                }
-                
+            }
+            
+            if(classPosition.equals(""))
+            {
+                Object[] temp = { 999.999, yourRuns.get(0).getRunDriverName(), yourRuns.get(0).getRunCarName() };
+                competitorRuns.add(temp);
+                classPosition = String.valueOf(competitorRuns.size());
+                ourRunTime = (double)competitorRuns.get(competitorRuns.size()-1)[0];
             }
             
             String rawPosition = "";
@@ -107,7 +101,13 @@ public class DriverAnalysisBean
                     rawPosition = String.valueOf(x+1);
                     break;
                 }
-                
+            }
+            
+            if(rawPosition.equals(""))
+            {
+                Object[] temp = { 999.999, yourRuns.get(0).getRunDriverName(), yourRuns.get(0).getRunCarName(), yourRuns.get(0).getRunClassName().getClassName() };
+                rawRuns.add(temp);
+                rawPosition = String.valueOf(rawRuns.size());
             }
             
             String paxPosition = "";
@@ -119,7 +119,13 @@ public class DriverAnalysisBean
                     paxPosition = String.valueOf(x+1);
                     break;
                 }
-                
+            }
+            
+            if(paxPosition.equals(""))
+            {
+                Object[] temp = { 999.999, yourRuns.get(0).getRunDriverName(), yourRuns.get(0).getRunCarName(), yourRuns.get(0).getRunClassName().getClassName() };
+                paxRuns.add(temp);
+                paxPosition = String.valueOf(paxRuns.size());
             }
             
             List<Integer> bestRunQuery = em.createQuery("SELECT r.runNumber FROM Runs r WHERE r.runDriverName = :driver and r.runTime = :runTime").setParameter("driver", driver).setParameter("runTime", ourRunTime).getResultList();
@@ -140,12 +146,29 @@ public class DriverAnalysisBean
             }
             List<Runs> noConesQuery = em.createQuery("SELECT r FROM Runs r where r.runEventUrl = :url and r.runClassName.className = :class and r.runOffcourse = 'N'").setParameter("url", e).setParameter("class", yourRuns.get(0).getRunClassName().getClassName()).getResultList();
             
-            AnalyzedDriver eventToAdd = new AnalyzedDriver(e, yourRuns, classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery);
+            AnalyzedDriver eventToAdd;
+            if(bestRunQuery.isEmpty())
+            {
+                eventToAdd = new AnalyzedDriver(e, yourRuns, classPosition, rawPosition, paxPosition, "Off Course on All Runs", conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery);
+            }
+            else
+            {
+                eventToAdd = new AnalyzedDriver(e, yourRuns, classPosition, rawPosition, paxPosition, bestRunQuery.get(0) + " out of " + yourRuns.size(), conesKilled, bestTimeIgnoringCones, competitorRuns, rawRuns, paxRuns, noConesQuery);
+            }
+            
             events.add(eventToAdd);
             avgClassPercent += Double.parseDouble(eventToAdd.getClassPercent());
             avgRawPercent += Double.parseDouble(eventToAdd.getRawPercent());
             avgPaxPercent += Double.parseDouble(eventToAdd.getPaxPercent());
-            avgBestRun += bestRunQuery.get(0);
+            if(bestRunQuery.isEmpty())
+            {
+                avgBestRun += 1;
+            }
+            else
+            {
+                avgBestRun += bestRunQuery.get(0);
+            }
+            
             avgCones += Double.parseDouble(eventToAdd.getConesKilled());
             progress += 100 / rawEventList.size();
         }
