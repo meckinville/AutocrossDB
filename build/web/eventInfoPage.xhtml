@@ -52,7 +52,7 @@
                             <f:selectItem itemLabel="Gulf Coast Autocrossers" itemValue="GULFCOAST" />
                             <f:selectItem itemLabel="Martin SCC" itemValue="MARTINSCC" />
                         </p:selectOneMenu>
-                        <p:commandButton id="filterButton" widgetVar="filterButton" onclick="PF('pbAjax').start();PF('filterButton').disable();PF('paxDetailsOP').hide();PF('classDetailsOP').hide();PF('rawDetailsOP').hide()" value="Filter" action="#{eventInfo.getEvents}" update="eventDetails eventInfoForm" />
+                        <p:commandButton id="filterButton" widgetVar="filterButton" onclick="PF('pbAjax').start();PF('filterButton').disable();PF('paxDetailsOP').hide();PF('classDetailsOP').hide();PF('rawDetailsOP').hide()" value="Analyze" action="#{eventInfo.getEvents}" update="eventDetails eventInfoForm" />
                     </p:panelGrid>
                     <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="200" widgetVar="pbAjax" value="#{eventInfo.progress}" style="width:auto;" >
                         <p:ajax event="complete" listener="#{eventInfo.onCompleteLoad}" oncomplete="PF('filterButton').enable()" update="progressBar" />

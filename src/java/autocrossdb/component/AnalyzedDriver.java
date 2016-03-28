@@ -69,7 +69,8 @@ public class AnalyzedDriver
         {
             this.classPercent = String.format("%.1f", (100 - (Double.parseDouble(classPosition) / competitorRuns.size()) * 100));
         }
-        this.rawPosition = rawPosition + "/" + rawRuns.size();
+               
+        this.rawPosition = rawPosition + "/" + rawRuns.size();       
         if(rawPosition.equals("1"))
         {
             this.rawPercent = "100";
@@ -78,6 +79,7 @@ public class AnalyzedDriver
         {
             this.rawPercent = String.format("%.1f", (100 - (Double.parseDouble(rawPosition) / rawRuns.size()) * 100));
         }
+                
         this.paxPosition = paxPosition + "/" + paxRuns.size();
         if(paxPosition.equals("1"))
         {

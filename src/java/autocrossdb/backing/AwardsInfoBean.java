@@ -6,7 +6,6 @@
 package autocrossdb.backing;
 
 import autocrossdb.component.Award;
-import autocrossdb.entities.Events;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,10 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
@@ -203,34 +200,6 @@ public class AwardsInfoBean
         //dirtiest class
         objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName having count(distinct r.runDriverName) > 4 order by avgCones desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         awards.add(populateAward(objectQuery, "[1] hit [0] cones per driver per event.", 2));
-        /*
-        Map<String, Double[]> dirtiestClassMap = new LinkedHashMap();
-        
-        for(Object[] o : objectQuery)
-        {
-            if(dirtiestClassMap.get(o[1]) == null)
-            {
-                Double[] value = new Double[2];
-                value[0] = new Double((long)o[0]);
-                value[1] = 1.0;
-                dirtiestClassMap.put(o[1].toString(), value);
-            }
-            else
-            {
-                Double[] value = dirtiestClassMap.get(o[1]);
-                value[1] = value[1] + 1;
-                dirtiestClassMap.put(o[1].toString(), value);
-            }
-        }
-        
-        Map<String, Double> dirtiestClassAveragedMap = new LinkedHashMap();
-        for(String key : dirtiestClassMap.keySet())
-        {
-            Double[] value = dirtiestClassMap.get(key);
-            dirtiestClassAveragedMap.put(key, value[0]/value[1]);
-        }
-        awards.add(populateAward(orderMap(dirtiestClassAveragedMap), "[name] hit [value] cones per driver per event."));
-        */
         return awards;
     }
 
@@ -307,21 +276,24 @@ public class AwardsInfoBean
     private static List<Award> calculatePercent(List<Object[]> eventQuery, List<Object[]> statQuery)
     {
 
+        Map<String, Number> firstMap = new TreeMap();
         Map<String, Number> map = new TreeMap();
         //go over the list of raw winners from events. add an entry to the map for each unique winner. the value for the key is the number of wins
         for(Object[] o : statQuery)
         {
-            map.put(String.valueOf(o[1]), new Long(String.valueOf(o[0])).doubleValue());
+            firstMap.put(String.valueOf(o[1]), new Long(String.valueOf(o[0])).doubleValue());
+            System.out.println("added " + o[1] + " " + o[0] + " to map.");
         }
         
         //go through the eventsAttended query. for each raw winner entry, we will divide their wins by their events attended. we then replace the value
         //in the map with this divided value. 
         for(Object[] o : eventQuery)
         {
-            if(map.containsKey(String.valueOf(o[1])))
+            if(firstMap.containsKey(String.valueOf(o[1])))
             {
+                System.out.println("map contains " + String.valueOf(o[1]));
                 double eventsAttended = new Long(String.valueOf(o[0])).doubleValue();
-                double rawWins = map.get(String.valueOf(o[1])).doubleValue();
+                double rawWins = firstMap.get(String.valueOf(o[1])).doubleValue();
                 double percent = rawWins / eventsAttended;
                 map.put(String.valueOf(o[1]), percent * 100);
             }
