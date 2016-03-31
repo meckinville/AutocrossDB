@@ -11,8 +11,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -62,6 +65,9 @@ public class ComparisonChartBean implements Serializable
     private double d2DialogStat;
     private double d1DialogDiff;
     private double d2DialogDiff;
+    private String avgDialogName = "AVERAGE";
+    private double avgDialogStat;
+    private String avgDialogDiff;
 
     
     @PersistenceContext
@@ -112,30 +118,39 @@ public class ComparisonChartBean implements Serializable
     {
         Map<Object,Number> d1Map = lineModel.getSeries().get(0).getData();
         Map<Object,Number> d2Map = lineModel.getSeries().get(1).getData();
+        Map<Object,Number> avgMap = lineModel.getSeries().get(2).getData();
         
         Object[] d1Keys = d1Map.keySet().toArray();
         Object[] d2Keys = d2Map.keySet().toArray();
+        Object[] avgKeys = avgMap.keySet().toArray();
 
         dialogHeader = d1Keys[event.getItemIndex()].toString();
+        
         d1DialogName = lineModel.getSeries().get(0).getLabel();
         d2DialogName = lineModel.getSeries().get(1).getLabel();
+        
         d1DialogStat = d1Map.get(d1Keys[event.getItemIndex()]).doubleValue();
         d2DialogStat = d2Map.get(d2Keys[event.getItemIndex()]).doubleValue();
+        avgDialogStat = Math.round(avgMap.get(avgKeys[event.getItemIndex()]).doubleValue() * 1000d) / 1000d;
         
         d1DialogDiff = d1DialogStat - d2DialogStat;
         d1DialogDiff = (Math.round(d1DialogDiff * 1000d)) / 1000d;
         d2DialogDiff = d2DialogStat - d1DialogStat;
         d2DialogDiff = (Math.round(d2DialogDiff * 1000d)) / 1000d;
+        avgDialogDiff = lineModel.getSeries().get(0).getLabel() + " Diff: " + (Math.round((d1DialogStat - avgDialogStat) * 1000d) / 1000d) + "\n" + lineModel.getSeries().get(1).getLabel() + " Diff:" + (Math.round((d2DialogStat - avgDialogStat) * 1000d) / 1000d);
     }
     
     public void drawLineChart(List<Object[]> query, String chartTitle, double min, double max, int tickInterval, String yTitle)
     {
+        
+        Set<String> events = new TreeSet();
         for(String selectedDriver : selectedDrivers)
         {
             LineChartSeries series = new LineChartSeries();
             series.setLabel(selectedDriver);
             for(Object[] event : query)
             {
+                events.add(event[4].toString());
                 if(event[2].equals(selectedDriver) && event[3] != null)
                 {
                     event[3] = Double.valueOf(event[3].toString());
@@ -152,6 +167,58 @@ public class ComparisonChartBean implements Serializable
             }
             lineModel.addSeries(series);            
         }
+        
+        //add avg line
+        LineChartSeries avgSeries = new LineChartSeries();
+        List<Object[]> averageQuery;
+        if(yTitle.equals("Raw Time"))
+        {
+           avgSeries.setLabel("Average Raw");
+           averageQuery = em.createQuery("SELECT min(r.runTime), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+        }
+        else if(yTitle.equals("Pax Time"))
+        {
+            avgSeries.setLabel("Average Raw");
+            averageQuery = em.createQuery("SELECT min(r.runPaxTime), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+        }
+        else
+        {
+            avgSeries.setLabel("Average Raw");
+            averageQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+        }
+        Map<String, Object[]> avgMap = new LinkedHashMap();
+        for(Object[] o : averageQuery)
+        {
+            if(avgMap.get(o[3].toString() + " " + chartFormat.format(o[2])) == null)
+            {
+                Object[] value = { (double)o[0], 1 };
+                avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
+            }
+            else
+            {
+                Object[] value = avgMap.get(o[3].toString() + " " + chartFormat.format(o[2]));
+                value[0] = (double)value[0] + (double)o[0];
+                value[1] = (int)value[1] + 1;
+                avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
+            }
+        }
+        
+        for(String key : avgMap.keySet())
+        {
+            Object[] value = avgMap.get(key);
+            double newAvg = (double)value[0] / (int)value[1];
+            if(newAvg > max)
+            {
+                max = newAvg;
+            }
+            if(newAvg < min)
+            {
+                min = newAvg;
+            }
+            avgSeries.set(key, newAvg);
+        }
+        lineModel.addSeries(avgSeries);
+
         
         if(max < 4)
         {
@@ -311,7 +378,6 @@ public class ComparisonChartBean implements Serializable
             d2PaxDiff = String.format("%.3f", d2Total /= eventsAttended);
             //total runs taken
             
-            //events attended together
         }
     }
     
@@ -509,6 +575,32 @@ public class ComparisonChartBean implements Serializable
 
     public void setD2DialogDiff(double d2DialogDiff) {
         this.d2DialogDiff = d2DialogDiff;
+    }
+
+    public String getAvgDialogName() {
+        return avgDialogName;
+    }
+
+    public void setAvgDialogName(String avgDialogName) {
+        this.avgDialogName = avgDialogName;
+    }
+
+    public double getAvgDialogStat() {
+        return avgDialogStat;
+    }
+
+    public void setAvgDialogStat(double avgDialogStat) {
+        this.avgDialogStat = avgDialogStat;
+    }
+
+    
+
+    public String getAvgDialogDiff() {
+        return avgDialogDiff;
+    }
+
+    public void setAvgDialogDiff(String avgDialogDiff) {
+        this.avgDialogDiff = avgDialogDiff;
     }
 
 

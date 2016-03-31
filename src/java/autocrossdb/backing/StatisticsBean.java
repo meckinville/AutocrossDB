@@ -31,6 +31,7 @@ public class StatisticsBean
     List<DriverStat> drivers;
     List<DriverStat> filteredDrivers;
     
+    
     private Date endDate;
     private Date startDate;
     
