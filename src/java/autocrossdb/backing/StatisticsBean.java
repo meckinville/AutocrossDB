@@ -56,7 +56,7 @@ public class StatisticsBean
         List<Events> eventList = em.createQuery("SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate ORDER BY e.eventDate asc").setParameter("endDate", endDate).setParameter("startDate", startDate).getResultList();
         
         LinkedHashMap<String, DriverStat> driverMap = new LinkedHashMap();
-        progressIncrement = new Double(50) / (double)eventList.size();
+        progressIncrement = 50.0 / (double)eventList.size();
         for(Events e : eventList)
         {
             List<Object[]> rawList = em.createQuery("SELECT min(r.runTime), r.runDriverName From Runs r where r.runEventUrl = :event and r.runOffcourse = 'N' and r.runClassName.className != 'NS' group by r.runDriverName order by min(r.runTime) asc").setParameter("event", e).getResultList();
@@ -138,7 +138,7 @@ public class StatisticsBean
             progress += progressIncrement;
         }
         
-        progressIncrement = new Double(50) / (double)driverMap.keySet().size();
+        progressIncrement = 50.0 / (double)driverMap.keySet().size();
         drivers = new ArrayList();
         for(String key : driverMap.keySet())
         {
@@ -188,7 +188,7 @@ public class StatisticsBean
         {
             return value.toString().contains(filter.toString().toUpperCase());
         }
-        return (compared == 0 || compared > 0);
+        return (compared >= 0);
     }
     
     public void onComplete()

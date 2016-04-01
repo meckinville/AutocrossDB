@@ -14,6 +14,11 @@ public class Nemesis implements Comparable<Nemesis>
     private String name;
     private int value;
     
+    public Nemesis()
+    {
+        
+    }
+    
     public Nemesis(String name, int value)
     {
         this.name = name;
@@ -39,18 +44,7 @@ public class Nemesis implements Comparable<Nemesis>
     @Override
     public int compareTo(Nemesis n)
     {
-        if(this.getValue() > n.getValue())
-        {
-            return 1;
-        }
-        else if(this.getValue() < n.getValue())
-        {
-            return -1;
-        }
-        else
-        {
-            return 0;
-        }
+        return this.name.compareTo(n.getName());
     }
     
 }

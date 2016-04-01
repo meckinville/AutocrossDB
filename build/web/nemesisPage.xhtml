@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Autocross DB</title>
+    </h:head>
+    <h:body>
+        <f:facet name="last">
+            <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
+        </f:facet>
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="100" >
+                <p:tabMenu activeIndex="#{param.i}">
+                    <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
+                        <f:param name="i" value="0"/>
+                    </p:menuitem>
+                    <p:menuitem value="Event Analysis" outcome="eventInfoPage" icon="fa fa-calendar">
+                        <f:param name="i" value="1"/>
+                    </p:menuitem>
+                    <p:menuitem value="New Event" outcome="loadEventPage" icon="fa fa-upload">
+                        <f:param name="i" value="2"/>
+                    </p:menuitem>
+                    <p:menuitem value="Chart" outcome="comparisonChart" icon="fa fa-line-chart">
+                        <f:param name="i" value="3" />
+                    </p:menuitem>
+                    <p:menuitem value="Awards" outcome="awardsPage" icon="fa fa-trophy" >
+                        <f:param name="i" value="4" />
+                    </p:menuitem>
+                    <p:menuitem value="Driver Analysis" outcome="driverAnalysisPage" icon="fa fa-search">
+                        <f:param name="i" value="5" />
+                    </p:menuitem>
+                    <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
+                        <f:param name="i" value="6" />
+                    </p:menuitem>
+                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" >
+                        <f:param name="i" value="7" />
+                    </p:menuitem>
+                </p:tabMenu> 
+            </p:layoutUnit>
+            <p:layoutUnit position="center">
+                <p:carousel id="nemesisCarousel" value="#{nemesis.nemesisList}" headerText="Nemesis" var="nemesis" numVisible="1" circular="true" >
+                    <h:panelGrid styleClass="noOutlinePanelGrid" columns="2" >
+                        
+                    </h:panelGrid>
+                </p:carousel>
+            </p:layoutUnit>
+            <p:layoutUnit styleClass="inputLayoutUnit" position="west" size="300">
+                <h:form id="nemesisInfoForm" >
+                    <p:panelGrid columns="2" styleClass="noOutlinePanelGrid"  >
+                        <h:outputLabel for="driverInput" value="Driver:" />
+                        <p:autoComplete id="driver" forceSelection="true" required="true" value="#{nemesis.driver}" completeMethod="#{nemesis.completeDriverText}" />
+                        <p:commandButton id="nemesisButton" widgetVar="nemesisButton"  value="Find Nemesis" action="#{nemesis.findNemesis}" />
+                    </p:panelGrid>
+                    <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="200" widgetVar="pbAjax" value="#{nemesis.progress}" style="width:auto;" >
+                        <p:ajax event="complete" listener="#{nemesis.onCompleteLoad}" oncomplete="PF('nemesisButton').enable()" update="progressBar nemesisCarousel" />
+                    </p:progressBar>
+                </h:form>
+            </p:layoutUnit>
+        </p:layout>
+    </h:body>
+</html>
+

@@ -41,11 +41,17 @@ public class ComparisonChartBean implements Serializable
     private String driver1;
     private String driver2;
     private String type;
+    
+    private double chartMax;
+    private double chartMin;
+    
     private Date startDate;
     private Date endDate;
+    
     private LineChartModel lineModel;
     private DateFormat chartFormat;
     private List<String> selectedDrivers;
+    
     private String d1TotalEvents;
     private String d2TotalEvents;
     private String d1RawWins;
@@ -65,9 +71,9 @@ public class ComparisonChartBean implements Serializable
     private double d2DialogStat;
     private double d1DialogDiff;
     private double d2DialogDiff;
-    private String avgDialogName = "AVERAGE";
     private double avgDialogStat;
-    private String avgDialogDiff;
+    private double avgDialogDiff1;
+    private double avgDialogDiff2;
 
     
     @PersistenceContext
@@ -137,10 +143,12 @@ public class ComparisonChartBean implements Serializable
         d1DialogDiff = (Math.round(d1DialogDiff * 1000d)) / 1000d;
         d2DialogDiff = d2DialogStat - d1DialogStat;
         d2DialogDiff = (Math.round(d2DialogDiff * 1000d)) / 1000d;
-        avgDialogDiff = lineModel.getSeries().get(0).getLabel() + " Diff: " + (Math.round((d1DialogStat - avgDialogStat) * 1000d) / 1000d) + "\n" + lineModel.getSeries().get(1).getLabel() + " Diff:" + (Math.round((d2DialogStat - avgDialogStat) * 1000d) / 1000d);
+        
+        avgDialogDiff1 = Math.round((d1DialogStat - avgDialogStat) * 1000d) / 1000d;
+        avgDialogDiff2 = Math.round((d2DialogStat - avgDialogStat) * 1000d) / 1000d;
     }
     
-    public void drawLineChart(List<Object[]> query, String chartTitle, double min, double max, int tickInterval, String yTitle)
+    public void drawLineChart(List<Object[]> query, String chartTitle, int tickInterval, String yTitle)
     {
         
         Set<String> events = new TreeSet();
@@ -154,13 +162,13 @@ public class ComparisonChartBean implements Serializable
                 if(event[2].equals(selectedDriver) && event[3] != null)
                 {
                     event[3] = Double.valueOf(event[3].toString());
-                    if((double)event[3] > max)
+                    if((double)event[3] > chartMax)
                     {
-                        max = (double)event[3];
+                        chartMax = (double)event[3];
                     }
-                    if((double)event[3] < min)
+                    if((double)event[3] < chartMin)
                     {
-                        min = (double)event[3];
+                        chartMin = (double)event[3];
                     }
                     series.set(event[1] + " " + chartFormat.format(event[0]), (double)event[3]);
                 }
@@ -169,83 +177,163 @@ public class ComparisonChartBean implements Serializable
         }
         
         //add avg line
-        LineChartSeries avgSeries = new LineChartSeries();
-        List<Object[]> averageQuery;
         if(yTitle.equals("Raw Time"))
         {
-           avgSeries.setLabel("Average Raw");
-           averageQuery = em.createQuery("SELECT min(r.runTime), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+           lineModel.addSeries(getAverage("raw", events));
+           
         }
         else if(yTitle.equals("Pax Time"))
         {
-            avgSeries.setLabel("Average Raw");
-            averageQuery = em.createQuery("SELECT min(r.runPaxTime), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+            lineModel.addSeries(getAverage("pax", events));
         }
         else
         {
-            avgSeries.setLabel("Average Raw");
-            averageQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+            lineModel.addSeries(getAverage("cones", events));
         }
-        Map<String, Object[]> avgMap = new LinkedHashMap();
-        for(Object[] o : averageQuery)
-        {
-            if(avgMap.get(o[3].toString() + " " + chartFormat.format(o[2])) == null)
-            {
-                Object[] value = { (double)o[0], 1 };
-                avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
-            }
-            else
-            {
-                Object[] value = avgMap.get(o[3].toString() + " " + chartFormat.format(o[2]));
-                value[0] = (double)value[0] + (double)o[0];
-                value[1] = (int)value[1] + 1;
-                avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
-            }
-        }
-        
-        for(String key : avgMap.keySet())
-        {
-            Object[] value = avgMap.get(key);
-            double newAvg = (double)value[0] / (int)value[1];
-            if(newAvg > max)
-            {
-                max = newAvg;
-            }
-            if(newAvg < min)
-            {
-                min = newAvg;
-            }
-            avgSeries.set(key, newAvg);
-        }
-        lineModel.addSeries(avgSeries);
 
-        
-        if(max < 4)
+        if(chartMax < 4)
         {
-            max = 4;
+            chartMax = 4;
         }
-        min -= 3;
-        if(min < 0)
+        chartMin -= 3;
+        if(chartMin < 0)
         {
-            min = 0;
+            chartMin = 0;
         }
         
         Axis yAxis = lineModel.getAxis(AxisType.Y);
-        min = Math.floor(min);
-        max = Math.ceil(max);
-        if((max - min) % tickInterval != 0)
+        chartMin = Math.floor(chartMin);
+        chartMax = Math.ceil(chartMax);
+        if((chartMax - chartMin) % tickInterval != 0)
         {
-            while((max - min) % tickInterval != 0)
+            while((chartMax - chartMin) % tickInterval != 0)
             {
-                max++;
+                chartMax++;
             }
         }
         yAxis.setTickInterval(String.valueOf(tickInterval));
-        yAxis.setTickCount( ( ( (int)max - (int)min ) / (int)tickInterval ) + 1);
+        yAxis.setTickCount( ( ( (int)chartMax - (int)chartMin ) / (int)tickInterval ) + 1);
         yAxis.setLabel(yTitle);
-        yAxis.setMin(min);
-        yAxis.setMax(max+1);
+        yAxis.setMin(chartMin);
+        yAxis.setMax(chartMax+1);
         lineModel.setTitle(chartTitle);
+    }
+    
+    public LineChartSeries getAverage(String type, Set<String> events)
+    {
+        List<Object[]> averageQuery;
+        LineChartSeries avgSeries = new LineChartSeries();
+        if(type.equals("raw"))
+        {
+           avgSeries.setLabel("AVERAGE RAW");
+           averageQuery = em.createQuery("SELECT min(r.runTime), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+           Map<String, Object[]> avgMap = new LinkedHashMap();
+           for(Object[] o : averageQuery)
+           {
+                if(avgMap.get(o[3].toString() + " " + chartFormat.format(o[2])) == null)
+                {
+                    Object[] value = { (double)o[0], 1 };
+                    avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
+                }
+                else
+                {
+                    Object[] value = avgMap.get(o[3].toString() + " " + chartFormat.format(o[2]));
+                    value[0] = (double)value[0] + (double)o[0];
+                    value[1] = (int)value[1] + 1;
+                    avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
+                }
+           }
+           for(String key : avgMap.keySet())
+            {
+                Object[] value = avgMap.get(key);
+                double newAvg = (double)value[0] / (int)value[1];
+                if(newAvg > chartMax)
+                {
+                    chartMax = newAvg;
+                }
+                if(newAvg < chartMin)
+                {
+                    chartMin = newAvg;
+                }
+                avgSeries.set(key, newAvg);
+            }
+        }
+        
+        else if(type.equals("pax"))
+        {
+            avgSeries.setLabel("AVERAGE PAX");
+            averageQuery = em.createQuery("SELECT min(r.runPaxTime), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+            Map<String, Object[]> avgMap = new LinkedHashMap();
+            for(Object[] o : averageQuery)
+            {
+                if(avgMap.get(o[3].toString() + " " + chartFormat.format(o[2])) == null)
+                {
+                    Object[] value = { (double)o[0], 1 };
+                    avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
+                }
+                else
+                {
+                    Object[] value = avgMap.get(o[3].toString() + " " + chartFormat.format(o[2]));
+                    value[0] = (double)value[0] + (double)o[0];
+                    value[1] = (int)value[1] + 1;
+                    avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
+                }
+            }
+            
+            for(String key : avgMap.keySet())
+            {
+                Object[] value = avgMap.get(key);
+                double newAvg = (double)value[0] / (int)value[1];
+                if(newAvg > chartMax)
+                {
+                    chartMax = newAvg;
+                }
+                if(newAvg < chartMin)
+                {
+                    chartMin = newAvg;
+                }
+                avgSeries.set(key, newAvg);
+            }
+        }
+
+        else
+        {
+            avgSeries.setLabel("AVERAGE CONES");
+            averageQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+            Map<String, Object[]> avgMap = new LinkedHashMap();
+            for(Object[] o : averageQuery)
+            {
+                if(avgMap.get(o[3].toString() + " " + chartFormat.format(o[2])) == null)
+                {
+                    Object[] value = { (long)o[0], 1 };
+                    avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
+                }
+                else
+                {
+                    Object[] value = avgMap.get(o[3].toString() + " " + chartFormat.format(o[2]));
+                    value[0] = (long)value[0] + (long)o[0];
+                    value[1] = (int)value[1] + 1;
+                    avgMap.put(o[3].toString() + " " + chartFormat.format(o[2]), value);
+                }
+            }
+            
+            for(String key : avgMap.keySet())
+            {
+                Object[] value = avgMap.get(key);
+                double newAvg = new Double(value[0].toString()) / new Double(value[1].toString());
+                if(newAvg > chartMax)
+                {
+                    chartMax = newAvg;
+                }
+                if(newAvg < chartMin)
+                {
+                    chartMin = newAvg;
+                }
+                avgSeries.set(key, newAvg);
+            }
+        }
+        
+        return avgSeries;
     }
     
     public void drawComparison()
@@ -263,17 +351,23 @@ public class ComparisonChartBean implements Serializable
             if(type.equalsIgnoreCase("raw"))
             {
                 List<Object[]> query = em.createNamedQuery("Runs.findCommonEventsForDriversRaw", Object[].class).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("driverList", selectedDrivers).getResultList();
-                drawLineChart(query, "Raw Time Comparison", 100, 0, 3, "Raw Time");
+                this.chartMax = 0;
+                this.chartMin = 100;
+                drawLineChart(query, "Raw Time Comparison", 3, "Raw Time");
             }
             else if(type.equalsIgnoreCase("pax"))
             {
                 List<Object[]> query = em.createNamedQuery("Runs.findCommonEventsForDriversPax", Object[].class).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("driverList", selectedDrivers).getResultList();
-                drawLineChart(query, "Pax Time Comparison", 100, 0, 3, "Pax Time");
+                this.chartMax = 0;
+                this.chartMin = 100;
+                drawLineChart(query, "Pax Time Comparison", 3, "Pax Time");
             }
             else
             {
                 List<Object[]> query = em.createNamedQuery("Runs.findCommonEventsForDriversCones", Object[].class).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("driverList", selectedDrivers).getResultList();
-                drawLineChart(query, "Cones Comparison", 0, 4, 2, "Cones");
+                this.chartMax = 0;
+                this.chartMin = 4;
+                drawLineChart(query, "Cones Comparison", 2, "Cones");
             }
             drawStatisticsTable();
             selectedDrivers.clear();
@@ -577,14 +671,6 @@ public class ComparisonChartBean implements Serializable
         this.d2DialogDiff = d2DialogDiff;
     }
 
-    public String getAvgDialogName() {
-        return avgDialogName;
-    }
-
-    public void setAvgDialogName(String avgDialogName) {
-        this.avgDialogName = avgDialogName;
-    }
-
     public double getAvgDialogStat() {
         return avgDialogStat;
     }
@@ -593,22 +679,21 @@ public class ComparisonChartBean implements Serializable
         this.avgDialogStat = avgDialogStat;
     }
 
-    
-
-    public String getAvgDialogDiff() {
-        return avgDialogDiff;
+    public double getAvgDialogDiff1() {
+        return avgDialogDiff1;
     }
 
-    public void setAvgDialogDiff(String avgDialogDiff) {
-        this.avgDialogDiff = avgDialogDiff;
+    public void setAvgDialogDiff1(double avgDialogDiff1) {
+        this.avgDialogDiff1 = avgDialogDiff1;
     }
 
+    public double getAvgDialogDiff2() {
+        return avgDialogDiff2;
+    }
 
+    public void setAvgDialogDiff2(double avgDialogDiff2) {
+        this.avgDialogDiff2 = avgDialogDiff2;
+    }
 
-
-
-    
-
-    
     
 }

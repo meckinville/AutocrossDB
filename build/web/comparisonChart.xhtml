@@ -43,6 +43,9 @@
                     <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
                         <f:param name="i" value="6" />
                     </p:menuitem>
+                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" >
+                        <f:param name="i" value="7" />
+                    </p:menuitem>
                 </p:tabMenu> 
             </p:layoutUnit>
             <p:layoutUnit styleClass="inputLayoutUnit" position="west" size="300">
@@ -108,20 +111,19 @@
             </p:layoutUnit>
         </p:layout>
         <p:dialog id="chartDialog" header="#{comparisonChart.dialogHeader}" widgetVar="dialog" modal="true" >
-            <p:panelGrid columns="3" >
+            <p:panelGrid columns="4" >
                 <h:outputText value="Driver" style="font-weight: bold;"/>
                 <h:outputText value="#{comparisonChart.type}" style="font-weight: bold;" />
                 <h:outputText value="Diff" style="font-weight: bold;" />
+                <h:outputText value="Vs. Average" style="font-weight: bold;" />
                 <h:outputText value="#{comparisonChart.d1DialogName}" />
                 <h:outputText styleClass="#{comparisonChart.d1DialogStat lt comparisonChart.d2DialogStat ? 'negativeDiff' : comparisonChart.d1DialogStat gt comparisonChart.d2DialogStat ? 'positiveDiff' : ''}" value="#{comparisonChart.d1DialogStat}" />
                 <h:outputText styleClass="#{comparisonChart.d1DialogDiff lt comparisonChart.d2DialogDiff ? 'negativeDiff' : comparisonChart.d1DialogDiff gt comparisonChart.d2DialogDiff ? 'positiveDiff' : ''}" value="#{comparisonChart.d1DialogDiff}" />
+                <h:outputText styleClass="#{comparisonChart.d1DialogDiff lt comparisonChart.avgDialogDiff1 ? 'positiveDiff' : comparisonChart.d1DialogDiff gt comparisonChart.avgDialogDiff1 ? 'negativeDiff' : ''}" value="#{comparisonChart.avgDialogDiff1} (#{comparisonChart.avgDialogStat})" />
                 <h:outputText value="#{comparisonChart.d2DialogName}" />
                 <h:outputText styleClass="#{comparisonChart.d2DialogStat lt comparisonChart.d1DialogStat ? 'negativeDiff' : comparisonChart.d2DialogStat gt comparisonChart.d1DialogStat ? 'positiveDiff' : ''}" value="#{comparisonChart.d2DialogStat}" />
                 <h:outputText styleClass="#{comparisonChart.d2DialogDiff lt comparisonChart.d1DialogDiff ? 'negativeDiff' : comparisonChart.d2DialogDiff gt comparisonChart.d1DialogDiff ? 'positiveDiff' : ''}" value="#{comparisonChart.d2DialogDiff}" />
-                <h:outputText value="#{comparisonChart.avgDialogName}" />
-                <h:outputText value="#{comparisonChart.avgDialogStat}" />
-                <h:outputText value="#{comparisonChart.avgDialogDiff}" />
-            
+                <h:outputText styleClass="#{comparisonChart.d2DialogDiff lt comparisonChart.avgDialogDiff2 ? 'positiveDiff' : comparisonChart.d2DialogDiff gt comparisonChart.avgDialogDiff2 ? 'negativeDiff' : ''}" value="#{comparisonChart.avgDialogDiff2} (#{comparisonChart.avgDialogStat})" />
             </p:panelGrid>
         </p:dialog>
     </h:body>
