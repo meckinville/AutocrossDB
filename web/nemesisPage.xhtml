@@ -36,27 +36,34 @@
                     <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
                         <f:param name="i" value="6" />
                     </p:menuitem>
-                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" >
+                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" icon="fa fa-user-secret">
                         <f:param name="i" value="7" />
                     </p:menuitem>
                 </p:tabMenu> 
             </p:layoutUnit>
             <p:layoutUnit position="center">
-                <p:carousel id="nemesisCarousel" value="#{nemesis.nemesisList}" headerText="Nemesis" var="nemesis" numVisible="1" circular="true" >
-                    <h:panelGrid styleClass="noOutlinePanelGrid" columns="2" >
-                        
-                    </h:panelGrid>
-                </p:carousel>
+                <h:form id="nemesisDataForm">
+                    <p:carousel id="nemesisCarousel" value="#{nemesis.nemesisList}" headerText="Nemesis" var="nem" numVisible="2" >
+                        <h:panelGrid styleClass="noOutlinePanelGrid" columns="2" >
+                            <h:outputLabel for="nemesisName" value="Name:" />
+                            <h:outputText id="nemesisName" value="#{nem.name}" />
+                            <h:outputLabel for="nemesisValue" value="Score:" />
+                            <h:outputText id="nemesisValue" value="#{nem.value}" />
+                            <h:outputLabel for="nemesisEvents" value="Events Together:" />
+                            <h:outputText id="nemesisEvents" value="#{nem.eventsTogether}" />
+                        </h:panelGrid>
+                    </p:carousel>
+                </h:form>
             </p:layoutUnit>
             <p:layoutUnit styleClass="inputLayoutUnit" position="west" size="300">
                 <h:form id="nemesisInfoForm" >
                     <p:panelGrid columns="2" styleClass="noOutlinePanelGrid"  >
                         <h:outputLabel for="driverInput" value="Driver:" />
-                        <p:autoComplete id="driver" forceSelection="true" required="true" value="#{nemesis.driver}" completeMethod="#{nemesis.completeDriverText}" />
-                        <p:commandButton id="nemesisButton" widgetVar="nemesisButton"  value="Find Nemesis" action="#{nemesis.findNemesis}" />
+                        <p:autoComplete id="driverInput" forceSelection="true" required="true" value="#{nemesis.driver}" completeMethod="#{nemesis.completeDriverText}" />
+                        <p:commandButton id="nemesisButton" widgetVar="nemesisButton"  value="Find Nemesis" action="#{nemesis.findNemesis}" onclick="PF('pbAjax').start();PF('nemesisButton').disable();" />
                     </p:panelGrid>
                     <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="200" widgetVar="pbAjax" value="#{nemesis.progress}" style="width:auto;" >
-                        <p:ajax event="complete" listener="#{nemesis.onCompleteLoad}" oncomplete="PF('nemesisButton').enable()" update="progressBar nemesisCarousel" />
+                        <p:ajax event="complete" listener="#{nemesis.onCompleteLoad}" oncomplete="PF('nemesisButton').enable()" update="progressBar nemesisDataForm" />
                     </p:progressBar>
                 </h:form>
             </p:layoutUnit>
