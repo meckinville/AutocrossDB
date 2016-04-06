@@ -5,6 +5,11 @@
  */
 package autocrossdb.component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  *
  * @author rmcconville
@@ -15,38 +20,52 @@ public class Nemesis implements Comparable<Nemesis>
     private double value;
     private int eventsTogether;
     
-    private double rawDiff;
-    private double paxDiff;
+    private List<Double> rawDiff;
+    private List<Double> paxDiff;
+    
+    private Set<String> carsDriven;
     
     public Nemesis()
     {
         
     }
     
-    public Nemesis(String name, double rawDiff, double paxDiff)
+    public Nemesis(String name, double rawDiff, double paxDiff, String car)
     {
         this.name = name;
-        this.rawDiff = rawDiff;
-        this.paxDiff = paxDiff;
+        this.rawDiff = new ArrayList();
+        this.rawDiff.add(rawDiff);
+        this.paxDiff = new ArrayList();
+        this.paxDiff.add(paxDiff);
         this.eventsTogether = 1;
-        calculateValue();
+        carsDriven = new TreeSet();
+        carsDriven.add(car);
     }
     
-    private void calculateValue()
+    public void calculateRawValue()
     {
-        double tempPax = this.paxDiff;
-        double tempRaw = this.rawDiff;
-        
-        if(tempPax < 0)
+        double total = 0;
+        for(Double d : rawDiff)
         {
-            tempPax *= -1;
+            total += d;
         }
-        if(tempRaw < 0)
-        {
-            tempRaw *= -1;
-        }
+        total /= (double)rawDiff.size();
         
-        this.value = tempRaw + tempPax;
+        total = Math.round(total * 100000d) / 100000d;
+        this.value = total;
+    }
+    
+    public void calculatePaxValue()
+    {
+        double total = 0;
+        for(Double d : paxDiff)
+        {
+            total += d;
+        }
+        total /= (double)paxDiff.size();
+        
+        total = Math.round(total * 100000d) / 100000d;
+        this.value = total;
     }
 
     public String getName() {
@@ -64,9 +83,7 @@ public class Nemesis implements Comparable<Nemesis>
     public void setValue(double value) {
         this.value = value;
     }
-
     
-
     public int getEventsTogether() {
         return eventsTogether;
     }
@@ -75,22 +92,43 @@ public class Nemesis implements Comparable<Nemesis>
         this.eventsTogether = eventsTogether;
     }
 
-    public double getRawDiff() {
+    public List<Double> getRawDiff() {
         return rawDiff;
     }
 
-    public void setRawDiff(double rawDiff) {
+    public void setRawDiff(List<Double> rawDiff) {
         this.rawDiff = rawDiff;
-        calculateValue();
     }
 
-    public double getPaxDiff() {
+    public List<Double> getPaxDiff() {
         return paxDiff;
     }
 
-    public void setPaxDiff(double paxDiff) {
+    public void setPaxDiff(List<Double> paxDiff) {
         this.paxDiff = paxDiff;
-        calculateValue();
+    }
+    
+    public void addRawDiff(double rawDiff)
+    {
+        this.rawDiff.add(rawDiff);
+    }
+    
+    public void addPaxDiff(double paxDiff)
+    {
+        this.paxDiff.add(paxDiff);
+    }
+    
+    public void addCarDriven(String car)
+    {
+        this.carsDriven.add(car);
+    }
+
+    public Set<String> getCarsDriven() {
+        return carsDriven;
+    }
+
+    public void setCarsDriven(Set<String> carsDriven) {
+        this.carsDriven = carsDriven;
     }
     
     
@@ -98,11 +136,11 @@ public class Nemesis implements Comparable<Nemesis>
     @Override
     public int compareTo(Nemesis n)
     {
-        if(this.value > n.getValue())
+        if(Math.abs(this.value) > Math.abs(n.getValue()))
         {
             return 1;
         }
-        else if(this.value < n.getValue())
+        else if(Math.abs(this.value) < Math.abs(n.getValue()))
         {
             return -1;
         }

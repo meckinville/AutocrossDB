@@ -34,17 +34,42 @@ td>a>span.fa-trophy {
 }
 
 /*removes border from the tr and td elements inside the panel grid table */
-.noOutlinePanelGrid.ui-panelgrid>*>tr,
-.noOutlinePanelGrid.ui-panelgrid .ui-panelgrid-cell {
+.noOutlinePanelGrid>*>tr,
+.noOutlinePanelGrid>*>*>.ui-panelgrid-cell {
     border: 0px;
 }
 
-
+.ui-datagrid-content {
+    border: 0px;
+}
 
 .ui-datagrid-column {
     width: 33%;
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+
+.nemesisPanel {
+    height: 400px;
+}
+
+.nemesisCarList {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+    padding-top:5px;
+    padding-bottom:5px;
+}
+
+.nemesisGrid {
+    margin: auto;
+    width: 50%;
+    text-align: center;
+}
+
+.nemesisGrid>tbody>tr>td {
+    width: 50%;
 }
 
 .analysisDataTable>*>*>*>tr>td {
@@ -96,4 +121,8 @@ td>a>span.fa-trophy {
 
 .ui-tabs-left > .ui-tabs-nav {
     height: auto;
+}
+
+.ui-panel-titlebar {
+    text-align: center;
 }

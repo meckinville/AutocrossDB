@@ -192,8 +192,57 @@ public class EventLoaderBean
                     driverName = driverName.trim();
                 }
                 
-                for(int y = 5; y < driverCells.size()-2; y++)
+                for(int y = 5; y <= driverCells.size()-2; y++)
                 {
+                    if(y == driverCells.size()-2)
+                    {
+                        Elements extraDriverCells = driverRows.get(x+1).select("td");
+                        if(extraDriverCells.first().text().equals("") || extraDriverCells.first().text() == null || extraDriverCells.first().text().equals(" "))
+                        {
+                            for(Element td : extraDriverCells)
+                            {
+                                if(td.text().length() > 5)
+                                {
+                                    if(td.text().substring(0,6).matches("[0-9][0-9].[0-9][0-9][0-9]"))
+                                    {
+                                        String time = td.text();
+                                        String offcourse = "N";
+                                        int cones = 0;
+                                        double paxTime = 0;
+                                        if(time.contains("+"))
+                                        {
+                                            if(time.substring(time.indexOf("+")+1).equals("DNF"))
+                                            {
+                                                offcourse = "Y";
+                                            }
+                                            else
+                                            {
+                                                cones = Integer.parseInt(time.substring(time.indexOf("+")+1));
+                                            }
+
+                                            time = time.substring(0, time.indexOf("+")-1);
+                                            
+                                            if(cones > 0)
+                                            {
+                                                double tempRunTime = Double.parseDouble(time);
+                                                tempRunTime += 2 * cones;
+                                                time = Double.toString(tempRunTime);
+                                            }
+                                        }
+                                        paxTime = calculatePax(classToWrite, time);
+                                        runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(),  position, Double.parseDouble(time), paxTime, offcourse, cones);
+                                        position++;
+                                        runToWrite.setRunClassName(classToWrite);
+                                        runToWrite.setRunEventUrl(eventToWrite);
+                                        runsCollection.add(runToWrite);
+                                    }
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+                    
                     if(driverCells.get(y).text().length() >= 6 && driverCells.get(y).text().contains("."))
                     {
                         String time = driverCells.get(y).text();

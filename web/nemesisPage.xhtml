@@ -43,16 +43,22 @@
             </p:layoutUnit>
             <p:layoutUnit position="center">
                 <h:form id="nemesisDataForm">
-                    <p:carousel id="nemesisCarousel" value="#{nemesis.nemesisList}" headerText="Nemesis" var="nem" numVisible="2" >
-                        <h:panelGrid styleClass="noOutlinePanelGrid" columns="2" >
-                            <h:outputLabel for="nemesisName" value="Name:" />
-                            <h:outputText id="nemesisName" value="#{nem.name}" />
-                            <h:outputLabel for="nemesisValue" value="Score:" />
-                            <h:outputText id="nemesisValue" value="#{nem.value}" />
-                            <h:outputLabel for="nemesisEvents" value="Events Together:" />
-                            <h:outputText id="nemesisEvents" value="#{nem.eventsTogether}" />
-                        </h:panelGrid>
-                    </p:carousel>
+                    <p:dataGrid id="nemesisGrid" value="#{nemesis.nemesisList}" var="nem" rows="2" columns="2" paginatorPosition="top" paginator="true" >
+                        <p:panel header="#{nem.name}" styleClass="nemesisPanel" >
+                            <p:panelGrid columns="2" styleClass="nemesisGrid" columnClasses="descriptionColumn ">
+                                <h:outputLabel for="nemesisValue" value="Average #{nemesis.nemesisType} Diff" />
+                                <h:outputText styleClass="#{nem.value lt 0.00 ? 'negativeDiff' : nem.value gt 0.00 ? 'positiveDiff' : null}" id="nemesisValue" value="#{nem.value}"  />
+                                <h:outputLabel for="nemesisEvents" value="Events Together" />
+                                <h:outputText id="nemesisEvents" value="#{nem.eventsTogether}" />
+                            </p:panelGrid>
+                            <p:dataList value="#{nem.carsDriven}" var="car" styleClass="nemesisCarList" type="definition"  >
+                                <f:facet name="header" >
+                                    Cars Driven by Nemesis
+                                </f:facet>
+                                #{car}
+                            </p:dataList>
+                        </p:panel>
+                    </p:dataGrid>
                 </h:form>
             </p:layoutUnit>
             <p:layoutUnit styleClass="inputLayoutUnit" position="west" size="300">
@@ -60,7 +66,12 @@
                     <p:panelGrid columns="2" styleClass="noOutlinePanelGrid"  >
                         <h:outputLabel for="driverInput" value="Driver:" />
                         <p:autoComplete id="driverInput" forceSelection="true" required="true" value="#{nemesis.driver}" completeMethod="#{nemesis.completeDriverText}" />
-                        <p:commandButton id="nemesisButton" widgetVar="nemesisButton"  value="Find Nemesis" action="#{nemesis.findNemesis}" onclick="PF('pbAjax').start();PF('nemesisButton').disable();" />
+                        <h:outputLabel for="nemesisType" value="Type:" />
+                        <p:selectOneRadio id="nemesisType" value="#{nemesis.nemesisType}" required="true" >
+                            <f:selectItem itemLabel="Raw" itemValue="Raw" />
+                            <f:selectItem itemLabel="Pax" itemValue="Pax" />
+                        </p:selectOneRadio>
+                        <p:commandButton id="nemesisButton" widgetVar="nemesisButton"  value="Find Nemesis" update="nemesisInfoForm" action="#{nemesis.findNemesis}" onclick="PF('pbAjax').start();PF('nemesisButton').disable();" />
                     </p:panelGrid>
                     <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="200" widgetVar="pbAjax" value="#{nemesis.progress}" style="width:auto;" >
                         <p:ajax event="complete" listener="#{nemesis.onCompleteLoad}" oncomplete="PF('nemesisButton').enable()" update="progressBar nemesisDataForm" />

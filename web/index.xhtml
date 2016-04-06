@@ -36,7 +36,7 @@
                     <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
                         <f:param name="i" value="6" />
                     </p:menuitem>
-                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" >
+                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" icon="fa fa-user-secret" >
                         <f:param name="i" value="7" />
                     </p:menuitem>
                 </p:tabMenu> 
@@ -54,11 +54,9 @@
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Club" style="text-align:center;" >
-                        <p:graphicImage name="images/clubs/#{event.upcomingClub}.jpg" style="width:100px; height:48px;" />
+                        <p:graphicImage name="images/clubs/#{event.upcomingClub}.jpg" alt="#{event.upcomingClub}" style="width:100px; height:48px;" />
                     </p:column>
                     <p:column headerText="Location" style="text-align:center;" >
-                        <p:graphicImage name="images/sites/#{event.upcomingLocation}.jpg" style="width:100px; height:48px;" alt="#{event.upcomingLocation}" />
-                        <br />
                         <h:outputText value="#{event.upcomingLocation}" />
                     </p:column>
                     <p:column headerText="Type" >

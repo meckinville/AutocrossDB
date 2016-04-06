@@ -43,30 +43,30 @@
                     <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
                         <f:param name="i" value="6" />
                     </p:menuitem>
-                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" >
+                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage"  icon="fa fa-user-secret">
                         <f:param name="i" value="7" />
                     </p:menuitem>
                 </p:tabMenu> 
             </p:layoutUnit>
             <p:layoutUnit styleClass="inputLayoutUnit" position="west" size="300">
                 <h:form id="driverForm">
-                <p:panelGrid id="grid" columns="2" styleClass="noOutlinePanelGrid">
-                    <p:outputLabel value="Driver 1:" for="driver1" />
-                    <p:autoComplete id="driver1" forceSelection="true" value="#{comparisonChart.driver1}" completeMethod="#{comparisonChart.completeDriverText}" />
-                    <p:outputLabel value="Driver 2:" for="driver2" />
-                    <p:autoComplete id="driver2" forceSelection="true" value="#{comparisonChart.driver2}" completeMethod="#{comparisonChart.completeDriverText}" />
-                    <p:outputLabel value="Start Date:" for="start" />
-                    <p:calendar id="start" mode="popup" value="#{comparisonChart.startDate}" />
-                    <p:outputLabel value="End Date:" for="end" />
-                    <p:calendar id="end" mode="popup" value="#{comparisonChart.endDate}" />
-                    <p:outputLabel for="type" value="Stat to Compare:" />
-                    <p:selectOneRadio id="type" value="#{comparisonChart.type}" required="true" >
-                        <f:selectItem itemLabel="Raw" itemValue="Raw" />
-                        <f:selectItem itemLabel="Pax" itemValue="Pax" />
-                        <f:selectItem itemLabel="Cones" itemValue="Cones" />
-                    </p:selectOneRadio>
-                    <p:commandButton id="viewChart" value="View Chart" action="#{comparisonChart.drawComparison}" update="compareChart statisticsGrid" />
-                </p:panelGrid>
+                    <p:panelGrid id="grid" columns="2" styleClass="noOutlinePanelGrid">
+                        <p:outputLabel value="Driver 1:" for="driver1" />
+                        <p:autoComplete id="driver1" forceSelection="true" value="#{comparisonChart.driver1}" completeMethod="#{comparisonChart.completeDriverText}" />
+                        <p:outputLabel value="Driver 2:" for="driver2" />
+                        <p:autoComplete id="driver2" forceSelection="true" value="#{comparisonChart.driver2}" completeMethod="#{comparisonChart.completeDriverText}" />
+                        <p:outputLabel value="Start Date:" for="start" />
+                        <p:calendar id="start" mode="popup" value="#{comparisonChart.startDate}" />
+                        <p:outputLabel value="End Date:" for="end" />
+                        <p:calendar id="end" mode="popup" value="#{comparisonChart.endDate}" />
+                        <p:outputLabel for="type" value="Stat to Compare:" />
+                        <p:selectOneRadio id="type" value="#{comparisonChart.type}" required="true" >
+                            <f:selectItem itemLabel="Raw" itemValue="Raw" />
+                            <f:selectItem itemLabel="Pax" itemValue="Pax" />
+                            <f:selectItem itemLabel="Cones" itemValue="Cones" />
+                        </p:selectOneRadio>
+                        <p:commandButton id="viewChart" value="View Chart" action="#{comparisonChart.drawComparison}" update="compareChart statisticsGrid" />
+                    </p:panelGrid>
                 </h:form>
             </p:layoutUnit>
             <p:layoutUnit position="center" >
