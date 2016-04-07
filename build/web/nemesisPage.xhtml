@@ -4,7 +4,8 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     <h:head>
         <title>Autocross DB</title>
     </h:head>
@@ -46,23 +47,20 @@
                     <p:dataGrid id="nemesisGrid" value="#{nemesis.nemesisList}" var="nem" rows="2" columns="2" paginatorPosition="top" paginator="true" >
                         <p:panel header="#{nem.name}" styleClass="nemesisPanel" >
                             <p:panelGrid columns="2" styleClass="nemesisGrid" columnClasses="descriptionColumn ">
+                                <h:outputLabel for="nemesisRank" value="Nemesis Rank" />
+                                <h:outputText id="nemesisRank" value="#{nem.rank}" />
+                                <h:outputLabel for="nemesisClass" value="Nemesis Class" />
+                                <h:outputText id="nemesisClass" value="#{nem.cls.className}" />
                                 <h:outputLabel for="nemesisValue" value="Average #{nemesis.nemesisType} Diff" />
                                 <h:outputText styleClass="#{nem.value lt 0.00 ? 'negativeDiff' : nem.value gt 0.00 ? 'positiveDiff' : null}" id="nemesisValue" value="#{nem.value}"  />
                                 <h:outputLabel for="nemesisEvents" value="Events Together" />
                                 <h:outputText id="nemesisEvents" value="#{nem.eventsTogether}" />
                             </p:panelGrid>
-                            <p:dataList value="#{nem.carsDriven}" var="car" styleClass="nemesisCarList" type="definition"  >
-                                <f:facet name="header" >
+                            <p:dataList value="#{nem.carsDriven}" var="car" type="definition" styleClass="nemesisCarList" >
+                                <f:facet name="header">
                                     Cars Driven by Nemesis
                                 </f:facet>
                                 #{car}
-                            </p:dataList>
-                            
-                            <p:dataList value="#{nem.classesDriven}" var="class" styleClass="nemesisCarList" type="definition"  >
-                                <f:facet name="header" >
-                                    Classes Driven by Nemesis
-                                </f:facet>
-                                #{class}
                             </p:dataList>
                         </p:panel>
                     </p:dataGrid>
@@ -72,9 +70,15 @@
                 <h:form id="nemesisInfoForm" >
                     <p:panelGrid columns="2" styleClass="noOutlinePanelGrid"  >
                         <h:outputLabel for="driverInput" value="Driver:" />
-                        <p:autoComplete id="driverInput" forceSelection="true" required="true" value="#{nemesis.driver}" completeMethod="#{nemesis.completeDriverText}" />
+                        <p:autoComplete id="driverInput" forceSelection="true" required="true" value="#{nemesis.driver}" completeMethod="#{nemesis.completeDriverText}" >
+                            <p:ajax event="itemSelect" listener="#{nemesis.onDriverSelect}" update="yourClass" />
+                        </p:autoComplete>
+                        <h:outputLabel for="yourClass" value="Your Class:" />
+                        <p:selectOneMenu id="yourClass" value="#{nemesis.driverClass}" required="true" >
+                            <f:selectItems value="#{nemesis.driverClassList}" />
+                        </p:selectOneMenu>
                         <h:outputLabel for="nemesisType" value="Type:" />
-                        <p:selectOneRadio id="nemesisType" value="#{nemesis.nemesisType}" required="true" >
+                        <p:selectOneRadio id="nemesisType" value="#{nemesis.nemesisType}" required="true"  >
                             <f:selectItem itemLabel="Raw" itemValue="Raw" />
                             <f:selectItem itemLabel="Pax" itemValue="Pax" />
                         </p:selectOneRadio>

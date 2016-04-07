@@ -41,6 +41,7 @@ public class ComparisonChartBean implements Serializable
     private String driver1;
     private String driver2;
     private String type;
+    private boolean showAverage;
     
     private double chartMax;
     private double chartMin;
@@ -124,12 +125,10 @@ public class ComparisonChartBean implements Serializable
     {
         Map<Object,Number> d1Map = lineModel.getSeries().get(0).getData();
         Map<Object,Number> d2Map = lineModel.getSeries().get(1).getData();
-        Map<Object,Number> avgMap = lineModel.getSeries().get(2).getData();
         
         Object[] d1Keys = d1Map.keySet().toArray();
         Object[] d2Keys = d2Map.keySet().toArray();
-        Object[] avgKeys = avgMap.keySet().toArray();
-
+        
         dialogHeader = d1Keys[event.getItemIndex()].toString();
         
         d1DialogName = lineModel.getSeries().get(0).getLabel();
@@ -137,15 +136,20 @@ public class ComparisonChartBean implements Serializable
         
         d1DialogStat = d1Map.get(d1Keys[event.getItemIndex()]).doubleValue();
         d2DialogStat = d2Map.get(d2Keys[event.getItemIndex()]).doubleValue();
-        avgDialogStat = Math.round(avgMap.get(avgKeys[event.getItemIndex()]).doubleValue() * 1000d) / 1000d;
         
         d1DialogDiff = d1DialogStat - d2DialogStat;
         d1DialogDiff = (Math.round(d1DialogDiff * 1000d)) / 1000d;
         d2DialogDiff = d2DialogStat - d1DialogStat;
         d2DialogDiff = (Math.round(d2DialogDiff * 1000d)) / 1000d;
         
-        avgDialogDiff1 = Math.round((d1DialogStat - avgDialogStat) * 1000d) / 1000d;
-        avgDialogDiff2 = Math.round((d2DialogStat - avgDialogStat) * 1000d) / 1000d;
+        if(showAverage)
+        {
+            Map<Object,Number> avgMap = lineModel.getSeries().get(2).getData();
+            Object[] avgKeys = avgMap.keySet().toArray();
+            avgDialogStat = Math.round(avgMap.get(avgKeys[event.getItemIndex()]).doubleValue() * 1000d) / 1000d;
+            avgDialogDiff1 = Math.round((d1DialogStat - avgDialogStat) * 1000d) / 1000d;
+            avgDialogDiff2 = Math.round((d2DialogStat - avgDialogStat) * 1000d) / 1000d;
+        }
     }
     
     public void drawLineChart(List<Object[]> query, String chartTitle, int tickInterval, String yTitle)
@@ -177,18 +181,21 @@ public class ComparisonChartBean implements Serializable
         }
         
         //add avg line
-        if(yTitle.equals("Raw Time"))
+        if(showAverage)
         {
-           lineModel.addSeries(getAverage("raw", events));
-           
-        }
-        else if(yTitle.equals("Pax Time"))
-        {
-            lineModel.addSeries(getAverage("pax", events));
-        }
-        else
-        {
-            lineModel.addSeries(getAverage("cones", events));
+            if(yTitle.equals("Raw Time"))
+            {
+               lineModel.addSeries(getAverage("raw", events));
+
+            }
+            else if(yTitle.equals("Pax Time"))
+            {
+                lineModel.addSeries(getAverage("pax", events));
+            }
+            else
+            {
+                lineModel.addSeries(getAverage("cones", events));
+            }
         }
 
         if(chartMax < 4)
@@ -693,6 +700,14 @@ public class ComparisonChartBean implements Serializable
 
     public void setAvgDialogDiff2(double avgDialogDiff2) {
         this.avgDialogDiff2 = avgDialogDiff2;
+    }
+
+    public boolean isShowAverage() {
+        return showAverage;
+    }
+
+    public void setShowAverage(boolean showAverage) {
+        this.showAverage = showAverage;
     }
 
     

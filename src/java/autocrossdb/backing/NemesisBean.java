@@ -30,8 +30,10 @@ import javax.persistence.PersistenceContext;
 public class NemesisBean 
 {
     private String driver;
+    private String driverClass;
     private String nemesisType;
     private List<Nemesis> nemesisList;
+    private List<String> driverClassList;
     
     private Date startDate;
     private Date endDate;
@@ -48,6 +50,8 @@ public class NemesisBean
         endDate = now.getTime();
         now.set(Calendar.MONTH, now.get(Calendar.MONTH)-12);
         startDate = now.getTime();
+        driverClassList = new ArrayList();
+        driverClassList.add("Select Driver First");
         progress = 0;
     }
     
@@ -56,7 +60,7 @@ public class NemesisBean
         if(nemesisType != null)
         {
             Map<String, Nemesis> nemesisMap = new LinkedHashMap();
-            List<Object[]> ourRuns = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runEventUrl, r.runClassName FROM Runs r WHERE r.runDriverName = :driver AND r.runOffcourse = 'N' and r.runEventUrl.eventDate > :startDate and r.runEventUrl.eventDate < :endDate group by r.runEventUrl order by r.runEventUrl.eventDate ASC ").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
+            List<Object[]> ourRuns = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runEventUrl, r.runClassName FROM Runs r WHERE r.runDriverName = :driver AND r.runOffcourse = 'N' and r.runEventUrl.eventDate > :startDate and r.runEventUrl.eventDate < :endDate and r.runClassName.className = :class group by r.runEventUrl order by r.runEventUrl.eventDate ASC ").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("class", driverClass).getResultList();
 
 
             for(Object[] o : ourRuns)
@@ -70,7 +74,8 @@ public class NemesisBean
 
                 for(Object[] x : tempList)
                 {
-                    Nemesis temp = nemesisMap.get(x[2].toString());
+                    Classes tempCls = (Classes)x[4];
+                    Nemesis temp = nemesisMap.get(x[2].toString() + " [" + tempCls.getClassName() + "]");
 
                     double rawDiff = (double)o[0] - (double)x[0];
                     double paxDiff = (double)o[1] - (double)x[1];
@@ -78,14 +83,13 @@ public class NemesisBean
                     if(temp == null)
                     {
                         temp = new Nemesis(x[2].toString(), rawDiff, paxDiff, x[5].toString(), (Classes)x[4]);
-                        nemesisMap.put(x[2].toString(), temp);
+                        nemesisMap.put(x[2].toString() + " [" + tempCls.getClassName() + "]", temp);
                     }
                     else
                     {
                         temp.addRawDiff(rawDiff);
                         temp.addPaxDiff(paxDiff);
                         temp.addCarDriven(x[5].toString());
-                        temp.addClassDriven((Classes)x[4]);
                         temp.setEventsTogether(temp.getEventsTogether() + 1);
                     }
                 }
@@ -103,15 +107,27 @@ public class NemesisBean
                 {
                     nemesisMap.get(key).calculatePaxValue();
                 }
-
-                if(nemesisMap.get(key).getValue() < 1 && nemesisMap.get(key).getValue() > -1 && nemesisMap.get(key).getEventsTogether() > 3)
+                
+                if(nemesisMap.get(key).getValue() < 2 && nemesisMap.get(key).getValue() > -2 && nemesisMap.get(key).getEventsTogether() > 2)
                 {
                     nemesisList.add(nemesisMap.get(key));
                 }
-
             }
-            System.out.println(nemesisList.size());
             Collections.sort(nemesisList);
+            int rankIndex = 1;
+            for(Nemesis n : nemesisList)
+            {
+               if(rankIndex == 21)
+               {
+                   break;
+               }
+               n.setRank(rankIndex);
+               rankIndex++;
+            }
+            if(nemesisList.size() > 19)
+            {
+                nemesisList = nemesisList.subList(0,20);
+            }
             progress = 100;
         }
         else
@@ -133,6 +149,11 @@ public class NemesisBean
             }
         }
         return results;
+    }
+    
+    public void onDriverSelect()
+    {
+        driverClassList = em.createQuery("SELECT DISTINCT r.runClassName.className from Runs r where r.runDriverName = :driver AND r.runEventUrl.eventDate > :startDate AND r.runEventUrl.eventDate < :endDate").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
     }
 
     public void onCompleteLoad()
@@ -171,6 +192,24 @@ public class NemesisBean
     public void setNemesisType(String nemesisType) {
         this.nemesisType = nemesisType;
     }
+
+    public String getDriverClass() {
+        return driverClass;
+    }
+
+    public void setDriverClass(String driverClass) {
+        this.driverClass = driverClass;
+    }
+
+    public List<String> getDriverClassList() {
+        return driverClassList;
+    }
+
+    public void setDriverClassList(List<String> driverClassList) {
+        this.driverClassList = driverClassList;
+    }
+
+    
     
     
 }

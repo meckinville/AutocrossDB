@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Classes.findByClass2015Pax", query = "SELECT c FROM Classes c WHERE c.class2015Pax = :class2015Pax"),
     @NamedQuery(name = "Classes.findByClass2014Pax", query = "SELECT c FROM Classes c WHERE c.class2014Pax = :class2014Pax"),
     @NamedQuery(name = "Classes.findByClass2013Pax", query = "SELECT c FROM Classes c WHERE c.class2013Pax = :class2013Pax")})
-public class Classes implements Serializable {
+public class Classes implements Serializable, Comparable<Classes> {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -140,6 +140,12 @@ public class Classes implements Serializable {
             return false;
         }
         return true;
+    }
+    
+    @Override
+    public int compareTo(Classes cls)
+    {
+        return this.className.compareTo(cls.getClassName());
     }
 
     @Override

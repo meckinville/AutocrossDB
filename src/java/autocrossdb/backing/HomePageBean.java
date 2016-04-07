@@ -44,13 +44,7 @@ public class HomePageBean
             images.add(x + ".jpg");
         }
         */
-        upcomingEvents = em.createQuery("SELECT ue from UpcomingEvents ue where ue.upcomingDate > :today order by ue.upcomingDate asc").setParameter("today", Calendar.getInstance().getTime()).getResultList();
-        if(upcomingEvents.size() > 10)
-        {
-            upcomingEvents = upcomingEvents.subList(0,12);
-        }
-        
-        
+        upcomingEvents = em.createQuery("SELECT ue from UpcomingEvents ue where ue.upcomingDate > :today order by ue.upcomingDate asc").setParameter("today", Calendar.getInstance().getTime()).getResultList();    
         eventCount = (long)em.createQuery("SELECT count(e) from Events e").getResultList().get(0);
         runCount = (long)em.createQuery("SELECT count(r) from Runs r").getResultList().get(0);
         driverCount = (long)em.createQuery("SELECT count(distinct r.runDriverName) from Runs r").getResultList().get(0);

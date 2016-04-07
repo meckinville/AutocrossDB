@@ -136,6 +136,12 @@
                                 </f:facet>
                                 #{driver} 
                             </p:dataList>
+                            <p:dataList value="#{awardsInfo.eventAwards2016.get(4)}" var="driver" type="ordered" first="1" >
+                                <f:facet name="header" >
+                                    #{awardsInfo.eventAwards2016.get(4).get(0)}
+                                </f:facet>
+                                #{driver} 
+                            </p:dataList>
                         </p:panelGrid>
                     </p:tab>
                     <p:tab title="Class Awards" >
@@ -267,6 +273,12 @@
                                 </f:facet>
                                 #{driver} 
                             </p:dataList>
+                            <p:dataList value="#{awardsInfo.eventAwards2015.get(4)}" var="driver" type="ordered"  first="1">
+                                <f:facet name="header" >
+                                    #{awardsInfo.eventAwards2015.get(4).get(0)}
+                                </f:facet>
+                                #{driver} 
+                            </p:dataList>
                         </p:panelGrid>
                     </p:tab>
                     <p:tab title="Class Awards" >
@@ -392,6 +404,12 @@
                             <p:dataList value="#{awardsInfo.eventAwards2014.get(3)}" var="driver" type="ordered" first="1" >
                                 <f:facet name="header" >
                                     #{awardsInfo.eventAwards2014.get(3).get(0)}
+                                </f:facet>
+                                #{driver} 
+                            </p:dataList>
+                            <p:dataList value="#{awardsInfo.eventAwards2014.get(4)}" var="driver" type="ordered" first="1" >
+                                <f:facet name="header" >
+                                    #{awardsInfo.eventAwards2014.get(4).get(0)}
                                 </f:facet>
                                 #{driver} 
                             </p:dataList>

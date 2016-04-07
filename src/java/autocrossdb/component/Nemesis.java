@@ -7,6 +7,9 @@ package autocrossdb.component;
 
 import autocrossdb.entities.Classes;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,14 +21,15 @@ import java.util.TreeSet;
 public class Nemesis implements Comparable<Nemesis>
 {
     private String name;
+    private Classes cls;
     private double value;
     private int eventsTogether;
+    private int rank;
     
     private List<Double> rawDiff;
     private List<Double> paxDiff;
     
     private Set<String> carsDriven;
-    private Set<Classes> classesDriven;
     
     public Nemesis()
     {
@@ -39,13 +43,12 @@ public class Nemesis implements Comparable<Nemesis>
         this.rawDiff.add(rawDiff);
         this.paxDiff = new ArrayList();
         this.paxDiff.add(paxDiff);
+        this.cls = cls;
         this.eventsTogether = 1;
         carsDriven = new TreeSet();
         carsDriven.add(car);
-        classesDriven = new TreeSet();
-        classesDriven.add(cls);
     }
-    
+
     public void calculateRawValue()
     {
         double total = 0;
@@ -135,19 +138,24 @@ public class Nemesis implements Comparable<Nemesis>
         this.carsDriven = carsDriven;
     }
 
-    public Set<Classes> getClassesDriven() {
-        return classesDriven;
+    public Classes getCls() {
+        return cls;
     }
 
-    public void setClassesDriven(Set<Classes> classesDriven) {
-        this.classesDriven = classesDriven;
+    public void setCls(Classes cls) {
+        this.cls = cls;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
     
-    public void addClassDriven(Classes cls)
-    {
-        this.classesDriven.add(cls);
-    }
     
+ 
     @Override
     public int compareTo(Nemesis n)
     {
