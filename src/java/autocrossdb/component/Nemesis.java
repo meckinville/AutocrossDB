@@ -5,6 +5,7 @@
  */
 package autocrossdb.component;
 
+import autocrossdb.entities.Classes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,13 +25,14 @@ public class Nemesis implements Comparable<Nemesis>
     private List<Double> paxDiff;
     
     private Set<String> carsDriven;
+    private Set<Classes> classesDriven;
     
     public Nemesis()
     {
         
     }
     
-    public Nemesis(String name, double rawDiff, double paxDiff, String car)
+    public Nemesis(String name, double rawDiff, double paxDiff, String car, Classes cls)
     {
         this.name = name;
         this.rawDiff = new ArrayList();
@@ -40,6 +42,8 @@ public class Nemesis implements Comparable<Nemesis>
         this.eventsTogether = 1;
         carsDriven = new TreeSet();
         carsDriven.add(car);
+        classesDriven = new TreeSet();
+        classesDriven.add(cls);
     }
     
     public void calculateRawValue()
@@ -130,8 +134,19 @@ public class Nemesis implements Comparable<Nemesis>
     public void setCarsDriven(Set<String> carsDriven) {
         this.carsDriven = carsDriven;
     }
+
+    public Set<Classes> getClassesDriven() {
+        return classesDriven;
+    }
+
+    public void setClassesDriven(Set<Classes> classesDriven) {
+        this.classesDriven = classesDriven;
+    }
     
-    
+    public void addClassDriven(Classes cls)
+    {
+        this.classesDriven.add(cls);
+    }
     
     @Override
     public int compareTo(Nemesis n)

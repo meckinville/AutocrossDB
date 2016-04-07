@@ -6,6 +6,7 @@
 package autocrossdb.backing;
 
 import autocrossdb.component.Nemesis;
+import autocrossdb.entities.Classes;
 import autocrossdb.entities.Runs;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -55,7 +56,7 @@ public class NemesisBean
         if(nemesisType != null)
         {
             Map<String, Nemesis> nemesisMap = new LinkedHashMap();
-            List<Object[]> ourRuns = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runEventUrl, r.runClassName.className FROM Runs r WHERE r.runDriverName = :driver AND r.runOffcourse = 'N' and r.runEventUrl.eventDate > :startDate and r.runEventUrl.eventDate < :endDate group by r.runEventUrl order by r.runEventUrl.eventDate ASC ").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
+            List<Object[]> ourRuns = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runEventUrl, r.runClassName FROM Runs r WHERE r.runDriverName = :driver AND r.runOffcourse = 'N' and r.runEventUrl.eventDate > :startDate and r.runEventUrl.eventDate < :endDate group by r.runEventUrl order by r.runEventUrl.eventDate ASC ").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
 
 
             for(Object[] o : ourRuns)
@@ -65,7 +66,7 @@ public class NemesisBean
 
                 //find all drivers within 1 second raw
                 //tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName.className FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl having ((:ourTime - min(r.runTime)) < 1) AND ((:ourTime - min(r.runTime)) > -1) order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).setParameter("ourTime", o[0]).getResultList();
-                tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName.className, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).getResultList();
+                tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).getResultList();
 
                 for(Object[] x : tempList)
                 {
@@ -76,7 +77,7 @@ public class NemesisBean
 
                     if(temp == null)
                     {
-                        temp = new Nemesis(x[2].toString(), rawDiff, paxDiff,  x[5].toString());
+                        temp = new Nemesis(x[2].toString(), rawDiff, paxDiff, x[5].toString(), (Classes)x[4]);
                         nemesisMap.put(x[2].toString(), temp);
                     }
                     else
@@ -84,6 +85,7 @@ public class NemesisBean
                         temp.addRawDiff(rawDiff);
                         temp.addPaxDiff(paxDiff);
                         temp.addCarDriven(x[5].toString());
+                        temp.addClassDriven((Classes)x[4]);
                         temp.setEventsTogether(temp.getEventsTogether() + 1);
                     }
                 }

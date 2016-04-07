@@ -57,6 +57,13 @@
                                 </f:facet>
                                 #{car}
                             </p:dataList>
+                            
+                            <p:dataList value="#{nem.classesDriven}" var="class" styleClass="nemesisCarList" type="definition"  >
+                                <f:facet name="header" >
+                                    Classes Driven by Nemesis
+                                </f:facet>
+                                #{class}
+                            </p:dataList>
                         </p:panel>
                     </p:dataGrid>
                 </h:form>
