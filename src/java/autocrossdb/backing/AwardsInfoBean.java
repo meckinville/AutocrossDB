@@ -7,6 +7,7 @@ package autocrossdb.backing;
 
 import autocrossdb.component.Award;
 import autocrossdb.entities.Cars;
+import autocrossdb.util.CarUtil;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,22 +80,18 @@ public class AwardsInfoBean
         individualAwards2016 = getIndividualAwardsForYear(2016);
         individualAwards2015 = getIndividualAwardsForYear(2015);
         individualAwards2014 = getIndividualAwardsForYear(2014);
-        individualAwards2013 = getIndividualAwardsForYear(2013);
         
         classAwards2016 = getClassAwardsForYear(2016);
         classAwards2015 = getClassAwardsForYear(2015);
         classAwards2014 = getClassAwardsForYear(2014);
-        classAwards2013 = getClassAwardsForYear(2013);
         
         eventAwards2016 = getEventAwardsForYear(2016);
         eventAwards2015 = getEventAwardsForYear(2015);
         eventAwards2014 = getEventAwardsForYear(2014);
-        eventAwards2013 = getEventAwardsForYear(2013);
         
         carAwards2016 = getCarAwardsForYear(2016);
         carAwards2015 = getCarAwardsForYear(2015);
         carAwards2014 = getCarAwardsForYear(2014);
-        carAwards2013 = getCarAwardsForYear(2013);
     }
     
     private List<Long> getStatsForYear(int year)
@@ -229,70 +226,15 @@ public class AwardsInfoBean
         endYear.set(year, Calendar.DECEMBER, 31);
         
         List<Object[]> objectQuery = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runCarName from Runs r where r.runOffcourse = 'N' AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runEventUrl, r.runClassName" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        //add biggest class at event
-        List<Award> carAwards = new ArrayList();
-        carAwards.add(new Award(0, "UNKNOWN"));
         List<Cars> carList = em.createQuery("SELECT c FROM Cars c").getResultList();
-        for(Object[] o : objectQuery)
-        {
-            boolean added = false;
-            for(Cars c : carList)
-            {
-                if(o[2].toString().contains(c.getCarMake()))
-                {
-                    Cars currentMake = c;
-                    Award temp = new Award(1, currentMake.getCarMake());
-                    if(carAwards.contains(temp))
-                    {
-                        Award oldAward = carAwards.get(carAwards.indexOf(new Award(0, currentMake.getCarMake())));
-                        oldAward.setValue(oldAward.getValue() + 1);
-                    }
-                    else
-                    {
-                        carAwards.add(temp);
-                    }
-                    added = true;
-                    break;
-                }
-                else
-                {
-                    String alternate = c.getCarAlternatives();
-                    if(alternate != null)
-                    {
-                        String[] alternatives = alternate.split(",");
-                        for(int x = 0; x < alternatives.length; x++)
-                        {
-                            if(o[2].toString().contains(alternatives[x]))
-                            {
-                                Cars currentMake = c;
-                                Award temp = new Award(1, currentMake.getCarMake());
-                                if(carAwards.contains(temp))
-                                {
-                                    Award oldAward = carAwards.get(carAwards.indexOf(new Award(0, currentMake.getCarMake())));
-                                    oldAward.setValue(oldAward.getValue() + 1);
-                                }
-                                else
-                                {
-                                    carAwards.add(temp);
-                                }
-                                added = true;
-                                break;
-                            }
-                        }
-                    }
-                            
-                    
-                }
-            }
-            if(!added)
-            {
-                Award oldUnknown = carAwards.get(carAwards.indexOf(new Award(0, "UNKNOWN")));
-                oldUnknown.setValue(oldUnknown.getValue() + 1);
-            }
-        }
-        Collections.sort(carAwards, Collections.reverseOrder());
-        awards.add(populateAward(carAwards, "Most Class Wins by Make", "[name] had [value] class wins."));
-
+        CarUtil carUtil = new CarUtil(carList);
+        List<Award> classWinsAwards = carUtil.getClassWins(objectQuery);
+        awards.add(populateAward(classWinsAwards, "Most Class Wins by Make", "[name] had [value] class wins."));
+        
+        List<String> query = em.createQuery("SELECT r.runCarName from Runs r WHERE r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        List<Award> participationAward = carUtil.getParticipation(query);
+        awards.add(populateAward(participationAward, "Highest Participation by Make", "[name] had [value] cars show up."));
+        
         return awards;
     }
 
