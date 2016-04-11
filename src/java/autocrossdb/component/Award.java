@@ -5,6 +5,8 @@
  */
 package autocrossdb.component;
 
+import java.util.Objects;
+
 /**
  *
  * @author rmcconville
@@ -41,6 +43,34 @@ public class Award implements Comparable<Award>
     public void setName(String name) {
         this.name = name;
     }
+    
+    @Override
+    public boolean equals(Object object)
+    {
+        if(object != null && object instanceof Award)
+        {
+            if(this.name.equalsIgnoreCase(((Award)object).getName()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    @Override
+    public int hashCode() 
+    {
+        int hash = 7;
+        hash = 43 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+    
     
     @Override
     public int compareTo(Award a)

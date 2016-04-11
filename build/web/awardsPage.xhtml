@@ -173,6 +173,16 @@
                             
                         </p:panelGrid>
                     </p:tab>
+                    <p:tab title="Car Awards" >
+                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                            <p:dataList value="#{awardsInfo.carAwards2016.get(0)}" var="driver" type="ordered" first="1" >
+                                <f:facet name="header" >
+                                    #{awardsInfo.carAwards2016.get(0).get(0)}
+                                </f:facet>
+                                #{driver} 
+                            </p:dataList>
+                        </p:panelGrid>
+                    </p:tab>
                 </p:tabView>
                 
             </p:tab>
@@ -309,6 +319,16 @@
                             </p:dataList>
                         </p:panelGrid>
                     </p:tab>
+                    <p:tab title="Car Awards" >
+                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                            <p:dataList value="#{awardsInfo.carAwards2015.get(0)}" var="driver" type="ordered" first="1" >
+                                <f:facet name="header" >
+                                    #{awardsInfo.carAwards2015.get(0).get(0)}
+                                </f:facet>
+                                #{driver} 
+                            </p:dataList>
+                        </p:panelGrid>
+                    </p:tab>
                 </p:tabView>
                 
             </p:tab>
@@ -439,6 +459,16 @@
                             <p:dataList value="#{awardsInfo.classAwards2014.get(3)}" var="driver" type="ordered" first="1" >
                                 <f:facet name="header" >
                                     #{awardsInfo.classAwards2014.get(3).get(0)}
+                                </f:facet>
+                                #{driver} 
+                            </p:dataList>
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab title="Car Awards" >
+                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                            <p:dataList value="#{awardsInfo.carAwards2014.get(0)}" var="driver" type="ordered" first="1" >
+                                <f:facet name="header" >
+                                    #{awardsInfo.carAwards2014.get(0).get(0)}
                                 </f:facet>
                                 #{driver} 
                             </p:dataList>

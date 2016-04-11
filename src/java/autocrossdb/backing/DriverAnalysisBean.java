@@ -43,6 +43,10 @@ public class DriverAnalysisBean
     private double avgPaxPercent = 0;
     private double avgCones = 0;
     private double avgBestRun = 0;
+    private long totalCones = 0;
+    private long totalOffcourse = 0;
+    private double totalTimeOncourse = 0;
+    private long totalRuns = 0; 
     
     @PersistenceContext
     private EntityManager em;
@@ -170,6 +174,21 @@ public class DriverAnalysisBean
             }
             
             avgCones += Double.parseDouble(eventToAdd.getConesKilled());
+            
+            for(Runs r : yourRuns)
+            {
+                if(r.getRunOffcourse().equals("N"))
+                {
+                    totalCones += r.getRunCones();
+                    totalTimeOncourse += r.getRunTime();
+                }
+                else
+                {
+                    totalOffcourse++;
+                }
+                totalRuns++;
+            }
+            
             progress += 100 / rawEventList.size();
         }
         avgClassPercent /= rawEventList.size();
@@ -182,6 +201,7 @@ public class DriverAnalysisBean
         avgBestRun = (double)Math.round(avgBestRun * 10d)/10d;
         avgCones /= rawEventList.size();
         avgCones = (double)Math.round(avgCones * 10d)/10d;
+        totalTimeOncourse = (double)Math.round(totalTimeOncourse * 1000d) / 1000d;
         progress = 100;
     }
     
@@ -306,6 +326,38 @@ public class DriverAnalysisBean
 
     public void setAvgBestRun(double avgBestRun) {
         this.avgBestRun = avgBestRun;
+    }
+
+    public long getTotalCones() {
+        return totalCones;
+    }
+
+    public void setTotalCones(long totalCones) {
+        this.totalCones = totalCones;
+    }
+
+    public long getTotalOffcourse() {
+        return totalOffcourse;
+    }
+
+    public void setTotalOffcourse(long totalOffcourse) {
+        this.totalOffcourse = totalOffcourse;
+    }
+
+    public double getTotalTimeOncourse() {
+        return totalTimeOncourse;
+    }
+
+    public void setTotalTimeOncourse(double totalTimeOncourse) {
+        this.totalTimeOncourse = totalTimeOncourse;
+    }
+
+    public long getTotalRuns() {
+        return totalRuns;
+    }
+
+    public void setTotalRuns(long totalRuns) {
+        this.totalRuns = totalRuns;
     }
     
     

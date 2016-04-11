@@ -58,7 +58,7 @@
                     </p:progressBar>
                 </h:form>
             </p:layoutUnit>
-            <p:layoutUnit position="south" size="520">
+            <p:layoutUnit position="south" size="500">
                 <p:dataGrid id="analysisGrid" value="#{driverAnalysis.events}" var="event" rows="3" columns="3" paginator="true" paginatorPosition="top" layout="grid">
                     <f:facet name="header" >
                         #{driverAnalysis.eventsSize} events
@@ -131,6 +131,19 @@
                         <h:outputText value="#{driverAnalysis.avgCones}" />
                         <h:outputText value="Best Run Number" />
                         <h:outputText value="#{driverAnalysis.avgBestRun}" />
+                    </p:panelGrid>
+                    <p:panelGrid columns="2" columnClasses="descriptionColumn" style="width:100%; margin-top: 10px;">
+                        <f:facet name="header" >
+                            Totals for #{driverAnalysis.driver}
+                        </f:facet>
+                        <h:outputText value="Total Runs" />
+                        <h:outputText value="#{driverAnalysis.totalRuns}" />
+                        <h:outputText value="Time Spent on Course" />
+                        <h:outputText value="#{driverAnalysis.totalTimeOncourse} seconds" />
+                        <h:outputText value="Offcourses" />
+                        <h:outputText value="#{driverAnalysis.totalOffcourse}" />
+                        <h:outputText value="Cones Hit" />
+                        <h:outputText value="#{driverAnalysis.totalCones}" />
                     </p:panelGrid>
                 </p:overlayPanel>
             </p:layoutUnit>

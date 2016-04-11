@@ -6,18 +6,22 @@
 package autocrossdb.backing;
 
 import autocrossdb.component.Award;
+import autocrossdb.entities.Cars;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -39,24 +43,28 @@ public class AwardsInfoBean
     private List<List<String>> individualAwards2016;
     private List<List<String>> classAwards2016;
     private List<List<String>> eventAwards2016;
+    private List<List<String>> carAwards2016;
     private List<Long> stats2016;
     
     private List<List<String>> individualAwards2015;
     private List<List<String>> classAwards2015;
     private List<List<String>> eventAwards2015;
+    private List<List<String>> carAwards2015;
     private List<Long> stats2015;
     
     private List<List<String>> individualAwards2014;
     private List<List<String>> classAwards2014;
     private List<List<String>> eventAwards2014;
+    private List<List<String>> carAwards2014;
     private List<Long> stats2014;
     
     private List<List<String>> individualAwards2013;
     private List<List<String>> classAwards2013;
     private List<List<String>> eventAwards2013;
+    private List<List<String>> carAwards2013;
     private List<Long> stats2013;
     
-    
+
     
     @PersistenceContext
     private EntityManager em;
@@ -82,6 +90,11 @@ public class AwardsInfoBean
         eventAwards2015 = getEventAwardsForYear(2015);
         eventAwards2014 = getEventAwardsForYear(2014);
         eventAwards2013 = getEventAwardsForYear(2013);
+        
+        carAwards2016 = getCarAwardsForYear(2016);
+        carAwards2015 = getCarAwardsForYear(2015);
+        carAwards2014 = getCarAwardsForYear(2014);
+        carAwards2013 = getCarAwardsForYear(2013);
     }
     
     private List<Long> getStatsForYear(int year)
@@ -206,6 +219,82 @@ public class AwardsInfoBean
         awards.add(populateAward(objectQuery, "Dirtiest Class", "[1] hit [0] cones per driver per event.", 2));
         return awards;
     }
+    
+    public List<List<String>> getCarAwardsForYear(int year)
+    {
+        List<List<String>> awards = new ArrayList<List<String>>();
+        Calendar beginYear = Calendar.getInstance();
+        Calendar endYear = Calendar.getInstance();
+        beginYear.set(year, Calendar.JANUARY, 1);
+        endYear.set(year, Calendar.DECEMBER, 31);
+        
+        List<Object[]> objectQuery = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runCarName from Runs r where r.runOffcourse = 'N' AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runEventUrl, r.runClassName" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add biggest class at event
+        List<Award> carAwards = new ArrayList();
+        carAwards.add(new Award(0, "UNKNOWN"));
+        List<Cars> carList = em.createQuery("SELECT c FROM Cars c").getResultList();
+        for(Object[] o : objectQuery)
+        {
+            boolean added = false;
+            for(Cars c : carList)
+            {
+                if(o[2].toString().contains(c.getCarMake()))
+                {
+                    Cars currentMake = c;
+                    Award temp = new Award(1, currentMake.getCarMake());
+                    if(carAwards.contains(temp))
+                    {
+                        Award oldAward = carAwards.get(carAwards.indexOf(new Award(0, currentMake.getCarMake())));
+                        oldAward.setValue(oldAward.getValue() + 1);
+                    }
+                    else
+                    {
+                        carAwards.add(temp);
+                    }
+                    added = true;
+                    break;
+                }
+                else
+                {
+                    String alternate = c.getCarAlternatives();
+                    if(alternate != null)
+                    {
+                        String[] alternatives = alternate.split(",");
+                        for(int x = 0; x < alternatives.length; x++)
+                        {
+                            if(o[2].toString().contains(alternatives[x]))
+                            {
+                                Cars currentMake = c;
+                                Award temp = new Award(1, currentMake.getCarMake());
+                                if(carAwards.contains(temp))
+                                {
+                                    Award oldAward = carAwards.get(carAwards.indexOf(new Award(0, currentMake.getCarMake())));
+                                    oldAward.setValue(oldAward.getValue() + 1);
+                                }
+                                else
+                                {
+                                    carAwards.add(temp);
+                                }
+                                added = true;
+                                break;
+                            }
+                        }
+                    }
+                            
+                    
+                }
+            }
+            if(!added)
+            {
+                Award oldUnknown = carAwards.get(carAwards.indexOf(new Award(0, "UNKNOWN")));
+                oldUnknown.setValue(oldUnknown.getValue() + 1);
+            }
+        }
+        Collections.sort(carAwards, Collections.reverseOrder());
+        awards.add(populateAward(carAwards, "Most Class Wins by Make", "[name] had [value] class wins."));
+
+        return awards;
+    }
 
     private static List<String> populateAward(List<Object[]> query, String awardHeader, String awardText, int replace)
     {
@@ -259,6 +348,10 @@ public class AwardsInfoBean
                 if(awardText.contains("cones per attended event"))
                 {
                     awardText = awardText.replace("[value]", String.format("%.3f" , award.get(i).getValue()/100));
+                }
+                else if(awardText.contains("class wins."))
+                {
+                    awardText = awardText.replace("[value]", String.format("%.0f" , award.get(i).getValue()));
                 }
                 else
                 {
@@ -460,6 +553,38 @@ public class AwardsInfoBean
 
     public void setStats2013(List<Long> stats2013) {
         this.stats2013 = stats2013;
+    }
+
+    public List<List<String>> getCarAwards2016() {
+        return carAwards2016;
+    }
+
+    public void setCarAwards2016(List<List<String>> carAwards2016) {
+        this.carAwards2016 = carAwards2016;
+    }
+
+    public List<List<String>> getCarAwards2015() {
+        return carAwards2015;
+    }
+
+    public void setCarAwards2015(List<List<String>> carAwards2015) {
+        this.carAwards2015 = carAwards2015;
+    }
+
+    public List<List<String>> getCarAwards2014() {
+        return carAwards2014;
+    }
+
+    public void setCarAwards2014(List<List<String>> carAwards2014) {
+        this.carAwards2014 = carAwards2014;
+    }
+
+    public List<List<String>> getCarAwards2013() {
+        return carAwards2013;
+    }
+
+    public void setCarAwards2013(List<List<String>> carAwards2013) {
+        this.carAwards2013 = carAwards2013;
     }
 
     

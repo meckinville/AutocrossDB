@@ -44,7 +44,7 @@
             </p:layoutUnit>
             <p:layoutUnit position="center">
                 <h:form id="nemesisDataForm">
-                    <p:dataGrid id="nemesisGrid" value="#{nemesis.nemesisList}" var="nem" rows="2" columns="2" paginatorPosition="top" paginator="true" >
+                    <p:dataGrid id="nemesisGrid" value="#{nemesis.nemesisList}" var="nem" rows="2" columns="4" paginatorPosition="top" paginator="true" >
                         <p:panel header="#{nem.name}" styleClass="nemesisPanel" >
                             <p:panelGrid columns="2" styleClass="nemesisGrid" columnClasses="descriptionColumn ">
                                 <h:outputLabel for="nemesisRank" value="Nemesis Rank" />
@@ -56,12 +56,6 @@
                                 <h:outputLabel for="nemesisEvents" value="Events Together" />
                                 <h:outputText id="nemesisEvents" value="#{nem.eventsTogether}" />
                             </p:panelGrid>
-                            <p:dataList value="#{nem.carsDriven}" var="car" type="definition" styleClass="nemesisCarList" >
-                                <f:facet name="header">
-                                    Cars Driven by Nemesis
-                                </f:facet>
-                                #{car}
-                            </p:dataList>
                         </p:panel>
                     </p:dataGrid>
                 </h:form>
