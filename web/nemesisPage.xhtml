@@ -14,7 +14,7 @@
             <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
         </f:facet>
         <p:layout fullPage="true">
-            <p:layoutUnit position="north" size="100" >
+            <p:layoutUnit styleClass="menuBar" position="north" size="60" >
                 <p:tabMenu activeIndex="#{param.i}">
                     <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
                         <f:param name="i" value="0"/>
@@ -44,7 +44,22 @@
             </p:layoutUnit>
             <p:layoutUnit position="center">
                 <h:form id="nemesisDataForm">
-                    <p:dataGrid id="nemesisGrid" value="#{nemesis.nemesisList}" var="nem" rows="2" columns="4" paginatorPosition="top" paginator="true" >
+                    <p:panel styleClass="descriptionPanel" id="nemesisInfo" header="How Nemesis are Determined" toggleable="true" collapsed="true">
+                        <h:outputText value="The Nemesis Finder looks at all events in the past year. It creates a list of drivers, keeping track of their average
+                                      raw differential and pax differential vs you."/>
+                        <br />
+                        <br />
+                        <h:outputText value="This list is then sorted by the absolute value of all other driver's
+                                      raw differential and pax differential vs you. The closer your differential is to 0, the higher the nemesis's rank. 
+                                      The top 20 nemesis are shown." />
+                        <br />
+                        <br />
+                        <h:outputText value="Other drivers are only eligible to be your nemesis if you have attended at least 3 events together.
+                                      The driver must also be within 2 seconds differential of you to be considered a nemesis. If the nemesis finder is unable to find
+                                      a nemesis for you, it is either because you have not attended enough events or there are no other drivers that are consistently within
+                                      2 seconds of you." />
+                    </p:panel>
+                    <p:dataGrid id="nemesisGrid" value="#{nemesis.nemesisList}" var="nem" rows="4" columns="2" paginatorPosition="top" paginator="true" >
                         <p:panel header="#{nem.name}" styleClass="nemesisPanel" >
                             <p:panelGrid columns="2" styleClass="nemesisGrid" columnClasses="descriptionColumn ">
                                 <h:outputLabel for="nemesisRank" value="Nemesis Rank" />

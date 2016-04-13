@@ -88,7 +88,6 @@ public class CarUtil
             }
             if(!added)
             {
-                System.out.println("UNKNOWN: " + o[2].toString());
                 Award oldUnknown = carAwards.get(carAwards.indexOf(new Award(0, "UNKNOWN")));
                 oldUnknown.setValue(oldUnknown.getValue() + 1);
             }
@@ -160,7 +159,6 @@ public class CarUtil
             }
             if(!added)
             {
-                System.out.println("UNKNOWN: " + o);
                 Award oldUnknown = carAwards.get(carAwards.indexOf(new Award(0, "UNKNOWN")));
                 oldUnknown.setValue(oldUnknown.getValue() + 1);
             }

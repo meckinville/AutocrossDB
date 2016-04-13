@@ -38,6 +38,7 @@ public class AwardsInfoBean
     
     private static final int PLACES_TO_POPULATE = 5;
     
+    
     private List<List<String>> individualAwards2016;
     private List<List<String>> classAwards2016;
     private List<List<String>> eventAwards2016;
@@ -175,6 +176,14 @@ public class AwardsInfoBean
         objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as average, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by average desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add average cones per driver
         awards.add(populateAward(objectQuery, "Average Cones Per Driver", "[0] cones hit per driver at [1] [2] with [3].", 3));
+        
+        objectQuery = em.createQuery("SELECT count(*), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate FROM Runs r WHERE r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runOffcourse = 'Y' group by r.runEventUrl order by count(*) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add most offcourses
+        awards.add(populateAward(objectQuery, "Most Confusing Course", "[0] offcourse calls at [1] [3] with [2].", 3));
+        
+        objectQuery = em.createQuery("SELECT count(*), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runNumber = 1 and r.runClassName.className = 'NS' group by r.runEventUrl order by count(*) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add novice invasion
+        awards.add(populateAward(objectQuery, "Novice Invasion", "[0] novices attended [1] [3] with [2].", 3));
         
         return awards;
     }
@@ -525,6 +534,7 @@ public class AwardsInfoBean
     public void setCarAwards2013(List<List<String>> carAwards2013) {
         this.carAwards2013 = carAwards2013;
     }
+
 
     
 

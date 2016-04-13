@@ -8,494 +8,540 @@
         <title>Autocross DB</title>
     </h:head>
     <h:body>
-        <f:facet name="last">
-            <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
-        </f:facet>
-        <p:tabMenu activeIndex="#{param.i}">
-            <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
-                <f:param name="i" value="0"/>
-            </p:menuitem>
-            <p:menuitem value="Event Analysis" outcome="eventInfoPage" icon="fa fa-calendar">
-                <f:param name="i" value="1"/>
-            </p:menuitem>
-            <p:menuitem value="New Event" outcome="loadEventPage" icon="fa fa-upload">
-                <f:param name="i" value="2"/>
-            </p:menuitem>
-            <p:menuitem value="Chart" outcome="comparisonChart" icon="fa fa-line-chart">
-                <f:param name="i" value="3" />
-            </p:menuitem>
-            <p:menuitem value="Awards" outcome="awardsPage" icon="fa fa-trophy" >
-                <f:param name="i" value="4" />
-            </p:menuitem>
-            <p:menuitem value="Driver Analysis" outcome="driverAnalysisPage" icon="fa fa-search">
-                <f:param name="i" value="5" />
-            </p:menuitem>
-            <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
-                <f:param name="i" value="6" />
-            </p:menuitem>
-            <p:menuitem value="Nemesis Finder" outcome="nemesisPage" icon="fa fa-user-secret" >
-                <f:param name="i" value="7" />
-            </p:menuitem>
-        </p:tabMenu> 
-        <p:tabView>
-            <p:tab title="2016 Awards" >
-                <h:outputText value="Number of Events in 2016: #{awardsInfo.stats2016.get(0)}" />
-                <br />
-                <h:outputText value="Total Unique Drivers in 2016: #{awardsInfo.stats2016.get(1)}" />
-                <p:tabView orientation="left">
-                    <p:tab title="Individual Awards">
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(3)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(4)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(4).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(5)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(5).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(6)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(6).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(7)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(7).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(8)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(8).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2016.get(9)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2016.get(9).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            
-                            
-                        </p:panelGrid>
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="60" styleClass="menuBar" >
+                <f:facet name="last">
+                    <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
+                </f:facet>
+                <p:tabMenu activeIndex="#{param.i}">
+                    <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
+                        <f:param name="i" value="0"/>
+                    </p:menuitem>
+                    <p:menuitem value="Event Analysis" outcome="eventInfoPage" icon="fa fa-calendar">
+                        <f:param name="i" value="1"/>
+                    </p:menuitem>
+                    <p:menuitem value="New Event" outcome="loadEventPage" icon="fa fa-upload">
+                        <f:param name="i" value="2"/>
+                    </p:menuitem>
+                    <p:menuitem value="Chart" outcome="comparisonChart" icon="fa fa-line-chart">
+                        <f:param name="i" value="3" />
+                    </p:menuitem>
+                    <p:menuitem value="Awards" outcome="awardsPage" icon="fa fa-trophy" >
+                        <f:param name="i" value="4" />
+                    </p:menuitem>
+                    <p:menuitem value="Driver Analysis" outcome="driverAnalysisPage" icon="fa fa-search">
+                        <f:param name="i" value="5" />
+                    </p:menuitem>
+                    <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
+                        <f:param name="i" value="6" />
+                    </p:menuitem>
+                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" icon="fa fa-user-secret" >
+                        <f:param name="i" value="7" />
+                    </p:menuitem>
+                </p:tabMenu> 
+            </p:layoutUnit>
+            <p:layoutUnit position="center" >
+                <p:tabView>
+                    <p:tab title="2016 Awards" >
+                        <h:outputText value="Number of Events in 2016: #{awardsInfo.stats2016.get(0)}" />
+                        <br />
+                        <h:outputText value="Total Unique Drivers in 2016: #{awardsInfo.stats2016.get(1)}" />
+                        <p:tabView orientation="left">
+                            <p:tab title="Individual Awards">
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(0).get(0)}
+                                            <p:commandButton icon="fa fa-question" onclick="PF('infoDialog').show()"/>
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(3)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(4)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(4).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(5)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(5).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(6)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(6).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(7)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(7).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(8)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(8).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(9)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2016.get(9).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+
+
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Event Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.eventAwards2016.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2016.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2016.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2016.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2016.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2016.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2016.get(3)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2016.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2016.get(4)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2016.get(4).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2016.get(5)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2016.get(5).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2016.get(6)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2016.get(6).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Class Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.classAwards2016.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2016.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2016.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2016.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2016.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2016.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2016.get(3)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2016.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Car Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.carAwards2016.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.carAwards2016.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.carAwards2016.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.carAwards2016.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+                            </p:tab>
+                        </p:tabView>
+
                     </p:tab>
-                    <p:tab title="Event Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.eventAwards2016.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2016.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2016.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2016.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2016.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2016.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2016.get(3)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2016.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2016.get(4)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2016.get(4).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
+                    <p:tab title="2015 Awards" >
+                        <h:outputText value="Number of Events in 2015: #{awardsInfo.stats2015.get(0)}" />
+                        <br />
+                        <h:outputText value="Total Unique Drivers in 2015: #{awardsInfo.stats2015.get(1)}" />
+                        <p:tabView orientation="left">
+                            <p:tab title="Individual Awards">
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(3)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(4)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(4).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(5)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(5).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(6)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(6).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(7)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(7).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(8)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(8).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2015.get(9)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2015.get(9).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+
+
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Event Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.eventAwards2015.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2015.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2015.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2015.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2015.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2015.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2015.get(3)}" var="driver" type="ordered"  first="1">
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2015.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2015.get(4)}" var="driver" type="ordered"  first="1">
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2015.get(4).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2015.get(5)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2015.get(5).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2015.get(6)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2015.get(6).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Class Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.classAwards2015.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2015.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2015.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2015.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2015.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2015.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2015.get(3)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2015.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Car Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.carAwards2015.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.carAwards2015.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.carAwards2015.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.carAwards2015.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+                            </p:tab>
+                        </p:tabView>
+
                     </p:tab>
-                    <p:tab title="Class Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.classAwards2016.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2016.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2016.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2016.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2016.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2016.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2016.get(3)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2016.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            
-                        </p:panelGrid>
-                    </p:tab>
-                    <p:tab title="Car Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.carAwards2016.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.carAwards2016.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.carAwards2016.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.carAwards2016.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
+                    <p:tab title="2014 Awards" >
+                        <h:outputText value="Number of Events in 2014: #{awardsInfo.stats2014.get(0)}" />
+                        <br />
+                        <h:outputText value="Total Unique Drivers in 2014: #{awardsInfo.stats2014.get(1)}" />
+                        <p:tabView orientation="left">
+                            <p:tab title="Individual Awards">
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(3)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(4)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(4).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(5)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(5).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(6)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(6).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(7)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(7).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(8)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(8).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.individualAwards2014.get(9)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.individualAwards2014.get(9).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Event Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.eventAwards2014.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2014.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2014.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2014.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2014.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2014.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2014.get(3)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2014.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2014.get(4)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2014.get(4).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2014.get(5)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2014.get(5).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.eventAwards2014.get(6)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.eventAwards2014.get(6).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+
+                            </p:tab>
+                            <p:tab title="Class Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.classAwards2014.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2014.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2014.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2014.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2014.get(2)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2014.get(2).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.classAwards2014.get(3)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.classAwards2014.get(3).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Car Awards" >
+                                <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                    <p:dataList value="#{awardsInfo.carAwards2014.get(0)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.carAwards2014.get(0).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                    <p:dataList value="#{awardsInfo.carAwards2014.get(1)}" var="driver" type="ordered" first="1" >
+                                        <f:facet name="header" >
+                                            #{awardsInfo.carAwards2014.get(1).get(0)}
+                                        </f:facet>
+                                        #{driver} 
+                                    </p:dataList>
+                                </p:panelGrid>
+                            </p:tab>
+                        </p:tabView>
+
                     </p:tab>
                 </p:tabView>
-                
-            </p:tab>
-            <p:tab title="2015 Awards" >
-                <h:outputText value="Number of Events in 2015: #{awardsInfo.stats2015.get(0)}" />
-                <br />
-                <h:outputText value="Total Unique Drivers in 2015: #{awardsInfo.stats2015.get(1)}" />
-                <p:tabView orientation="left">
-                    <p:tab title="Individual Awards">
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(3)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(4)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(4).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(5)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(5).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(6)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(6).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(7)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(7).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(8)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(8).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2015.get(9)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2015.get(9).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            
-                            
-                        </p:panelGrid>
-                    </p:tab>
-                    <p:tab title="Event Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.eventAwards2015.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2015.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2015.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2015.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2015.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2015.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2015.get(3)}" var="driver" type="ordered"  first="1">
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2015.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2015.get(4)}" var="driver" type="ordered"  first="1">
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2015.get(4).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
-                    </p:tab>
-                    <p:tab title="Class Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.classAwards2015.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2015.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2015.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2015.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2015.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2015.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2015.get(3)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2015.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
-                    </p:tab>
-                    <p:tab title="Car Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.carAwards2015.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.carAwards2015.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.carAwards2015.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.carAwards2015.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
-                    </p:tab>
-                </p:tabView>
-                
-            </p:tab>
-            <p:tab title="2014 Awards" >
-                <h:outputText value="Number of Events in 2014: #{awardsInfo.stats2014.get(0)}" />
-                <br />
-                <h:outputText value="Total Unique Drivers in 2014: #{awardsInfo.stats2014.get(1)}" />
-                <p:tabView orientation="left">
-                    <p:tab title="Individual Awards">
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(3)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(4)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(4).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(5)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(5).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(6)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(6).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(7)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(7).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(8)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(8).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.individualAwards2014.get(9)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.individualAwards2014.get(9).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
-                    </p:tab>
-                    <p:tab title="Event Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.eventAwards2014.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2014.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2014.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2014.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2014.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2014.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2014.get(3)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2014.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.eventAwards2014.get(4)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.eventAwards2014.get(4).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
-                        
-                    </p:tab>
-                    <p:tab title="Class Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.classAwards2014.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2014.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2014.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2014.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2014.get(2)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2014.get(2).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.classAwards2014.get(3)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.classAwards2014.get(3).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
-                    </p:tab>
-                    <p:tab title="Car Awards" >
-                        <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                            <p:dataList value="#{awardsInfo.carAwards2014.get(0)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.carAwards2014.get(0).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                            <p:dataList value="#{awardsInfo.carAwards2014.get(1)}" var="driver" type="ordered" first="1" >
-                                <f:facet name="header" >
-                                    #{awardsInfo.carAwards2014.get(1).get(0)}
-                                </f:facet>
-                                #{driver} 
-                            </p:dataList>
-                        </p:panelGrid>
-                    </p:tab>
-                </p:tabView>
-                
-            </p:tab>
-        </p:tabView>
+            </p:layoutUnit>
+        </p:layout>
+        <p:dialog header="Test Dialog" widgetVar="infoDialog" modal="true" >
+            <h:outputText value="test"/>
+        </p:dialog>
           <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

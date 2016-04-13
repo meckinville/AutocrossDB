@@ -12,6 +12,10 @@ body {
     font-family: Arial;
 }
 
+.menuBar.ui-layout-north>div {
+    overflow: hidden;
+}
+
 .ui-tabmenuitem>a>span.fa {
     margin: 3px;
     font-size: 13px;
@@ -51,7 +55,7 @@ td>a>span.fa-trophy {
 
 
 .nemesisPanel {
-    height: 400px;
+    height: 300px;
 }
 
 .nemesisCarList {
@@ -70,6 +74,11 @@ td>a>span.fa-trophy {
 
 .nemesisGrid>tbody>tr>td {
     width: 50%;
+}
+
+.descriptionPanel.ui-panel {
+    border: 0px;
+    padding: 0px;
 }
 
 .analysisDataTable>*>*>*>tr>td {
@@ -97,10 +106,6 @@ td>a>span.fa-trophy {
     width: 100%;
 }
 
-.award.ui-datalist>*>ol {
-    list-style-type: none;
-    text-align: center;
-}
 
 .centeredPanelGrid {
     margin: 0 auto;
