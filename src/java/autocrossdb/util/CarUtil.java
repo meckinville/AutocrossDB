@@ -32,6 +32,11 @@ public class CarUtil
         carAwards.add(new Award(0, "UNKNOWN"));
         for(Object[] o : query)
         {
+            //if the vehicle name is blank, skip this vehicle
+            if(o[2].toString().equals("") || o[2].toString() == null)
+            {
+                continue;
+            }
             boolean added = false;
             for(Cars c : cars)
             {
@@ -83,6 +88,7 @@ public class CarUtil
             }
             if(!added)
             {
+                System.out.println("UNKNOWN: " + o[2].toString());
                 Award oldUnknown = carAwards.get(carAwards.indexOf(new Award(0, "UNKNOWN")));
                 oldUnknown.setValue(oldUnknown.getValue() + 1);
             }
@@ -96,10 +102,16 @@ public class CarUtil
     //Strings of car names
     public List<Award> getParticipation(List<String> query)
     {
+        
         List<Award> carAwards = new ArrayList();
         carAwards.add(new Award(0, "UNKNOWN"));
         for(String o : query)
         {
+            //if the vehicle name is blank, skip this vehicle
+            if(o.equals("") || o == null)
+            {
+                continue;
+            }
             boolean added = false;
             for(Cars c : cars)
             {
@@ -148,6 +160,7 @@ public class CarUtil
             }
             if(!added)
             {
+                System.out.println("UNKNOWN: " + o);
                 Award oldUnknown = carAwards.get(carAwards.indexOf(new Award(0, "UNKNOWN")));
                 oldUnknown.setValue(oldUnknown.getValue() + 1);
             }

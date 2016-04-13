@@ -11,18 +11,15 @@ import autocrossdb.util.CarUtil;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -291,7 +288,7 @@ public class AwardsInfoBean
                 {
                     awardText = awardText.replace("[value]", String.format("%.3f" , award.get(i).getValue()/100));
                 }
-                else if(awardText.contains("class wins."))
+                else if(awardText.contains("class wins.") || awardText.contains("cars show up"))
                 {
                     awardText = awardText.replace("[value]", String.format("%.0f" , award.get(i).getValue()));
                 }

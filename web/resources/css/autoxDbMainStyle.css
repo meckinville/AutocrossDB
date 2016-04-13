@@ -93,8 +93,13 @@ td>a>span.fa-trophy {
     font-weight: bold;
 }
 
-.award.ui-panelgrid>*>tr {
+.award.ui-panelgrid {
     width: 100%;
+}
+
+.award.ui-datalist>*>ol {
+    list-style-type: none;
+    text-align: center;
 }
 
 .centeredPanelGrid {
