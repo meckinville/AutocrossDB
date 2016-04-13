@@ -50,6 +50,30 @@ public class HomePageBean
         driverCount = (long)em.createQuery("SELECT count(distinct r.runDriverName) from Runs r").getResultList().get(0);
         clubCount = (long)em.createQuery("SELECT count(distinct r.runEventUrl.eventClubName) from Runs r").getResultList().get(0);
     }
+    
+    public String getClubLink(UpcomingEvents e)
+    {
+        if(e.getUpcomingClub().equals("MARTINSCC"))
+        {
+            return "http://www.martinscc.org";
+        }
+        else if(e.getUpcomingClub().equals("CFRSCCA"))
+        {
+            return "http://www.cfrsolo2.com";
+        }
+        else if(e.getUpcomingClub().equals("GCAC"))
+        {
+            return "http://www.gulfcoastautocrossers.com";
+        }
+        else if(e.getUpcomingClub().equals("FAST"))
+        {
+            return "http://www.drivefast.org";
+        }
+        else
+        {
+            return "";
+        }
+    }
 
     public List<String> getImages() {
         return images;

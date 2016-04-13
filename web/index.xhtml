@@ -54,7 +54,9 @@
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Club" style="text-align:center;" >
-                        <p:graphicImage name="images/clubs/#{event.upcomingClub}.jpg" alt="#{event.upcomingClub}" style="width:100px; height:48px;" />
+                        <h:outputLink value="#{homePage.getClubLink(event)}" >
+                            <p:graphicImage name="images/clubs/#{event.upcomingClub}.jpg" alt="#{event.upcomingClub}" style="width:100px; height:48px;" />
+                        </h:outputLink>
                     </p:column>
                     <p:column headerText="Location" style="text-align:center;" >
                         <h:outputText value="#{event.upcomingLocation}" />
