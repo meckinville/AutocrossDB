@@ -5,7 +5,7 @@
  */
 package autocrossdb.util;
 
-import autocrossdb.component.Award;
+import autocrossdb.component.AwardHelper;
 import autocrossdb.entities.Cars;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,10 +26,10 @@ public class CarUtil
     
     //query format:
     //0=min run time, 1=driver name, 2=car name
-    public List<Award> getClassWins(List<Object[]> query)
+    public List<AwardHelper> getClassWins(List<Object[]> query)
     {
-        List<Award> carAwards = new ArrayList();
-        carAwards.add(new Award(0, "UNKNOWN"));
+        List<AwardHelper> carAwards = new ArrayList();
+        carAwards.add(new AwardHelper(0, "UNKNOWN"));
         for(Object[] o : query)
         {
             //if the vehicle name is blank, skip this vehicle
@@ -43,10 +43,10 @@ public class CarUtil
                 if(o[2].toString().contains(c.getCarMake()))
                 {
                     Cars currentMake = c;
-                    Award temp = new Award(1, currentMake.getCarMake());
+                    AwardHelper temp = new AwardHelper(1, currentMake.getCarMake());
                     if(carAwards.contains(temp))
                     {
-                        Award oldAward = carAwards.get(carAwards.indexOf(new Award(0, currentMake.getCarMake())));
+                        AwardHelper oldAward = carAwards.get(carAwards.indexOf(new AwardHelper(0, currentMake.getCarMake())));
                         oldAward.setValue(oldAward.getValue() + 1);
                     }
                     else
@@ -67,10 +67,10 @@ public class CarUtil
                             if(o[2].toString().contains(alternatives[x]))
                             {
                                 Cars currentMake = c;
-                                Award temp = new Award(1, currentMake.getCarMake());
+                                AwardHelper temp = new AwardHelper(1, currentMake.getCarMake());
                                 if(carAwards.contains(temp))
                                 {
-                                    Award oldAward = carAwards.get(carAwards.indexOf(new Award(0, currentMake.getCarMake())));
+                                    AwardHelper oldAward = carAwards.get(carAwards.indexOf(new AwardHelper(0, currentMake.getCarMake())));
                                     oldAward.setValue(oldAward.getValue() + 1);
                                 }
                                 else
@@ -88,7 +88,7 @@ public class CarUtil
             }
             if(!added)
             {
-                Award oldUnknown = carAwards.get(carAwards.indexOf(new Award(0, "UNKNOWN")));
+                AwardHelper oldUnknown = carAwards.get(carAwards.indexOf(new AwardHelper(0, "UNKNOWN")));
                 oldUnknown.setValue(oldUnknown.getValue() + 1);
             }
         }
@@ -99,11 +99,11 @@ public class CarUtil
     
     //query format:
     //Strings of car names
-    public List<Award> getParticipation(List<String> query)
+    public List<AwardHelper> getParticipation(List<String> query)
     {
         
-        List<Award> carAwards = new ArrayList();
-        carAwards.add(new Award(0, "UNKNOWN"));
+        List<AwardHelper> carAwards = new ArrayList();
+        carAwards.add(new AwardHelper(0, "UNKNOWN"));
         for(String o : query)
         {
             //if the vehicle name is blank, skip this vehicle
@@ -116,10 +116,10 @@ public class CarUtil
             {
                 if(o.contains(c.getCarMake()))
                 {
-                    Award temp = new Award(1, c.getCarMake());
+                    AwardHelper temp = new AwardHelper(1, c.getCarMake());
                     if(carAwards.contains(temp))
                     {
-                        Award oldAward = carAwards.get(carAwards.indexOf(new Award(0, c.getCarMake())));
+                        AwardHelper oldAward = carAwards.get(carAwards.indexOf(new AwardHelper(0, c.getCarMake())));
                         oldAward.setValue(oldAward.getValue() + 1);
                     }
                     else
@@ -140,10 +140,10 @@ public class CarUtil
                             if(o.contains(alternatives[x]))
                             {
                                 Cars currentMake = c;
-                                Award temp = new Award(1, currentMake.getCarMake());
+                                AwardHelper temp = new AwardHelper(1, currentMake.getCarMake());
                                 if(carAwards.contains(temp))
                                 {
-                                    Award oldAward = carAwards.get(carAwards.indexOf(new Award(0, currentMake.getCarMake())));
+                                    AwardHelper oldAward = carAwards.get(carAwards.indexOf(new AwardHelper(0, currentMake.getCarMake())));
                                     oldAward.setValue(oldAward.getValue() + 1);
                                 }
                                 else
@@ -159,7 +159,7 @@ public class CarUtil
             }
             if(!added)
             {
-                Award oldUnknown = carAwards.get(carAwards.indexOf(new Award(0, "UNKNOWN")));
+                AwardHelper oldUnknown = carAwards.get(carAwards.indexOf(new AwardHelper(0, "UNKNOWN")));
                 oldUnknown.setValue(oldUnknown.getValue() + 1);
             }
         }

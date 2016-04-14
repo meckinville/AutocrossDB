@@ -5,93 +5,59 @@
  */
 package autocrossdb.component;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author rmcconville
  */
-public class Award implements Comparable<Award>
+public class Award 
 {
-    private double value;
-    private String name;
+    List<String> awardStrings;
+    String awardTitle;
+    String awardInfo;
     
-    public Award(Object[] award)
+    public Award(String title, String info)
     {
-        this.value = (double)award[0];
-        this.name = String.valueOf(award[1]);
+        this.awardStrings = new ArrayList();
+        this.awardTitle = title;
+        this.awardInfo = info;
     }
     
-    public Award(double l, String s)
+    public void add(String s)
     {
-        this.name = s; 
-        this.value = l;
+        awardStrings.add(s);
+    }
+    
+    public int size()
+    {
+        return awardStrings.size();
     }
 
-    public double getValue() {
-        return value;
+    public List<String> getAwardStrings() {
+        return awardStrings;
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public void setAwardStrings(List<String> awardStrings) {
+        this.awardStrings = awardStrings;
     }
 
-    public String getName() {
-        return name;
+    public String getAwardTitle() {
+        return awardTitle;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAwardTitle(String awardTitle) {
+        this.awardTitle = awardTitle;
     }
-    
-    @Override
-    public boolean equals(Object object)
-    {
-        if(object != null && object instanceof Award)
-        {
-            if(this.name.equalsIgnoreCase(((Award)object).getName()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+
+    public String getAwardInfo() {
+        return awardInfo;
     }
-    @Override
-    public int hashCode() 
-    {
-        int hash = 7;
-        hash = 43 * hash + Objects.hashCode(this.name);
-        return hash;
+
+    public void setAwardInfo(String awardInfo) {
+        this.awardInfo = awardInfo;
     }
     
     
-    @Override
-    public int compareTo(Award a)
-    {
-        if(this.getValue() > a.getValue())
-        {
-            return 1;
-        }
-        else if(this.getValue() < a.getValue())
-        {
-            return -1;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    
-    @Override
-    public String toString()
-    {
-        return this.name + " " + this.value;
-    }
 }

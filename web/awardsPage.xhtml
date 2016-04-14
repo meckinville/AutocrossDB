@@ -49,16 +49,16 @@
                         <p:tabView orientation="left">
                             <p:tab title="Individual Awards">
                                 <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
-                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(0)}" var="driver" type="ordered" first="1" >
+                                    <p:dataList value="#{awardsInfo.xindividualAwards2016.get(0).awardStrings}" var="driver" type="ordered" >
                                         <f:facet name="header" >
-                                            #{awardsInfo.individualAwards2016.get(0).get(0)}
-                                            <p:commandButton icon="fa fa-question" onclick="PF('infoDialog').show()"/>
+                                            #{awardsInfo.xindividualAwards2016.get(0).awardTitle}
+                                            <p:commandButton icon="fa fa-question" onclick="PF('individualDialog').show()"/>
                                         </f:facet>
                                         #{driver} 
                                     </p:dataList>
-                                    <p:dataList value="#{awardsInfo.individualAwards2016.get(1)}" var="driver" type="ordered" first="1" >
+                                    <p:dataList value="#{awardsInfo.xindividualAwards2016.get(1).awardStrings}" var="driver" type="ordered" >
                                         <f:facet name="header" >
-                                            #{awardsInfo.individualAwards2016.get(1).get(0)}
+                                            #{awardsInfo.xindividualAwards2016.get(1).awardTitle}
                                         </f:facet>
                                         #{driver} 
                                     </p:dataList>

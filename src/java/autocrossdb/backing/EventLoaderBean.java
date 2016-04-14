@@ -365,7 +365,7 @@ public class EventLoaderBean
                         {
                             clsName = columns.get(1).text();
                         }
-                        if(clsName.equalsIgnoreCase("NOV"))
+                        if(clsName.equalsIgnoreCase("NOV") || clsName.equalsIgnoreCase("NOV2"))
                         {
                             clsName = "NS";
                         }
@@ -379,7 +379,7 @@ public class EventLoaderBean
                         {
                             Element classLink = classHeaderRow.select("a[name]").first();
                             String cls = classLink.attr("name");
-                            if(cls.equalsIgnoreCase("NOV"))
+                            if(cls.equalsIgnoreCase("NOV")  || clsName.equalsIgnoreCase("NOV2"))
                             {
                                 cls = "NS";
                             }
@@ -441,7 +441,7 @@ public class EventLoaderBean
                                 if(columnText.contains("+"))
                                 {
                                     //check for offcourse
-                                    if(columnText.substring(columnText.indexOf("+")+1).trim().equals("OFF"))
+                                    if(columnText.substring(columnText.indexOf("+")+1).trim().equals("OFF") || columnText.substring(columnText.indexOf("+")+1).trim().equals("DNF"))
                                     {
                                         String runTime = columnText.substring(0,columnText.indexOf("+"));
                                         double paxTime = calculatePax(classToWrite, runTime);
@@ -478,7 +478,7 @@ public class EventLoaderBean
                                 
                             }
                             //else if the column does not have a period but it says OFF it is an off course
-                            else if(columnText.trim().equalsIgnoreCase("OFF"))
+                            else if(columnText.trim().equalsIgnoreCase("OFF") || columnText.substring(columnText.indexOf("+")+1).trim().equals("DNF"))
                             {
                                 runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, 999.999, 999.999, "Y", 0);
                                 runToWrite.setRunClassName(classToWrite);
@@ -544,7 +544,7 @@ public class EventLoaderBean
                             }
                         }
                         //if the column does not contain a period, it might be OFF
-                        else if(columnText.equalsIgnoreCase("OFF"))
+                        else if(columnText.equalsIgnoreCase("OFF") || columnText.substring(columnText.indexOf("+")+1).trim().equals("DNF"))
                         {
                             runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, 999.999, 999.999, "Y", 0);
                             runToWrite.setRunClassName(classToWrite);
