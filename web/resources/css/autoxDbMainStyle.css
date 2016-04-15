@@ -106,6 +106,14 @@ td>a>span.fa-trophy {
     width: 100%;
 }
 
+.awardInfoButton {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.awardInfoDialog.ui-dialog-title-dialog {
+    text-align: center;
+}
 
 .centeredPanelGrid {
     margin: 0 auto;

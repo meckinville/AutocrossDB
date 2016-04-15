@@ -8,6 +8,7 @@ package autocrossdb.backing;
 import autocrossdb.component.Award;
 import autocrossdb.component.AwardHelper;
 import autocrossdb.entities.Cars;
+import autocrossdb.util.AwardInfoUtil;
 import autocrossdb.util.CarUtil;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,29 +42,24 @@ public class AwardsInfoBean
     
     private List<Award> xindividualAwards2016;
     
-    private List<List<String>> individualAwards2016;
-    private List<List<String>> classAwards2016;
-    private List<List<String>> eventAwards2016;
-    private List<List<String>> carAwards2016;
+    private List<Award> individualAwards2016;
+    private List<Award> classAwards2016;
+    private List<Award> eventAwards2016;
+    private List<Award> carAwards2016;
     private List<Long> stats2016;
     
-    private List<List<String>> individualAwards2015;
-    private List<List<String>> classAwards2015;
-    private List<List<String>> eventAwards2015;
-    private List<List<String>> carAwards2015;
+    private List<Award> individualAwards2015;
+    private List<Award> classAwards2015;
+    private List<Award> eventAwards2015;
+    private List<Award> carAwards2015;
     private List<Long> stats2015;
     
-    private List<List<String>> individualAwards2014;
-    private List<List<String>> classAwards2014;
-    private List<List<String>> eventAwards2014;
-    private List<List<String>> carAwards2014;
+    private List<Award> individualAwards2014;
+    private List<Award> classAwards2014;
+    private List<Award> eventAwards2014;
+    private List<Award> carAwards2014;
     private List<Long> stats2014;
     
-    private List<List<String>> individualAwards2013;
-    private List<List<String>> classAwards2013;
-    private List<List<String>> eventAwards2013;
-    private List<List<String>> carAwards2013;
-    private List<Long> stats2013;
     
     private Award selectedAward;
 
@@ -78,7 +74,6 @@ public class AwardsInfoBean
         stats2015 = getStatsForYear(2015);
         stats2016 = getStatsForYear(2016);
         
-        xindividualAwards2016 = xgetIndividualAwardsForYear(2016);
         individualAwards2016 = getIndividualAwardsForYear(2016);
         individualAwards2015 = getIndividualAwardsForYear(2015);
         individualAwards2014 = getIndividualAwardsForYear(2014);
@@ -110,9 +105,9 @@ public class AwardsInfoBean
         return stats;
     }
     
-    public List<List<String>> getIndividualAwardsForYear(int year)
+    public List<Award> getIndividualAwardsForYear(int year)
     {
-        List<List<String>> awards = new ArrayList<List<String>>();
+        List<Award> awards = new ArrayList();
         
         Calendar beginYear = Calendar.getInstance();
         Calendar endYear = Calendar.getInstance();
@@ -122,59 +117,39 @@ public class AwardsInfoBean
         List<Object[]> objectQuery = em.createQuery("SELECT count(e.eventRawWinner), e.eventRawWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventRawWinner order by count(e.eventRawWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         
         //add raw event winners and raw percent wins
-        awards.add(populateAward(objectQuery, "Most Raw Wins", "[1] with [0] raw time wins.", 1));
-        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Highest Percent Raw Wins", "[name] had top raw time at [value]% of attended events."));
+        awards.add(populateAward(objectQuery, "Most Raw Wins", "[1] with [0] raw time wins.", AwardInfoUtil.MOST_RAW_WINS_INFO, 1));
+        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Highest Percent Raw Wins", "[name] had top raw time at [value]% of attended events.", AwardInfoUtil.HIGHEST_RAW_PERCENT_INFO));
         
         objectQuery = em.createQuery("SELECT count(e.eventPaxWinner), e.eventPaxWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventPaxWinner order by count(e.eventPaxWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add pax event winners and pax percent wins
-        awards.add(populateAward(objectQuery, "Most Pax Wins", "[1] with [0] pax time wins.", 1));
-        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Highest Percent Pax Wins", "[name] had top pax time at [value]% of attended events."));
+        awards.add(populateAward(objectQuery, "Most Pax Wins", "[1] with [0] pax time wins.", AwardInfoUtil.MOST_PAX_WINS_INFO, 1));
+        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Highest Percent Pax Wins", "[name] had top pax time at [value]% of attended events.", AwardInfoUtil.HIGHEST_PAX_PERCENT_INFO));
         
         objectQuery = em.createQuery("SELECT sum(r.runCones), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add most cones total and most cones per event
-        awards.add(populateAward(objectQuery, "Most Cones Hit", "[1] with [0] total cones hit.", 1));
-        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Most Cones Hit Per Event Average", "[name] hit [value] cones per attended event."));
+        awards.add(populateAward(objectQuery, "Most Cones Hit", "[1] with [0] total cones hit.", AwardInfoUtil.MOST_CONES_HIT_INFO, 1));
+        awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Most Cones Hit Per Event Average", "[name] hit [value] cones per attended event.", AwardInfoUtil.MOST_CONES_HIT_AVG_INFO));
         
         //add most events attended
-        awards.add(populateAward(eventsAttendedQuery, "Most Events Attended", "[1] with [0] events attended.", 1));
+        awards.add(populateAward(eventsAttendedQuery, "Most Events Attended", "[1] with [0] events attended.", AwardInfoUtil.MOST_EVENTS_ATTENDED_INFO, 1));
         
         objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add most runs taken
-        awards.add(populateAward(objectQuery, "Most Runs Taken", "[1] with [0] runs taken.", 1));
+        awards.add(populateAward(objectQuery, "Most Runs Taken", "[1] with [0] runs taken.", AwardInfoUtil.MOST_RUNS_TAKEN_INFO, 1));
         
         objectQuery = em.createQuery("SELECT count(distinct r.runClassName.className), r.runDriverName from Runs r where r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(distinct r.runClassName.className) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add class jumper
-        awards.add(populateAward(objectQuery, "Class Jumper", "[1] participated in [0] different classes.", 1));
+        awards.add(populateAward(objectQuery, "Class Jumper", "[1] participated in [0] different classes.", AwardInfoUtil.CLASS_JUMPER_INFO, 1));
         
         objectQuery = em.createQuery("SELECT max(r.runCones), r.runDriverName, r.runEventUrl.eventDate, r.runEventUrl.eventLocation, r.runNumber from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runOffcourse = 'N' group by r.runId order by max(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add dirtiest run
-        awards.add(populateAward(objectQuery, "Dirtiest Run", "[1] hit [0] cones on run #[4] at [3] [2].", 4));
+        awards.add(populateAward(objectQuery, "Dirtiest Run", "[1] hit [0] cones on run #[4] at [3] [2].", AwardInfoUtil.DIRTIEST_RUN_INFO, 4));
         
         return awards;
     }
-    
-    public List<Award> xgetIndividualAwardsForYear(int year)
+    public List<Award> getEventAwardsForYear(int year)
     {
         List<Award> awards = new ArrayList();
-        Calendar beginYear = Calendar.getInstance();
-        Calendar endYear = Calendar.getInstance();
-        beginYear.set(year, Calendar.JANUARY, 1);
-        endYear.set(year, Calendar.DECEMBER, 31);
-        List<Object[]> eventsAttendedQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 group by r.runDriverName having count(r.runDriverName) > 3 order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        List<Object[]> objectQuery = em.createQuery("SELECT count(e.eventRawWinner), e.eventRawWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventRawWinner order by count(e.eventRawWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        
-        //add raw event winners and raw percent wins
-        //awards.add(populateAward(objectQuery, "Most Raw Wins", "[1] with [0] raw time wins.", 1));
-        //awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Highest Percent Raw Wins", "[name] had top raw time at [value]% of attended events."));
-        awards.add(xpopulateAward(objectQuery, "Most Raw Wins", "[1] with [0] raw time wins.", 1));
-        awards.add(xpopulateAward(calculatePercent(eventsAttendedQuery,objectQuery), "Highest Percent Raw Wins", "[name] had top raw time at [value]% of attended events."));
-        
-        return awards;
-    }
-    
-    public List<List<String>> getEventAwardsForYear(int year)
-    {
-        List<List<String>> awards = new ArrayList<List<String>>();
         Calendar beginYear = Calendar.getInstance();
         Calendar endYear = Calendar.getInstance();
         beginYear.set(year, Calendar.JANUARY, 1);
@@ -182,38 +157,38 @@ public class AwardsInfoBean
         
         List<Object[]> objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add biggest event
-        awards.add(populateAward(objectQuery, "Largest Event Attendance", "[0] participants at [1] [2] with [3].", 3));
+        awards.add(populateAward(objectQuery, "Largest Event Attendance", "[0] participants at [1] [2] with [3].", AwardInfoUtil.LARGEST_EVENT_INFO,  3));
         
         objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by count(r.runDriverName) asc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add smallest event
-        awards.add(populateAward(objectQuery, "Smallest Event Attendance", "[0] participants at [1] [2] with [3].", 3));
+        awards.add(populateAward(objectQuery, "Smallest Event Attendance", "[0] participants at [1] [2] with [3].", AwardInfoUtil.SMALLEST_EVENT_INFO, 3));
         
         objectQuery = em.createQuery("SELECT max(r.runNumber), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runEventUrl order by max(r.runNumber) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add most runs at an event
-        awards.add(populateAward(objectQuery, "Most Runs at Event", "[0] runs at [1] [3] with [2].", 3));
+        awards.add(populateAward(objectQuery, "Most Runs at Event", "[0] runs at [1] [3] with [2].", AwardInfoUtil.MOST_RUNS_AT_EVENT_INFO,  3));
         
         objectQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add cone carnage
-        awards.add(populateAward(objectQuery, "Cone Carnage", "[0] cones hit at [1] [2] with [3].", 3));
+        awards.add(populateAward(objectQuery, "Cone Carnage", "[0] cones hit at [1] [2] with [3].", AwardInfoUtil.CONE_CARNAGE_INFO, 3));
         
         objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as average, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by average desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add average cones per driver
-        awards.add(populateAward(objectQuery, "Average Cones Per Driver", "[0] cones hit per driver at [1] [2] with [3].", 3));
+        awards.add(populateAward(objectQuery, "Average Cones Per Driver", "[0] cones hit per driver at [1] [2] with [3].", AwardInfoUtil.AVG_CONES_PER_DRIVER_INFO, 3));
         
         objectQuery = em.createQuery("SELECT count(*), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate FROM Runs r WHERE r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runOffcourse = 'Y' group by r.runEventUrl order by count(*) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add most offcourses
-        awards.add(populateAward(objectQuery, "Most Confusing Course", "[0] offcourse calls at [1] [3] with [2].", 3));
+        awards.add(populateAward(objectQuery, "Most Confusing Course", "[0] offcourse calls at [1] [3] with [2].", AwardInfoUtil.MOST_CONFUSING_COURSE_INFO, 3));
         
         objectQuery = em.createQuery("SELECT count(*), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runNumber = 1 and r.runClassName.className = 'NS' group by r.runEventUrl order by count(*) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add novice invasion
-        awards.add(populateAward(objectQuery, "Novice Invasion", "[0] novices attended [1] [3] with [2].", 3));
+        awards.add(populateAward(objectQuery, "Novice Invasion", "[0] novices attended [1] [3] with [2].", AwardInfoUtil.NOVICE_INVASION_INFO, 3));
         
         return awards;
     }
     
-    public List<List<String>> getClassAwardsForYear(int year)
+    public List<Award> getClassAwardsForYear(int year)
     {
-        List<List<String>> awards = new ArrayList<List<String>>();
+        List<Award> awards = new ArrayList();
         Calendar beginYear = Calendar.getInstance();
         Calendar endYear = Calendar.getInstance();
         beginYear.set(year, Calendar.JANUARY, 1);
@@ -221,11 +196,11 @@ public class AwardsInfoBean
         
         List<Object[]> objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runClassName.className, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName, r.runEventUrl order by count(r.runDriverName) desc" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add biggest class at event
-        awards.add(populateAward(objectQuery, "Largest Class Attendance", "[1] with [0] participants at [2] [3].", 3));
+        awards.add(populateAward(objectQuery, "Largest Class Attendance", "[1] with [0] participants at [2] [3].", AwardInfoUtil.LARGEST_CLASS_ATTENDANCE_INFO, 3));
         
         objectQuery = em.createQuery("SELECT count(distinct r.runDriverName), r.runClassName.className from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName order by count(distinct r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         //add most unique drivers in class for the year
-        awards.add(populateAward(objectQuery, "Most Unique Drivers in Class", "[1] with [0] unique participants.", 1));
+        awards.add(populateAward(objectQuery, "Most Unique Drivers in Class", "[1] with [0] unique participants.", AwardInfoUtil.MOST_UNIQUE_DRIVERS_CLASS_INFO, 1));
          
         //highest average participation
         objectQuery = em.createQuery("SELECT count(r), r.runClassName.className from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runClassName.className != 'NS' group by r.runClassName order by count(r) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
@@ -238,17 +213,17 @@ public class AwardsInfoBean
             temp[1] = o[1];
             tempQuery.add(temp);
         }
-        awards.add(populateAward(tempQuery, "Highest Average Participation", "[1] had an average of [0] participants.", 1));
+        awards.add(populateAward(tempQuery, "Highest Average Participation", "[1] had an average of [0] participants.", AwardInfoUtil.HIGHEST_AVG_PARTICIPATION_INFO, 1));
         
         //dirtiest class
         objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName having count(distinct r.runDriverName) > 4 order by avgCones desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        awards.add(populateAward(objectQuery, "Dirtiest Class", "[1] hit [0] cones per driver per event.", 2));
+        awards.add(populateAward(objectQuery, "Dirtiest Class", "[1] hit [0] cones per driver per event.", AwardInfoUtil.DIRTIEST_CLASS_INFO, 2));
         return awards;
     }
     
-    public List<List<String>> getCarAwardsForYear(int year)
+    public List<Award> getCarAwardsForYear(int year)
     {
-        List<List<String>> awards = new ArrayList<List<String>>();
+        List<Award> awards = new ArrayList();
         Calendar beginYear = Calendar.getInstance();
         Calendar endYear = Calendar.getInstance();
         beginYear.set(year, Calendar.JANUARY, 1);
@@ -258,18 +233,18 @@ public class AwardsInfoBean
         List<Cars> carList = em.createQuery("SELECT c FROM Cars c").getResultList();
         CarUtil carUtil = new CarUtil(carList);
         List<AwardHelper> classWinsAwards = carUtil.getClassWins(objectQuery);
-        awards.add(populateAward(classWinsAwards, "Most Class Wins by Make", "[name] had [value] class wins."));
+        awards.add(populateAward(classWinsAwards, "Most Class Wins by Make", "[name] had [value] class wins.", AwardInfoUtil.MOST_CLASS_WINS_CARMAKE_INFO));
         
         List<String> query = em.createQuery("SELECT r.runCarName from Runs r WHERE r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         List<AwardHelper> participationAward = carUtil.getParticipation(query);
-        awards.add(populateAward(participationAward, "Highest Participation by Make", "[name] had [value] cars show up."));
+        awards.add(populateAward(participationAward, "Highest Participation by Make", "[name] had [value] cars show up.", AwardInfoUtil.HIGHEST_ATTENDANCE_CARMAKE_INFO));
         
         return awards;
     }
     
-    private static Award xpopulateAward(List<Object[]> query, String awardHeader, String awardText, int replace)
+    private static Award populateAward(List<Object[]> query, String awardHeader, String awardText, String awardInfo, int replace)
     {
-        Award award = new Award(awardHeader, "test info");
+        Award award = new Award(awardHeader, awardInfo);
         String originalAwardText = awardText;
         try
         {
@@ -304,9 +279,9 @@ public class AwardsInfoBean
         return award;
     }
     
-    private static Award xpopulateAward(List<AwardHelper> award, String awardHeader, String awardText)
+    private static Award populateAward(List<AwardHelper> award, String awardHeader, String awardText, String awardInfo)
     {
-        Award returnAward = new Award(awardHeader, "test info");
+        Award returnAward = new Award(awardHeader, awardInfo);
         String originalAwardText = awardText;
         try
         {
@@ -340,82 +315,6 @@ public class AwardsInfoBean
         
     }
 
-    private static List<String> populateAward(List<Object[]> query, String awardHeader, String awardText, int replace)
-    {
-        List<String> returnList = new ArrayList();
-        returnList.add(awardHeader);
-        String originalAwardText = awardText;
-        try
-        {
-            for(int i = 0; i < PLACES_TO_POPULATE; i++)
-            {
-                for(int x = 0; x <= replace; x++)
-                {
-                    if(query.get(i)[x] instanceof Date)
-                    {
-                        awardText = awardText.replace("[" + String.valueOf(x) + "]", webFormat.format(query.get(i)[x]));
-                    }
-                    else if(query.get(i)[x] instanceof Double || query.get(i)[x] instanceof Float)
-                    {
-                        awardText = awardText.replace("[" + String.valueOf(x) + "]", String.format("%.3f", query.get(i)[x]));
-                    }
-                    else
-                    {
-                        awardText = awardText.replace("[" + String.valueOf(x) + "]", query.get(i)[x].toString());
-                    }
-                    
-                }
-                returnList.add(awardText);
-                awardText = originalAwardText;
-            }
-        }
-        catch(IndexOutOfBoundsException e)
-        {
-            while(returnList.size() <= PLACES_TO_POPULATE)
-            {
-                returnList.add("No others eligible.");
-            }
-        }
-        return returnList;
-    }
-    
-    private static List<String> populateAward(List<AwardHelper> award, String awardHeader, String awardText)
-    {
-        List<String> returnList = new ArrayList();
-        returnList.add(awardHeader);
-        String originalAwardText = awardText;
-        try
-        {
-            for(int i = 0; i < PLACES_TO_POPULATE; i++)
-            {
-                awardText = awardText.replace("[name]", award.get(i).getName());
-                if(awardText.contains("cones per attended event"))
-                {
-                    awardText = awardText.replace("[value]", String.format("%.3f" , award.get(i).getValue()/100));
-                }
-                else if(awardText.contains("class wins.") || awardText.contains("cars show up"))
-                {
-                    awardText = awardText.replace("[value]", String.format("%.0f" , award.get(i).getValue()));
-                }
-                else
-                {
-                    awardText = awardText.replace("[value]", String.format("%.1f" , award.get(i).getValue()));
-                }
-                returnList.add(awardText);
-                awardText = originalAwardText;
-            }
-        }
-        catch(IndexOutOfBoundsException e)
-        {
-            while(returnList.size() <= PLACES_TO_POPULATE)
-            {
-                returnList.add("No others eligible.");
-            }
-        }
-        return returnList;
-        
-    }
-    
     private static List<AwardHelper> calculatePercent(List<Object[]> eventQuery, List<Object[]> statQuery)
     {
 
@@ -452,121 +351,105 @@ public class AwardsInfoBean
         Collections.sort(awardList, Collections.reverseOrder());
         return awardList;
     }
-    
-    private static List<AwardHelper> orderMap(Map<String, Double> map)
-    {
-        Set<String> driverNames = map.keySet();
-        Collection<Double> driverPercents = map.values();
-        List<AwardHelper> awardList = new ArrayList();
-        Iterator<String> namesIt = driverNames.iterator();
-        Iterator<Double> percentsIt = driverPercents.iterator();
-        while(namesIt.hasNext())
-        {
-            awardList.add(new AwardHelper(percentsIt.next().doubleValue(), namesIt.next()));
-        }
-        
-        Collections.sort(awardList, Collections.reverseOrder());
-        return awardList;
-    }
 
-    public List<List<String>> getIndividualAwards2016() {
+    public List<Award> getIndividualAwards2016() {
         return individualAwards2016;
     }
 
-    public void setIndividualAwards2016(List<List<String>> individualAwards2016) {
+    public void setIndividualAwards2016(List<Award> individualAwards2016) {
         this.individualAwards2016 = individualAwards2016;
     }
 
-    public List<List<String>> getClassAwards2016() {
+    public List<Award> getClassAwards2016() {
         return classAwards2016;
     }
 
-    public void setClassAwards2016(List<List<String>> classAwards2016) {
+    public void setClassAwards2016(List<Award> classAwards2016) {
         this.classAwards2016 = classAwards2016;
     }
 
-    public List<List<String>> getEventAwards2016() {
+    public List<Award> getEventAwards2016() {
         return eventAwards2016;
     }
 
-    public void setEventAwards2016(List<List<String>> eventAwards2016) {
+    public void setEventAwards2016(List<Award> eventAwards2016) {
         this.eventAwards2016 = eventAwards2016;
     }
 
-    public List<List<String>> getIndividualAwards2015() {
+    public List<Award> getCarAwards2016() {
+        return carAwards2016;
+    }
+
+    public void setCarAwards2016(List<Award> carAwards2016) {
+        this.carAwards2016 = carAwards2016;
+    }
+
+    public List<Award> getIndividualAwards2015() {
         return individualAwards2015;
     }
 
-    public void setIndividualAwards2015(List<List<String>> individualAwards2015) {
+    public void setIndividualAwards2015(List<Award> individualAwards2015) {
         this.individualAwards2015 = individualAwards2015;
     }
 
-    public List<List<String>> getClassAwards2015() {
+    public List<Award> getClassAwards2015() {
         return classAwards2015;
     }
 
-    public void setClassAwards2015(List<List<String>> classAwards2015) {
+    public void setClassAwards2015(List<Award> classAwards2015) {
         this.classAwards2015 = classAwards2015;
     }
 
-    public List<List<String>> getEventAwards2015() {
+    public List<Award> getEventAwards2015() {
         return eventAwards2015;
     }
 
-    public void setEventAwards2015(List<List<String>> eventAwards2015) {
+    public void setEventAwards2015(List<Award> eventAwards2015) {
         this.eventAwards2015 = eventAwards2015;
     }
 
-    public List<List<String>> getIndividualAwards2014() {
+    public List<Award> getCarAwards2015() {
+        return carAwards2015;
+    }
+
+    public void setCarAwards2015(List<Award> carAwards2015) {
+        this.carAwards2015 = carAwards2015;
+    }
+
+    public List<Award> getIndividualAwards2014() {
         return individualAwards2014;
     }
 
-    public void setIndividualAwards2014(List<List<String>> individualAwards2014) {
+    public void setIndividualAwards2014(List<Award> individualAwards2014) {
         this.individualAwards2014 = individualAwards2014;
     }
 
-    public List<List<String>> getClassAwards2014() {
+    public List<Award> getClassAwards2014() {
         return classAwards2014;
     }
 
-    public void setClassAwards2014(List<List<String>> classAwards2014) {
+    public void setClassAwards2014(List<Award> classAwards2014) {
         this.classAwards2014 = classAwards2014;
     }
 
-    public List<List<String>> getEventAwards2014() {
+    public List<Award> getEventAwards2014() {
         return eventAwards2014;
     }
 
-    public void setEventAwards2014(List<List<String>> eventAwards2014) {
+    public void setEventAwards2014(List<Award> eventAwards2014) {
         this.eventAwards2014 = eventAwards2014;
     }
 
-    public List<List<String>> getIndividualAwards2013() {
-        return individualAwards2013;
+    public List<Award> getCarAwards2014() {
+        return carAwards2014;
     }
 
-    public void setIndividualAwards2013(List<List<String>> individualAwards2013) {
-        this.individualAwards2013 = individualAwards2013;
+    public void setCarAwards2014(List<Award> carAwards2014) {
+        this.carAwards2014 = carAwards2014;
     }
 
-    public List<List<String>> getClassAwards2013() {
-        return classAwards2013;
-    }
-
-    public void setClassAwards2013(List<List<String>> classAwards2013) {
-        this.classAwards2013 = classAwards2013;
-    }
-
-    public List<List<String>> getEventAwards2013() {
-        return eventAwards2013;
-    }
-
-    public void setEventAwards2013(List<List<String>> eventAwards2013) {
-        this.eventAwards2013 = eventAwards2013;
-    }
     
     
-
     public List<Long> getStats2016() {
         return stats2016;
     }
@@ -591,52 +474,20 @@ public class AwardsInfoBean
         this.stats2014 = stats2014;
     }
 
-    public List<Long> getStats2013() {
-        return stats2013;
-    }
-
-    public void setStats2013(List<Long> stats2013) {
-        this.stats2013 = stats2013;
-    }
-
-    public List<List<String>> getCarAwards2016() {
-        return carAwards2016;
-    }
-
-    public void setCarAwards2016(List<List<String>> carAwards2016) {
-        this.carAwards2016 = carAwards2016;
-    }
-
-    public List<List<String>> getCarAwards2015() {
-        return carAwards2015;
-    }
-
-    public void setCarAwards2015(List<List<String>> carAwards2015) {
-        this.carAwards2015 = carAwards2015;
-    }
-
-    public List<List<String>> getCarAwards2014() {
-        return carAwards2014;
-    }
-
-    public void setCarAwards2014(List<List<String>> carAwards2014) {
-        this.carAwards2014 = carAwards2014;
-    }
-
-    public List<List<String>> getCarAwards2013() {
-        return carAwards2013;
-    }
-
-    public void setCarAwards2013(List<List<String>> carAwards2013) {
-        this.carAwards2013 = carAwards2013;
-    }
-
     public List<Award> getXindividualAwards2016() {
         return xindividualAwards2016;
     }
 
     public void setXindividualAwards2016(List<Award> xindividualAwards2016) {
         this.xindividualAwards2016 = xindividualAwards2016;
+    }
+
+    public Award getSelectedAward() {
+        return selectedAward;
+    }
+
+    public void setSelectedAward(Award selectedAward) {
+        this.selectedAward = selectedAward;
     }
 
 
