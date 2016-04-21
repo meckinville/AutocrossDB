@@ -15,32 +15,20 @@
         </f:facet>
         <p:layout fullPage="true">
             <p:layoutUnit styleClass="menuBar" position="north" size="60">
-                <p:tabMenu activeIndex="#{param.i}">
-                    <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
-                        <f:param name="i" value="0"/>
-                    </p:menuitem>
-                    <p:menuitem value="Event Analysis" outcome="eventInfoPage" icon="fa fa-calendar">
-                        <f:param name="i" value="1"/>
-                    </p:menuitem>
-                    <p:menuitem value="New Event" outcome="loadEventPage" icon="fa fa-upload">
-                        <f:param name="i" value="2"/>
-                    </p:menuitem>
-                    <p:menuitem value="Chart" outcome="comparisonChart" icon="fa fa-line-chart">
-                        <f:param name="i" value="3" />
-                    </p:menuitem>
-                    <p:menuitem value="Awards" outcome="awardsPage" icon="fa fa-trophy" >
-                        <f:param name="i" value="4" />
-                    </p:menuitem>
-                    <p:menuitem value="Driver Analysis" outcome="driverAnalysisPage" icon="fa fa-search">
-                        <f:param name="i" value="5" />
-                    </p:menuitem>
-                    <p:menuitem value="Statistics" outcome="statisticsPage" icon="fa fa-list-ol" >
-                        <f:param name="i" value="6" />
-                    </p:menuitem>
-                    <p:menuitem value="Nemesis Finder" outcome="nemesisPage" icon="fa fa-user-secret" >
-                        <f:param name="i" value="7" />
-                    </p:menuitem>
-                </p:tabMenu> 
+                <h:form>
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:commandButton value="Home" ajax="false" action="index.xhtml?faces-redirect=true" icon="fa fa-home" />
+                            <p:commandButton value="Event Analysis" ajax="false" action="eventInfoPage.xhtml?faces-redirect=true" icon="fa fa-upload" />
+                            <p:commandButton value="New Event" ajax="false" action="loadEventPage.xhtml?faces-redirect=true" icon="fa fa-calendar" />
+                            <p:commandButton value="Chart" ajax="false" action="comparisonChart.xhtml?faces-redirect=true" icon="fa fa-line-chart" />
+                            <p:commandButton value="Awards" ajax="false" action="awardsPage.xhtml?faces-redirect=true" icon="fa fa-trophy" />
+                            <p:commandButton value="Driver Analysis" ajax="false" action="driverAnalysisPage.xhtml?faces-redirect=true" icon="fa fa-search" styleClass="ui-state-focus"  />
+                            <p:commandButton value="Statistics" ajax="false" action="statisticsPage.xhtml?faces-redirect=true" icon="fa fa-list-ol" />
+                            <p:commandButton value="Nemesis" ajax="false" action="nemesisPage.xhtml?faces-redirect=true" icon="fa fa-user-secret" />
+                        </f:facet>
+                    </p:toolbar>
+                </h:form>
             </p:layoutUnit>
             <p:layoutUnit styleClass="inputLayoutUnit" position="west" size="300">
                 <h:form id="analysisForm">

@@ -7,7 +7,6 @@ package autocrossdb.backing;
 
 import autocrossdb.component.Nemesis;
 import autocrossdb.entities.Classes;
-import autocrossdb.entities.Runs;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;

@@ -16,7 +16,7 @@ body {
     overflow: hidden;
 }
 
-.ui-tabmenuitem>a>span.fa {
+.ui-toolbar>*>button>span.fa {
     margin: 3px;
     font-size: 13px;
     overflow: visible;

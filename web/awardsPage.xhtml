@@ -13,7 +13,7 @@
                 <f:facet name="last">
                     <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
                 </f:facet>
-                <p:tabMenu activeIndex="#{param.i}">
+                <!--p:tabMenu activeIndex="#{param.i}">
                     <p:menuitem value=" Home" outcome="index" icon="fa fa-home">
                         <f:param name="i" value="0"/>
                     </p:menuitem>
@@ -38,7 +38,21 @@
                     <p:menuitem value="Nemesis Finder" outcome="nemesisPage" icon="fa fa-user-secret" >
                         <f:param name="i" value="7" />
                     </p:menuitem>
-                </p:tabMenu> 
+                </p:tabMenu--> 
+                <h:form>
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:commandButton value="Home" ajax="false" action="index.xhtml?faces-redirect=true" icon="fa fa-home" />
+                            <p:commandButton value="Event Analysis" ajax="false" action="eventInfoPage.xhtml?faces-redirect=true" icon="fa fa-upload" />
+                            <p:commandButton value="New Event" ajax="false" action="loadEventPage.xhtml?faces-redirect=true" icon="fa fa-calendar" />
+                            <p:commandButton value="Chart" ajax="false" action="comparisonChart.xhtml?faces-redirect=true" icon="fa fa-line-chart" />
+                            <p:commandButton value="Awards" ajax="false" action="awardsPage.xhtml?faces-redirect=true" icon="fa fa-trophy" styleClass="ui-state-focus"  />
+                            <p:commandButton value="Driver Analysis" ajax="false" action="driverAnalysisPage.xhtml?faces-redirect=true" icon="fa fa-search" />
+                            <p:commandButton value="Statistics" ajax="false" action="statisticsPage.xhtml?faces-redirect=true" icon="fa fa-list-ol" />
+                            <p:commandButton value="Nemesis" ajax="false" action="nemesisPage.xhtml?faces-redirect=true" icon="fa fa-user-secret" />
+                        </f:facet>
+                    </p:toolbar>
+                </h:form>
             </p:layoutUnit>
             <h:form id="awardsForm">
             <p:layoutUnit position="center" >

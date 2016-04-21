@@ -216,7 +216,7 @@ public class AwardsInfoBean
         awards.add(populateAward(tempQuery, "Highest Average Participation", "[1] had an average of [0] participants.", AwardInfoUtil.HIGHEST_AVG_PARTICIPATION_INFO, 1));
         
         //dirtiest class
-        objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName having count(distinct r.runDriverName) > 4 order by avgCones desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName having count(distinct r.runDriverName) > 2 order by avgCones desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
         awards.add(populateAward(objectQuery, "Dirtiest Class", "[1] hit [0] cones per driver per event.", AwardInfoUtil.DIRTIEST_CLASS_INFO, 2));
         return awards;
     }

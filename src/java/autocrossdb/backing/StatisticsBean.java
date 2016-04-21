@@ -6,6 +6,7 @@
 package autocrossdb.backing;
 
 import autocrossdb.component.DriverStat;
+import autocrossdb.component.Theme;
 import autocrossdb.entities.Events;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,10 +30,14 @@ import javax.persistence.PersistenceContext;
 @ViewScoped
 public class StatisticsBean
 {
+    private List<Theme> themes;
+    
+    @ManagedProperty(value="#{themeService}")
+    private ThemeServiceBean themeService;
+    
     List<DriverStat> drivers;
     List<DriverStat> filteredDrivers;
-    
-    
+
     private Date endDate;
     private Date startDate;
     
@@ -44,6 +50,7 @@ public class StatisticsBean
     @PostConstruct
     public void init()
     {
+        themes = themeService.getThemes();
         Calendar now = Calendar.getInstance();
         endDate = now.getTime();
         now.set(Calendar.MONTH, now.get(Calendar.MONTH)-8);
@@ -67,7 +74,7 @@ public class StatisticsBean
             //we have a hashmap that uses driver name as key.
             //the value of the hashmap is a DriverStat object which contains
             //a running value of the raw/pax/class percentiles. once we have
-            //iterated through all the runs we will divide the running percentile
+            //iterated through all the runs we will divide the running percentiles
             //by the number of events.
             for(int x = 0; x < rawList.size(); x++)
             {
@@ -236,6 +243,17 @@ public class StatisticsBean
         this.progress = progress;
     }
 
-    
+    public List<Theme> getThemes() {
+        return themes;
+    }
+
+    public void setThemes(List<Theme> themes) {
+        this.themes = themes;
+    }
+
+    public void setThemeService(ThemeServiceBean service)
+    {
+        this.themeService = service;
+    }
     
 }

@@ -8,11 +8,11 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(Classes.class)
 public abstract class Classes_ {
 
-	public static volatile SingularAttribute<Classes, Double> class2016Pax;
-	public static volatile SingularAttribute<Classes, Double> class2014Pax;
-	public static volatile SingularAttribute<Classes, Double> class2015Pax;
 	public static volatile SingularAttribute<Classes, String> className;
+	public static volatile SingularAttribute<Classes, Double> class2014Pax;
 	public static volatile SingularAttribute<Classes, Double> class2013Pax;
+	public static volatile SingularAttribute<Classes, Double> class2015Pax;
+	public static volatile SingularAttribute<Classes, Double> class2016Pax;
 
 }
 
