@@ -23,9 +23,9 @@ public class AnalyzedEvent
     private double avgRunTime;
     private long totalCones;
     
-    private List<ClassTableRow> rawTimes;
-    private List<ClassTableRow> paxTimes;
-    private List<ClassTableRow> classTimes;
+    private List<StandingsTableRow> rawTimes;
+    private List<StandingsTableRow> paxTimes;
+    private List<StandingsTableRow> classTimes;
     
     private String topRawName;
     private String topRawTime;
@@ -68,13 +68,13 @@ public class AnalyzedEvent
         {
             if(x == 0)
             {
-                this.rawTimes.add(new ClassTableRow(x+1, String.valueOf(rawTimes.get(x)[1]), String.valueOf(rawTimes.get(x)[3]), String.valueOf(rawTimes.get(x)[2]), (int)rawTimes.get(x)[4], (double)rawTimes.get(x)[0], 0.000, 0.000));
+                this.rawTimes.add(new StandingsTableRow(x+1, String.valueOf(rawTimes.get(x)[1]), String.valueOf(rawTimes.get(x)[3]), String.valueOf(rawTimes.get(x)[2]), (int)rawTimes.get(x)[4], (double)rawTimes.get(x)[0], 0.000, 0.000));
                 lastTime = (double)rawTimes.get(x)[0];
                 topTime = (double)rawTimes.get(x)[0];
             }
             else
             {
-                this.rawTimes.add(new ClassTableRow(x+1, String.valueOf(rawTimes.get(x)[1]), String.valueOf(rawTimes.get(x)[3]), String.valueOf(rawTimes.get(x)[2]), (int)rawTimes.get(x)[4], (double)rawTimes.get(x)[0], lastTime-(double)rawTimes.get(x)[0], topTime-(double)rawTimes.get(x)[0]));
+                this.rawTimes.add(new StandingsTableRow(x+1, String.valueOf(rawTimes.get(x)[1]), String.valueOf(rawTimes.get(x)[3]), String.valueOf(rawTimes.get(x)[2]), (int)rawTimes.get(x)[4], (double)rawTimes.get(x)[0], lastTime-(double)rawTimes.get(x)[0], topTime-(double)rawTimes.get(x)[0]));
                 lastTime = (double)rawTimes.get(x)[0];
             }
         }
@@ -83,13 +83,13 @@ public class AnalyzedEvent
         {
             if(x == 0)
             {
-                this.paxTimes.add(new ClassTableRow(x+1, String.valueOf(paxTimes.get(x)[1]), String.valueOf(paxTimes.get(x)[3]), String.valueOf(paxTimes.get(x)[2]), (int)paxTimes.get(x)[4], (double)paxTimes.get(x)[0], 0.000, 0.000));
+                this.paxTimes.add(new StandingsTableRow(x+1, String.valueOf(paxTimes.get(x)[1]), String.valueOf(paxTimes.get(x)[3]), String.valueOf(paxTimes.get(x)[2]), (int)paxTimes.get(x)[4], (double)paxTimes.get(x)[0], 0.000, 0.000));
                 lastTime = (double)paxTimes.get(x)[0];
                 topTime = (double)paxTimes.get(x)[0];
             }
             else
             {
-                this.paxTimes.add(new ClassTableRow(x+1, String.valueOf(paxTimes.get(x)[1]), String.valueOf(paxTimes.get(x)[3]), String.valueOf(paxTimes.get(x)[2]), (int)paxTimes.get(x)[4], (double)paxTimes.get(x)[0], lastTime-(double)paxTimes.get(x)[0], topTime-(double)paxTimes.get(x)[0]));
+                this.paxTimes.add(new StandingsTableRow(x+1, String.valueOf(paxTimes.get(x)[1]), String.valueOf(paxTimes.get(x)[3]), String.valueOf(paxTimes.get(x)[2]), (int)paxTimes.get(x)[4], (double)paxTimes.get(x)[0], lastTime-(double)paxTimes.get(x)[0], topTime-(double)paxTimes.get(x)[0]));
                 lastTime = (double)paxTimes.get(x)[0];
             }
         }
@@ -103,7 +103,7 @@ public class AnalyzedEvent
             if(x == 0)
             {
                 currentClass = String.valueOf(classTimes.get(x)[2]);
-                this.classTimes.add(new ClassTableRow(1, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], 0.000, 0.000));
+                this.classTimes.add(new StandingsTableRow(1, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], 0.000, 0.000));
                 lastTime = (double)classTimes.get(x)[0];
                 topTime = (double)classTimes.get(x)[0];
                 classPosition = 2;
@@ -111,15 +111,15 @@ public class AnalyzedEvent
             else if(!(String.valueOf(classTimes.get(x)[2]).equals(currentClass)))
             {
                 currentClass = String.valueOf(classTimes.get(x)[2]);
-                this.classTimes.add(new ClassTableRow(0, "", "", "", 0, 0.0, 0.0, 0.0));
-                this.classTimes.add(new ClassTableRow(1, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], 0.000, 0.000));
+                this.classTimes.add(new StandingsTableRow(0, "", "", "", 0, 0.0, 0.0, 0.0));
+                this.classTimes.add(new StandingsTableRow(1, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], 0.000, 0.000));
                 lastTime = (double)classTimes.get(x)[0];
                 topTime = (double)classTimes.get(x)[0];
                 classPosition = 2;    
             }
             else
             {
-                this.classTimes.add(new ClassTableRow(classPosition, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], lastTime-(double)classTimes.get(x)[0], topTime-(double)classTimes.get(x)[0]));
+                this.classTimes.add(new StandingsTableRow(classPosition, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], lastTime-(double)classTimes.get(x)[0], topTime-(double)classTimes.get(x)[0]));
                 classPosition++;
                 lastTime = (double)classTimes.get(x)[0];
             }
@@ -303,27 +303,27 @@ public class AnalyzedEvent
         this.offCourseRuns = offCourseRuns;
     }
 
-    public List<ClassTableRow> getRawTimes() {
+    public List<StandingsTableRow> getRawTimes() {
         return rawTimes;
     }
 
-    public void setRawTimes(List<ClassTableRow> rawTimes) {
+    public void setRawTimes(List<StandingsTableRow> rawTimes) {
         this.rawTimes = rawTimes;
     }
 
-    public List<ClassTableRow> getPaxTimes() {
+    public List<StandingsTableRow> getPaxTimes() {
         return paxTimes;
     }
 
-    public void setPaxTimes(List<ClassTableRow> paxTimes) {
+    public void setPaxTimes(List<StandingsTableRow> paxTimes) {
         this.paxTimes = paxTimes;
     }
 
-    public List<ClassTableRow> getClassTimes() {
+    public List<StandingsTableRow> getClassTimes() {
         return classTimes;
     }
 
-    public void setClassTimes(List<ClassTableRow> classTimes) {
+    public void setClassTimes(List<StandingsTableRow> classTimes) {
         this.classTimes = classTimes;
     }
 

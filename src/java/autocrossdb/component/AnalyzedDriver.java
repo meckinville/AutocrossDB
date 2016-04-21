@@ -46,10 +46,10 @@ public class AnalyzedDriver
     private String conesKilled;
     
     
-    private List<ClassTableRow> classTable = new ArrayList();
-    private List<ClassTableRow> rawTable = new ArrayList();
-    private List<ClassTableRow> paxTable = new ArrayList();
-    private List<ClassTableRow> noConesTable = new ArrayList();
+    private List<StandingsTableRow> classTable = new ArrayList();
+    private List<StandingsTableRow> rawTable = new ArrayList();
+    private List<StandingsTableRow> paxTable = new ArrayList();
+    private List<StandingsTableRow> noConesTable = new ArrayList();
     
     private Map<String,Double> noConesMap;
     
@@ -101,14 +101,14 @@ public class AnalyzedDriver
         {
             if(x == 0)
             {
-                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, 0, (double)competitorRuns.get(x)[0], 0.000, 0.000));
+                classTable.add(new StandingsTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, 0, (double)competitorRuns.get(x)[0], 0.000, 0.000));
                 lastTime = (double)competitorRuns.get(x)[0];
                 topTime = (double)competitorRuns.get(x)[0];
                 
             }
             else
             {
-                classTable.add(new ClassTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, 0, (double)competitorRuns.get(x)[0], lastTime-(double)competitorRuns.get(x)[0], topTime-(double)competitorRuns.get(x)[0]));
+                classTable.add(new StandingsTableRow(x+1, String.valueOf(competitorRuns.get(x)[1]), String.valueOf(competitorRuns.get(x)[2]), className, 0, (double)competitorRuns.get(x)[0], lastTime-(double)competitorRuns.get(x)[0], topTime-(double)competitorRuns.get(x)[0]));
                 lastTime = (double)competitorRuns.get(x)[0];
             }
             
@@ -118,13 +118,13 @@ public class AnalyzedDriver
         {
             if(x == 0)
             {
-                rawTable.add(new ClassTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), 0, (double)rawRuns.get(x)[0], 0.000, 0.000));
+                rawTable.add(new StandingsTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), 0, (double)rawRuns.get(x)[0], 0.000, 0.000));
                 lastTime = (double)rawRuns.get(x)[0];
                 topTime = (double)rawRuns.get(x)[0];
             }
             else
             {
-                rawTable.add(new ClassTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), 0, (double)rawRuns.get(x)[0], lastTime-(double)rawRuns.get(x)[0], topTime-(double)rawRuns.get(x)[0]));
+                rawTable.add(new StandingsTableRow(x+1, String.valueOf(rawRuns.get(x)[1]), String.valueOf(rawRuns.get(x)[2]), String.valueOf(rawRuns.get(x)[3]), 0, (double)rawRuns.get(x)[0], lastTime-(double)rawRuns.get(x)[0], topTime-(double)rawRuns.get(x)[0]));
                 lastTime = (double)rawRuns.get(x)[0];
             }
         }
@@ -133,13 +133,13 @@ public class AnalyzedDriver
         {
             if(x == 0)
             {
-                paxTable.add(new ClassTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), 0, (double)paxRuns.get(x)[0], 0.000, 0.000));
+                paxTable.add(new StandingsTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), 0, (double)paxRuns.get(x)[0], 0.000, 0.000));
                 lastTime = (double)paxRuns.get(x)[0];
                 topTime = (double)paxRuns.get(x)[0];
             }
             else
             {
-                paxTable.add(new ClassTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), 0, (double)paxRuns.get(x)[0], lastTime-(double)paxRuns.get(x)[0], topTime-(double)paxRuns.get(x)[0]));
+                paxTable.add(new StandingsTableRow(x+1, String.valueOf(paxRuns.get(x)[1]), String.valueOf(paxRuns.get(x)[2]), String.valueOf(paxRuns.get(x)[3]), 0, (double)paxRuns.get(x)[0], lastTime-(double)paxRuns.get(x)[0], topTime-(double)paxRuns.get(x)[0]));
                 lastTime = (double)paxRuns.get(x)[0];
             }
         }
@@ -187,13 +187,13 @@ public class AnalyzedDriver
             {
                 
                 
-                noConesTable.add(new ClassTableRow(x+1, row.getKey(), car, cls, cones, row.getValue(), 0.000, 0.000));
+                noConesTable.add(new StandingsTableRow(x+1, row.getKey(), car, cls, cones, row.getValue(), 0.000, 0.000));
                 lastTime = row.getValue();
                 topTime = row.getValue();
             }
             else
             {
-                noConesTable.add(new ClassTableRow(x+1, row.getKey(), car, cls, cones, row.getValue(), lastTime-row.getValue(), topTime-row.getValue()));
+                noConesTable.add(new StandingsTableRow(x+1, row.getKey(), car, cls, cones, row.getValue(), lastTime-row.getValue(), topTime-row.getValue()));
                 lastTime = row.getValue();
             }
             x++;
@@ -282,27 +282,27 @@ public class AnalyzedDriver
         this.paxPosition = paxPosition;
     }
 
-    public List<ClassTableRow> getClassTable() {
+    public List<StandingsTableRow> getClassTable() {
         return classTable;
     }
 
-    public void setClassTable(List<ClassTableRow> classTable) {
+    public void setClassTable(List<StandingsTableRow> classTable) {
         this.classTable = classTable;
     }
 
-    public List<ClassTableRow> getRawTable() {
+    public List<StandingsTableRow> getRawTable() {
         return rawTable;
     }
 
-    public void setRawTable(List<ClassTableRow> rawTable) {
+    public void setRawTable(List<StandingsTableRow> rawTable) {
         this.rawTable = rawTable;
     }
 
-    public List<ClassTableRow> getPaxTable() {
+    public List<StandingsTableRow> getPaxTable() {
         return paxTable;
     }
 
-    public void setPaxTable(List<ClassTableRow> paxTable) {
+    public void setPaxTable(List<StandingsTableRow> paxTable) {
         this.paxTable = paxTable;
     }
 
@@ -330,11 +330,11 @@ public class AnalyzedDriver
         this.conesKilled = conesKilled;
     }
 
-    public List<ClassTableRow> getNoConesTable() {
+    public List<StandingsTableRow> getNoConesTable() {
         return noConesTable;
     }
 
-    public void setNoConesTable(List<ClassTableRow> noConesTable) {
+    public void setNoConesTable(List<StandingsTableRow> noConesTable) {
         this.noConesTable = noConesTable;
     }
 

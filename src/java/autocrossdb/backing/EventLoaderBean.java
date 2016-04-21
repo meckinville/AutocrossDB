@@ -194,10 +194,17 @@ public class EventLoaderBean
                 
                 for(int y = 5; y <= driverCells.size()-2; y++)
                 {
+                    //if we're on the last column... check the next row to see if the driver field is blank.
+                    //if it is blank, the results must be on 2 different lines.
                     if(y == driverCells.size()-2)
                     {
-                        Elements extraDriverCells = driverRows.get(x+1).select("td");
-                        if(extraDriverCells.first().text().equals("") || extraDriverCells.first().text() == null || extraDriverCells.first().text().equals(" "))
+                        Elements extraDriverCells = null;
+                        if(driverRows.size() > x+1)
+                        {
+                            extraDriverCells = driverRows.get(x+1).select("td");
+                        }
+                        
+                        if(extraDriverCells != null && (extraDriverCells.first().text().equals("") || extraDriverCells.first().text() == null || extraDriverCells.first().text().equals(" ")))
                         {
                             for(Element td : extraDriverCells)
                             {
