@@ -67,6 +67,10 @@ public class DriverAnalysisBean
         avgPaxPercent = 0;
         avgCones = 0;
         avgBestRun = 0;
+        totalCones = 0;
+        totalOffcourse = 0;
+        totalTimeOncourse = 0;
+        totalRuns = 0;
         
         events = new ArrayList();
         List<Events> rawEventList = em.createQuery("SELECT e from Events e JOIN e.runsCollection r WHERE r.runDriverName = :driver AND r.runNumber = 1 AND e.eventDate > :start AND e.eventDate < :end ORDER BY e.eventDate desc", Events.class).setParameter("driver", this.driver).setParameter("start", startDate).setParameter("end", endDate).getResultList();

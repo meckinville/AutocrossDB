@@ -104,6 +104,7 @@ public class ComparisonChartBean implements Serializable
         CategoryAxis xAxis = new CategoryAxis("Events");
         xAxis.setTickAngle(-50);
         lineModel.getAxes().put(AxisType.X, xAxis);
+        lineModel.setZoom(true);
         
     }
 
