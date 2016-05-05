@@ -6,14 +6,20 @@
 package autocrossdb.component;
 
 import autocrossdb.entities.Events;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import org.primefaces.model.chart.LineChartModel;
 
 /**
  *
  * @author rmcconville
  */
-public class AnalyzedEvent
+public class AnalyzedEvent implements Serializable
 {
     private Events neglectedEvent;
     
@@ -26,6 +32,8 @@ public class AnalyzedEvent
     private List<StandingsTableRow> rawTimes;
     private List<StandingsTableRow> paxTimes;
     private List<StandingsTableRow> classTimes;
+    
+    private HashMap<String, LineChartModel> classBattle;
     
     private String topRawName;
     private String topRawTime;
@@ -43,6 +51,7 @@ public class AnalyzedEvent
     private String noviceChampTime;
     private String noviceChampCar;
     private String noviceChampClass;
+
     
     public AnalyzedEvent(Events e)
     {
@@ -98,8 +107,6 @@ public class AnalyzedEvent
         int classPosition = 1;
         for(int x = 0; x < classTimes.size(); x++)
         {
-            
-            
             if(x == 0)
             {
                 currentClass = String.valueOf(classTimes.get(x)[2]);
@@ -115,7 +122,7 @@ public class AnalyzedEvent
                 this.classTimes.add(new StandingsTableRow(1, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], 0.000, 0.000));
                 lastTime = (double)classTimes.get(x)[0];
                 topTime = (double)classTimes.get(x)[0];
-                classPosition = 2;    
+                classPosition = 2;
             }
             else
             {
@@ -126,7 +133,7 @@ public class AnalyzedEvent
         }
     }
     
-
+    
     public String getTopRawName() {
         return topRawName;
     }
@@ -325,6 +332,14 @@ public class AnalyzedEvent
 
     public void setClassTimes(List<StandingsTableRow> classTimes) {
         this.classTimes = classTimes;
+    }
+
+    public HashMap<String, LineChartModel> getClassBattle() {
+        return classBattle;
+    }
+
+    public void setClassBattle(HashMap<String, LineChartModel> classBattle) {
+        this.classBattle = classBattle;
     }
 
     

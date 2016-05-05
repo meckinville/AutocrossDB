@@ -7,10 +7,12 @@ package autocrossdb.backing;
 
 import autocrossdb.component.AnalyzedEvent;
 import autocrossdb.entities.Events;
+import autocrossdb.entities.Runs;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -18,6 +20,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.LineChartModel;
 
 /**
  *
@@ -126,8 +131,12 @@ public class EventInfoBean implements Serializable
                 List<Object[]> rawTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
                 List<Object[]> paxTimes = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
                 List<Object[]> classTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by r.runClassName.className, min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
-
-                analyzedEvents.add(new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes));
+                
+                List<Runs> classBattleTimes = em.createQuery("SELECT r from Runs r where r.runEventUrl.eventUrl = :eventUrl order by r.runClassName.className, r.runNumber, r.runTime").setParameter("eventUrl", e.getEventUrl()).getResultList();
+                AnalyzedEvent tempEvent = new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes);
+                tempEvent.setClassBattle(calculateClassBattles(classBattleTimes));
+                
+                analyzedEvents.add(tempEvent);
                 progDoub += 100 / eventsList.size();
                 progress = (long)progDoub;
             }
@@ -137,6 +146,34 @@ public class EventInfoBean implements Serializable
         {
             e.printStackTrace();
         }
+    }
+    
+    private HashMap<String, LineChartModel> calculateClassBattles(List<Runs> runs)
+    {
+        HashMap<String, LineChartModel> battle = new HashMap();
+        
+        
+
+        
+        for(Runs r : runs)
+        {
+            LineChartModel chart = battle.get(r.getRunClassName().getClassName());
+            if(chart == null)
+            {
+                chart = new LineChartModel();
+                chart.setTitle("XX Position Battle");
+                Axis yAxis = chart.getAxis(AxisType.Y);
+                Axis xAxis = chart.getAxis(AxisType.X);
+                yAxis.setLabel("Position");
+                xAxis.setLabel("Run Number");
+                battle.put(r.getRunClassName().getClassName(), chart);
+            }
+            
+            
+            
+        }
+        
+        return battle;
     }
     
     public int getEventsSize()
