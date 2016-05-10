@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
@@ -22,7 +23,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LineChartSeries;
 
 /**
  *
@@ -40,6 +43,7 @@ public class EventInfoBean implements Serializable
     private Date endDate;
     
     private String clubFilter;
+    private String classBattleSelection;
     
     @PersistenceContext
     private EntityManager em;
@@ -151,26 +155,43 @@ public class EventInfoBean implements Serializable
     private HashMap<String, LineChartModel> calculateClassBattles(List<Runs> runs)
     {
         HashMap<String, LineChartModel> battle = new HashMap();
-        
-        
 
-        
         for(Runs r : runs)
         {
             LineChartModel chart = battle.get(r.getRunClassName().getClassName());
             if(chart == null)
             {
+                System.out.println("Created chart for" + r.getRunClassName().getClassName());
                 chart = new LineChartModel();
-                chart.setTitle("XX Position Battle");
+                chart.setTitle(r.getRunClassName().getClassName()+ " Position Battle");
                 Axis yAxis = chart.getAxis(AxisType.Y);
                 Axis xAxis = chart.getAxis(AxisType.X);
                 yAxis.setLabel("Position");
                 xAxis.setLabel("Run Number");
                 battle.put(r.getRunClassName().getClassName(), chart);
             }
+            List<ChartSeries> series = chart.getSeries();
+            ChartSeries currentSeries = null;
+            for(ChartSeries s : series)
+            {
+                if(s.getLabel().equals(r.getRunDriverName()))
+                {
+                    System.out.println("Found series for " + r.getRunDriverName() + " already.");
+                    currentSeries = s;
+                    break;
+                }
+            }
             
+            if(currentSeries == null)
+            {
+                currentSeries = new ChartSeries();
+                currentSeries.setLabel(r.getRunDriverName());
+                System.out.println("No series for " + r.getRunDriverName() + " so I created it.");
+            }
             
-            
+            currentSeries.set(r.getRunNumber(), r.getRunTime());
+            chart.addSeries(currentSeries);
+            System.out.println("Entered " + r.getRunNumber() + " - " + r.getRunTime());
         }
         
         return battle;
@@ -257,6 +278,14 @@ public class EventInfoBean implements Serializable
 
     public void setClubFilter(String clubFilter) {
         this.clubFilter = clubFilter;
+    }
+
+    public String getClassBattleSelection() {
+        return classBattleSelection;
+    }
+
+    public void setClassBattleSelection(String classBattleSelection) {
+        this.classBattleSelection = classBattleSelection;
     }
 
     

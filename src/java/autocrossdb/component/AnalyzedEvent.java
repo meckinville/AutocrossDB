@@ -35,6 +35,8 @@ public class AnalyzedEvent implements Serializable
     
     private HashMap<String, LineChartModel> classBattle;
     
+    private LineChartModel currentClassBattle;
+    
     private String topRawName;
     private String topRawTime;
     private String topRawCar;
@@ -340,6 +342,15 @@ public class AnalyzedEvent implements Serializable
 
     public void setClassBattle(HashMap<String, LineChartModel> classBattle) {
         this.classBattle = classBattle;
+    }
+    
+    public LineChartModel getCurrentClassBattle()
+    {
+        return classBattle.get("BS");
+    }
+    
+    public void setCurrentClassBattle(LineChartModel currentClassBattle) {
+        this.currentClassBattle = currentClassBattle;
     }
 
     

@@ -99,6 +99,14 @@
                                     <h:outputText value="Pax Standings" />
                                     <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
                                 </p:commandLink>
+                                <p:selectOneMenu value="#{eventInfo.classBattleSelection}" >
+                                    <f:selectItem itemLabel="BS" itemValue="BS" />
+                                    <f:selectItem itemLabel="GS" itemValue="GS" />
+                                </p:selectOneMenu>
+                                <p:commandLink update="battlePopup" oncomplete="PF('battleChart').show();PF('classDetailsOP').hide();PF('rawDetailsOP').hide();PF('paxDetailsOP').hide()" >
+                                    <h:outputText value="Class Battle" />
+                                    <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
+                                </p:commandLink>
                         </p:panel>
                     </p:dataGrid>
                 </h:form>
@@ -212,6 +220,11 @@
                     <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampClass}"/>
                     <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampTime}"/>
                 </p:panelGrid>
+            </p:outputPanel>
+        </p:dialog>
+        <p:dialog id="battlePopup" modal="true" widgetVar="battleDialog" >
+            <p:outputPanel>
+                <p:chart id="battleChart" widgetVar="battleChart" type="line" model="#{eventInfo.selectedAnalyzedEvent.currentClassBattle}" style="height:600px;" />
             </p:outputPanel>
         </p:dialog>
         <script>
