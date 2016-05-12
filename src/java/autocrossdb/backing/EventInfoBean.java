@@ -6,17 +6,19 @@
 package autocrossdb.backing;
 
 import autocrossdb.component.AnalyzedEvent;
+import autocrossdb.component.ClassBattleHelper;
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
@@ -56,6 +58,7 @@ public class EventInfoBean implements Serializable
         now.set(Calendar.MONTH, now.get(Calendar.MONTH)-3);
         startDate = now.getTime();
         progress = 0;
+        selectedAnalyzedEvent = new AnalyzedEvent();
     }
     
     public void analyzeEvent()
@@ -138,7 +141,8 @@ public class EventInfoBean implements Serializable
                 
                 List<Runs> classBattleTimes = em.createQuery("SELECT r from Runs r where r.runEventUrl.eventUrl = :eventUrl order by r.runClassName.className, r.runNumber, r.runTime").setParameter("eventUrl", e.getEventUrl()).getResultList();
                 AnalyzedEvent tempEvent = new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes);
-                tempEvent.setClassBattle(calculateClassBattles(classBattleTimes));
+                //tempEvent.setClassBattle(calculateClassBattles(classBattleTimes));
+                tempEvent.setClassBattle(separateClassesForBattle(classBattleTimes));
                 
                 analyzedEvents.add(tempEvent);
                 progDoub += 100 / eventsList.size();
@@ -152,46 +156,144 @@ public class EventInfoBean implements Serializable
         }
     }
     
-    private HashMap<String, LineChartModel> calculateClassBattles(List<Runs> runs)
+    private HashMap<String, LineChartModel> separateClassesForBattle(List<Runs> runs)
     {
         HashMap<String, LineChartModel> battle = new HashMap();
-
+        
+        HashMap<String, List<Runs>> separateClasses = new HashMap();
+        
         for(Runs r : runs)
         {
-            LineChartModel chart = battle.get(r.getRunClassName().getClassName());
-            if(chart == null)
+            if(separateClasses.containsKey(r.getRunClassName().getClassName()))
             {
-                System.out.println("Created chart for" + r.getRunClassName().getClassName());
-                chart = new LineChartModel();
-                chart.setTitle(r.getRunClassName().getClassName()+ " Position Battle");
-                Axis yAxis = chart.getAxis(AxisType.Y);
-                Axis xAxis = chart.getAxis(AxisType.X);
-                yAxis.setLabel("Position");
-                xAxis.setLabel("Run Number");
-                battle.put(r.getRunClassName().getClassName(), chart);
+                separateClasses.get(r.getRunClassName().getClassName()).add(r);
             }
-            List<ChartSeries> series = chart.getSeries();
-            ChartSeries currentSeries = null;
-            for(ChartSeries s : series)
+            else
             {
-                if(s.getLabel().equals(r.getRunDriverName()))
+                List<Runs> temp = new ArrayList();
+                temp.add(r);
+                separateClasses.put(r.getRunClassName().getClassName(), temp);
+            }
+        }
+        
+        for(String s : separateClasses.keySet())
+        {
+            List<Runs> currentList = separateClasses.get(s);
+            int xMax = 0;
+            int yMax = 0;
+            HashMap<Integer, List<ClassBattleHelper>> positions = new HashMap();
+            HashMap<String, ClassBattleHelper> bestRuns = new HashMap();
+            for(Runs r : currentList)
+            {
+                if(positions.containsKey(r.getRunNumber()))
                 {
-                    System.out.println("Found series for " + r.getRunDriverName() + " already.");
-                    currentSeries = s;
-                    break;
+                    ClassBattleHelper temp = new ClassBattleHelper(r.getRunDriverName(), r.getRunTime(), r.getRunOffcourse());
+                    if(bestRuns.containsKey(r.getRunDriverName()))
+                    {
+                        if(temp.compareTo(bestRuns.get(r.getRunDriverName())) > 0)
+                        {
+                            bestRuns.put(r.getRunDriverName(), temp);
+                        }
+                    }
+                    else
+                    {
+                        bestRuns.put(r.getRunDriverName(), temp);
+                    }
+                    positions.get(r.getRunNumber()).add(bestRuns.get(r.getRunDriverName()));
+                }
+                else
+                {
+                    ClassBattleHelper temp = new ClassBattleHelper(r.getRunDriverName(), r.getRunTime(), r.getRunOffcourse());
+                    if(bestRuns.containsKey(r.getRunDriverName()))
+                    {
+                        if(temp.compareTo(bestRuns.get(r.getRunDriverName())) > 0)
+                        {
+                            bestRuns.put(r.getRunDriverName(), temp);
+                        }
+                    }
+                    else
+                    {
+                        bestRuns.put(r.getRunDriverName(), temp);
+                    }
+                    
+                    List<ClassBattleHelper> tempList = new ArrayList();
+                    tempList.add(bestRuns.get(r.getRunDriverName()));
+                    positions.put(r.getRunNumber(), tempList);
                 }
             }
             
-            if(currentSeries == null)
-            {
-                currentSeries = new ChartSeries();
-                currentSeries.setLabel(r.getRunDriverName());
-                System.out.println("No series for " + r.getRunDriverName() + " so I created it.");
-            }
+            LineChartModel chart = new LineChartModel();
+            chart.setTitle(s + " Position Battle");
+            chart.setLegendPosition("ne");
+            Axis yAxis = chart.getAxis(AxisType.Y);
+            Axis xAxis = chart.getAxis(AxisType.X);
+            yAxis.setLabel("Position");
+            xAxis.setLabel("Run Number");
+
+             
             
-            currentSeries.set(r.getRunNumber(), r.getRunTime());
-            chart.addSeries(currentSeries);
-            System.out.println("Entered " + r.getRunNumber() + " - " + r.getRunTime());
+            HashMap<String, ChartSeries> seriesMap = new HashMap();
+            for(int key : positions.keySet())
+            {
+                if(positions.get(key).size() < bestRuns.keySet().size())
+                {
+                    Set<String> keys = bestRuns.keySet();
+                    List<ClassBattleHelper> checkList = positions.get(key);
+                    for(String k : keys)
+                    {
+                        if(!checkList.contains(bestRuns.get(k)))
+                        {
+                            checkList.add(bestRuns.get(k));
+                        }
+                    }
+                    
+                }
+                if(key > xMax)
+                {
+                    xMax = key;
+                }
+                List<ClassBattleHelper> positionList = positions.get(key);
+                Collections.sort(positionList, Collections.reverseOrder());
+                int position = 1;
+                for(ClassBattleHelper cbh : positionList)
+                {
+                    if(seriesMap.containsKey(cbh.getDriver()))
+                    {
+                        seriesMap.get(cbh.getDriver()).set(key, position);
+                        if(position > yMax)
+                        {
+                            yMax = position;
+                        }
+                        position++;
+                    }
+                    else
+                    {
+                        ChartSeries tempSeries = new ChartSeries();
+                        tempSeries.setLabel(cbh.getDriver());
+                        tempSeries.set(key, position);
+                        seriesMap.put(cbh.getDriver(), tempSeries);
+                        if(position > yMax)
+                        {
+                            yMax = position;
+                        }
+                        position++;
+                    }
+                }
+            }
+            for(String st : seriesMap.keySet())
+            {
+                chart.addSeries(seriesMap.get(st));
+            }
+
+            xAxis.setMax(xMax + 1);
+            yAxis.setMax(yMax + 1);
+            yAxis.setMin(0);
+            xAxis.setMin(0);
+            yAxis.setTickCount(yMax+2);
+            xAxis.setTickCount(xMax+2);
+            yAxis.setTickInterval("1");
+            xAxis.setTickInterval("1");
+            battle.put(s, chart);
         }
         
         return battle;

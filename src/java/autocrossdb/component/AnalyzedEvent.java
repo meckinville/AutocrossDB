@@ -10,9 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.primefaces.model.chart.LineChartModel;
 
 /**
@@ -53,7 +50,12 @@ public class AnalyzedEvent implements Serializable
     private String noviceChampTime;
     private String noviceChampCar;
     private String noviceChampClass;
+    private String selectedClass;
 
+    public AnalyzedEvent()
+    {
+        currentClassBattle = new LineChartModel();
+    }
     
     public AnalyzedEvent(Events e)
     {
@@ -72,6 +74,8 @@ public class AnalyzedEvent implements Serializable
         this.rawTimes = new ArrayList();
         this.paxTimes = new ArrayList();
         this.classTimes = new ArrayList();
+        
+        currentClassBattle = new LineChartModel();
         
         double topTime = 0;
         double lastTime = 0;
@@ -346,11 +350,23 @@ public class AnalyzedEvent implements Serializable
     
     public LineChartModel getCurrentClassBattle()
     {
-        return classBattle.get("BS");
+        if(this.selectedClass == null || this.selectedClass.equals(""))
+        {
+            return new LineChartModel();
+        }
+        return classBattle.get(this.selectedClass);
     }
     
     public void setCurrentClassBattle(LineChartModel currentClassBattle) {
         this.currentClassBattle = currentClassBattle;
+    }
+
+    public String getSelectedClass() {
+        return selectedClass;
+    }
+
+    public void setSelectedClass(String selectedClass) {
+        this.selectedClass = selectedClass;
     }
 
     
