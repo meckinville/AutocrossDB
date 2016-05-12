@@ -155,7 +155,7 @@ public class EventLoaderBean
                 
                 if(clsStr.equals(""))
                 {
-                    Elements driverCell = results.select("tr > td:containsOwn(" + driverName + ")");
+                    Elements driverCell = results.select("tr > td:matchesOwn(^" + driverName + "$)");
                     Element driverRow = driverCell.first().parent();
                     while(driverRow.previousElementSibling() != null)
                     {
