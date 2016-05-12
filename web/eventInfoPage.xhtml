@@ -222,7 +222,7 @@
         </p:dialog>
         <p:dialog id="battlePopup" modal="true" widgetVar="battleDialog" >
             <p:outputPanel>
-                <p:chart id="battleChart" widgetVar="battleChart" type="line" model="#{eventInfo.selectedAnalyzedEvent.currentClassBattle}" style="height:600px; width:1000px;" />
+                <p:chart id="battleChart" widgetVar="battleChart" type="line" responsive="true" model="#{eventInfo.selectedAnalyzedEvent.currentClassBattle}" style="height:600px; width:1000px;" />
             </p:outputPanel>
         </p:dialog>
         <script>
