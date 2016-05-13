@@ -105,41 +105,46 @@
             </p:layoutUnit>
             <p:layoutUnit position="center">
                 <p:overlayPanel id="classDetails" dismissable="false" widgetVar="classDetailsOP" >
-                    <p:dataTable var="driver" value="#{eventInfo.selectedAnalyzedEvent.classTimes}" styleClass="analysisDataTable" >
+                    <p:dataTable var="driver" value="#{eventInfo.selectedAnalyzedEvent.classTimes}" rowIndexVar="currentRow" styleClass="analysisDataTable" sortBy="#{driver.cls}">
                         <f:facet name="header" >
-                            Class Details #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
+                            Class Details for #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
                         </f:facet>
-                        <p:column colspan="1"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Class">
+                        <p:column colspan="2" headerText="Class">
                             #{driver.cls}
                         </p:column>
-                        <p:column colspan="1"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Position">
+                        <p:column colspan="1"  headerText="Position">
                           #{driver.position}
                         </p:column>
-                        <p:column colspan="3"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Driver">
+                        <p:column colspan="3"  headerText="Driver">
                             #{driver.driver}
                         </p:column>
-                        <p:column colspan="3"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Car">
+                        <p:column colspan="3"  headerText="Car">
                             #{driver.car}
                         </p:column>
-                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Best Time">
+                        <p:column colspan="2"  headerText="Best Time">
                             #{driver.time}
                         </p:column>
-                        <p:column colspan="2"  style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" headerText="Time Difference" >
+                        <p:column colspan="2"  headerText="Time Difference" >
                             #{driver.diff} (#{driver.leaderDiff})
                         </p:column>
-                        <p:column colspan="2" style="#{driver.driver eq '' ? 'color:gray;background-color:gray;' : ''}" >
-                            <p:commandLink rendered="#{ driver.driver ne '' }" update="battlePopup" oncomplete="PF('battleDialog').show();PF('rawDetailsOP').hide();PF('paxDetailsOP').hide()" >
-                                <h:outputText value="Class Battle" />
-                                <f:setPropertyActionListener value="#{driver.cls}" target="#{eventInfo.selectedAnalyzedEvent.selectedClass}" />
-                            </p:commandLink>
-                        </p:column>
+                        <p:summaryRow listener="#{eventInfo.selectedAnalyzedEvent.summaryRowCalculation}">
+                            <p:column colspan="2">
+                                <p:commandLink update="battlePopup" oncomplete="PF('battleDialog').show();PF('rawDetailsOP').hide();PF('paxDetailsOP').hide()" >
+                                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.currentClass} Class Battle" />
+                                    <f:setPropertyActionListener value="#{driver.cls}" target="#{eventInfo.selectedAnalyzedEvent.selectedClass}" />
+                                </p:commandLink>
+                            </p:column>  
+                            <p:column colspan="11">
+                                Lead Changes: #{eventInfo.selectedAnalyzedEvent.currentLeadChange}
+                            </p:column>
+                        </p:summaryRow>
                     </p:dataTable>
                 </p:overlayPanel>
 
                 <p:overlayPanel id="rawDetails" dismissable="false" widgetVar="rawDetailsOP" >
                     <p:dataTable var="driver" value="#{eventInfo.selectedAnalyzedEvent.rawTimes}" styleClass="analysisDataTable">
                         <f:facet name="header" >
-                            Raw Details #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
+                            Raw Details for #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
                         </f:facet>
                         <p:column colspan="1"  headerText="Position">
                           #{driver.position}
@@ -223,6 +228,7 @@
         <p:dialog id="battlePopup" modal="true" widgetVar="battleDialog" >
             <p:outputPanel>
                 <p:chart id="battleChart" widgetVar="battleChart" type="line" responsive="true" model="#{eventInfo.selectedAnalyzedEvent.currentClassBattle}" style="height:600px; width:1000px;" />
+                <h:outputText value="Lead Changes: #{eventInfo.selectedAnalyzedEvent.currentLeadChange}" style="font-weight:bold;" />
             </p:outputPanel>
         </p:dialog>
         <script>

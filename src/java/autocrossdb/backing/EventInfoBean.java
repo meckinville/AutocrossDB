@@ -7,11 +7,11 @@ package autocrossdb.backing;
 
 import autocrossdb.component.AnalyzedEvent;
 import autocrossdb.component.ClassBattleHelper;
+import autocrossdb.component.StandingsTableRow;
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -27,7 +27,6 @@ import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.LineChartModel;
-import org.primefaces.model.chart.LineChartSeries;
 
 /**
  *
@@ -39,6 +38,7 @@ public class EventInfoBean implements Serializable
 {
     private List<AnalyzedEvent> analyzedEvents;
     private AnalyzedEvent selectedAnalyzedEvent;
+
     private long progress;
     
     private Date startDate;
@@ -142,7 +142,7 @@ public class EventInfoBean implements Serializable
                 List<Runs> classBattleTimes = em.createQuery("SELECT r from Runs r where r.runEventUrl.eventUrl = :eventUrl order by r.runClassName.className, r.runNumber, r.runTime").setParameter("eventUrl", e.getEventUrl()).getResultList();
                 AnalyzedEvent tempEvent = new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes);
                 //tempEvent.setClassBattle(calculateClassBattles(classBattleTimes));
-                tempEvent.setClassBattle(separateClassesForBattle(classBattleTimes));
+                tempEvent.setClassBattle(separateClassesForBattle(classBattleTimes, tempEvent));
                 
                 analyzedEvents.add(tempEvent);
                 progDoub += 100 / eventsList.size();
@@ -156,9 +156,10 @@ public class EventInfoBean implements Serializable
         }
     }
     
-    private HashMap<String, LineChartModel> separateClassesForBattle(List<Runs> runs)
+    private HashMap<String, LineChartModel> separateClassesForBattle(List<Runs> runs, AnalyzedEvent event)
     {
         HashMap<String, LineChartModel> battle = new HashMap();
+        HashMap<String, Integer> leadChanges = new HashMap();
         
         HashMap<String, List<Runs>> separateClasses = new HashMap();
         
@@ -178,6 +179,7 @@ public class EventInfoBean implements Serializable
         
         for(String s : separateClasses.keySet())
         {
+            leadChanges.put(s, 0);
             List<Runs> currentList = separateClasses.get(s);
             int xMax = 0;
             int yMax = 0;
@@ -233,6 +235,9 @@ public class EventInfoBean implements Serializable
              
             
             HashMap<String, ChartSeries> seriesMap = new HashMap();
+            
+            String leader = "";
+            
             for(int key : positions.keySet())
             {
                 if(positions.get(key).size() < bestRuns.keySet().size())
@@ -260,6 +265,15 @@ public class EventInfoBean implements Serializable
                     if(seriesMap.containsKey(cbh.getDriver()))
                     {
                         seriesMap.get(cbh.getDriver()).set(key, position);
+                       
+                        //track lead changes
+                        if(position == 1 && !cbh.getDriver().equals(leader))
+                        {
+                            leader = cbh.getDriver();
+                            int leadChanged = leadChanges.get(s);
+                            leadChanged++;
+                            leadChanges.put(s, leadChanged);
+                        }
                         if(position > yMax)
                         {
                             yMax = position;
@@ -271,6 +285,12 @@ public class EventInfoBean implements Serializable
                         ChartSeries tempSeries = new ChartSeries();
                         tempSeries.setLabel(cbh.getDriver());
                         tempSeries.set(key, position);
+                        
+                        // track lead changes
+                        if(position == 1)
+                        {
+                            leader = cbh.getDriver();
+                        }
                         seriesMap.put(cbh.getDriver(), tempSeries);
                         if(position > yMax)
                         {
@@ -295,7 +315,7 @@ public class EventInfoBean implements Serializable
             xAxis.setTickInterval("1");
             battle.put(s, chart);
         }
-        
+        event.setClassLeadChanges(leadChanges);
         return battle;
     }
     
@@ -326,7 +346,7 @@ public class EventInfoBean implements Serializable
     }
 
     public void onCompleteLoad()
-    {
+    { 
         progress = 0;
     }
 
@@ -390,9 +410,12 @@ public class EventInfoBean implements Serializable
         this.classBattleSelection = classBattleSelection;
     }
 
-    
+    }
 
    
     
-}
+
+
+    
+
  

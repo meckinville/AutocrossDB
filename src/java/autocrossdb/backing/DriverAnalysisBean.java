@@ -47,6 +47,9 @@ public class DriverAnalysisBean
     private long totalOffcourse = 0;
     private double totalTimeOncourse = 0;
     private long totalRuns = 0; 
+    private int totalClassWins = 0;
+    private int totalRawWins = 0;
+    private int totalPaxWins = 0;
     
     @PersistenceContext
     private EntityManager em;
@@ -71,6 +74,9 @@ public class DriverAnalysisBean
         totalOffcourse = 0;
         totalTimeOncourse = 0;
         totalRuns = 0;
+        totalClassWins = 0;
+        totalRawWins = 0;
+        totalPaxWins = 0;
         
         events = new ArrayList();
         List<Events> rawEventList = em.createQuery("SELECT e from Events e JOIN e.runsCollection r WHERE r.runDriverName = :driver AND r.runNumber = 1 AND e.eventDate > :start AND e.eventDate < :end ORDER BY e.eventDate desc", Events.class).setParameter("driver", this.driver).setParameter("start", startDate).setParameter("end", endDate).getResultList();
@@ -87,6 +93,10 @@ public class DriverAnalysisBean
                 if(competitorRuns.get(x)[1].equals(driver))
                 {
                     classPosition = String.valueOf(x+1);
+                    if(classPosition.equals("1"))
+                    {
+                        totalClassWins++;
+                    }
                     ourRunTime = (double)competitorRuns.get(x)[0];
                     break;
                 }
@@ -107,6 +117,10 @@ public class DriverAnalysisBean
                 if(rawRuns.get(x)[1].equals(driver))
                 {
                     rawPosition = String.valueOf(x+1);
+                    if(rawPosition.equals("1"))
+                    {
+                        totalRawWins++;
+                    }
                     break;
                 }
             }
@@ -125,6 +139,10 @@ public class DriverAnalysisBean
                 if(paxRuns.get(x)[1].equals(driver))
                 {
                     paxPosition = String.valueOf(x+1);
+                    if(paxPosition.equals("1"))
+                    {
+                        totalPaxWins++;
+                    }
                     break;
                 }
             }
@@ -362,6 +380,30 @@ public class DriverAnalysisBean
 
     public void setTotalRuns(long totalRuns) {
         this.totalRuns = totalRuns;
+    }
+
+    public int getTotalClassWins() {
+        return totalClassWins;
+    }
+
+    public void setTotalClassWins(int totalClassWins) {
+        this.totalClassWins = totalClassWins;
+    }
+
+    public int getTotalRawWins() {
+        return totalRawWins;
+    }
+
+    public void setTotalRawWins(int totalRawWins) {
+        this.totalRawWins = totalRawWins;
+    }
+
+    public int getTotalPaxWins() {
+        return totalPaxWins;
+    }
+
+    public void setTotalPaxWins(int totalPaxWins) {
+        this.totalPaxWins = totalPaxWins;
     }
     
     

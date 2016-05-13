@@ -5,6 +5,9 @@
  */
 package autocrossdb.component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  *
@@ -21,6 +24,12 @@ public class StandingsTableRow
     private String diff;
     private String leaderDiff;
     
+    List<StandingsTableColumn> columns;
+    
+    public StandingsTableRow()
+    {
+        columns = new ArrayList();
+    }
 
     public StandingsTableRow(int position, String driver, String car, String cls, int cones, double time, double diff, double leaderDiff) {
         this.position = position;
@@ -31,6 +40,11 @@ public class StandingsTableRow
         this.time = String.format("%.3f", time);
         this.diff = String.format("%.3f", diff);
         this.leaderDiff = String.format("%.3f", leaderDiff);
+    }
+    
+    public void addColumn(StandingsTableColumn newColumn)
+    {
+        columns.add(newColumn);
     }
     
     public int getPosition() {
@@ -100,6 +114,14 @@ public class StandingsTableRow
 
     public void setCones(int cones) {
         this.cones = cones;
+    }
+
+    public List<StandingsTableColumn> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<StandingsTableColumn> columns) {
+        this.columns = columns;
     }
 
     

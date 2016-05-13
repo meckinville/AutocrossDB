@@ -68,8 +68,8 @@ public class NemesisBean
                 List<Object[]> tempList = new ArrayList();
 
                 //find all drivers within 1 second raw
-                //tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName.className FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl having ((:ourTime - min(r.runTime)) < 1) AND ((:ourTime - min(r.runTime)) > -1) order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).setParameter("ourTime", o[0]).getResultList();
-                tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).getResultList();
+                tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl having ((:ourTime - min(r.runTime)) < 1) AND ((:ourTime - min(r.runTime)) > -1) order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).setParameter("ourTime", o[0]).getResultList();
+                //tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).getResultList();
 
                 for(Object[] x : tempList)
                 {

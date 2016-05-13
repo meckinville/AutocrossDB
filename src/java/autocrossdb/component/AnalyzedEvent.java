@@ -31,8 +31,11 @@ public class AnalyzedEvent implements Serializable
     private List<StandingsTableRow> classTimes;
     
     private HashMap<String, LineChartModel> classBattle;
+    private HashMap<String, Integer> classLeadChanges;
     
+    private String currentClass;
     private LineChartModel currentClassBattle;
+    private int currentLeadChange;
     
     private String topRawName;
     private String topRawTime;
@@ -124,7 +127,7 @@ public class AnalyzedEvent implements Serializable
             else if(!(String.valueOf(classTimes.get(x)[2]).equals(currentClass)))
             {
                 currentClass = String.valueOf(classTimes.get(x)[2]);
-                this.classTimes.add(new StandingsTableRow(0, "", "", "", 0, 0.0, 0.0, 0.0));
+                //this.classTimes.add(new StandingsTableRow(0, "", "", "", 0, 0.0, 0.0, 0.0));
                 this.classTimes.add(new StandingsTableRow(1, String.valueOf(classTimes.get(x)[1]), String.valueOf(classTimes.get(x)[3]), String.valueOf(classTimes.get(x)[2]), (int)classTimes.get(x)[4], (double)classTimes.get(x)[0], 0.000, 0.000));
                 lastTime = (double)classTimes.get(x)[0];
                 topTime = (double)classTimes.get(x)[0];
@@ -137,6 +140,12 @@ public class AnalyzedEvent implements Serializable
                 lastTime = (double)classTimes.get(x)[0];
             }
         }
+    }
+    
+    public void summaryRowCalculation(Object o)
+    {
+        this.currentLeadChange = classLeadChanges.get(o.toString());
+        this.currentClass = o.toString();
     }
     
     
@@ -367,6 +376,31 @@ public class AnalyzedEvent implements Serializable
 
     public void setSelectedClass(String selectedClass) {
         this.selectedClass = selectedClass;
+    }
+
+    public HashMap<String, Integer> getClassLeadChanges() {
+        return classLeadChanges;
+    }
+
+    public void setClassLeadChanges(HashMap<String, Integer> classLeadChanges) {
+        this.classLeadChanges = classLeadChanges;
+    }
+
+    public int getCurrentLeadChange() {
+        
+        return currentLeadChange;
+    }
+
+    public void setCurrentLeadChange(int currentLeadChange) {
+        this.currentLeadChange = currentLeadChange;
+    }
+
+    public String getCurrentClass() {
+        return currentClass;
+    }
+
+    public void setCurrentClass(String currentClass) {
+        this.currentClass = currentClass;
     }
 
     

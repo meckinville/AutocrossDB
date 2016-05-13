@@ -6,7 +6,6 @@
 package autocrossdb.backing;
 
 import autocrossdb.entities.UpcomingEvents;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import javax.annotation.PostConstruct;

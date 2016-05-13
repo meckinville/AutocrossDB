@@ -40,6 +40,10 @@ public class ClassBattleHelper implements Comparable<ClassBattleHelper>
         {
             return 1;
         }
+        else if(this.offcourse && !other.offcourse)
+        {
+            return -1;
+        }
         else if(this.time == other.getTime())
         {
             return 0;
