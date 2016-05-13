@@ -29,6 +29,7 @@ td>a>span.fa-trophy {
 .descriptionColumn {
     font-weight: bold;
 }
+
 .ui-overlaypanel {
     margin: 10px;
 }
@@ -89,7 +90,7 @@ td>a>span.fa-trophy {
     font-size: 16px;
 }
 
-.analysisGrid>tbody>tr>td {
+.analysisPanelGrid>tbody>tr>td {
     width: 50%;
 }
 
@@ -115,14 +116,21 @@ td>a>span.fa-trophy {
     text-align: center;
 }
 
-.centeredPanelGrid {
+.comparisonChartPanelGrid {
     margin: 0 auto;
 }
 
-.headerRow {
+.comparisonChartPanelGrid > tbody > tr {
+    font-size: 14px;
+}
+
+.comparisonChartPanelGrid > tbody > .headerRow {
     text-align: center;
+    font-size: 16px;
+}
+
+.comparisonChartPanelGrid > * > .descriptionColumn {
     font-weight: bold;
-    font-size: 22px;
 }
 
 .ourDriverRow {
@@ -143,4 +151,9 @@ td>a>span.fa-trophy {
 
 .ui-panel-titlebar {
     text-align: center;
+}
+
+.eventAnalysisPanel > .ui-panel-content {
+    text-align: center;
+    font-size: 14px;
 }

@@ -65,12 +65,12 @@
                 </p:chart>
                 <p:commandButton type="button" value="Reset Zoom" icon="ui-icon-cancel" onclick="PF('compareChart').resetZoom()" />
             </p:layoutUnit>
-            <p:layoutUnit position="south" size="220">
-                <p:panelGrid id="statisticsGrid" styleClass="centeredPanelGrid">
-                    <p:row>
-                        <p:column styleClass="descriptionColumn headerRow" colspan="3">Statistic</p:column>
-                        <p:column styleClass="headerRow" colspan="2">#{comparisonChart.driver1 ne null and comparisonChart.driver1 ne '' ? comparisonChart.driver1 : 'Driver 1'}</p:column>
-                        <p:column styleClass="headerRow" colspan="2">#{comparisonChart.driver2 ne null and comparisonChart.driver2 ne '' ? comparisonChart.driver2 : 'Driver 2'}</p:column>
+            <p:layoutUnit position="south" size="200">
+                <p:panelGrid id="statisticsGrid" styleClass="comparisonChartPanelGrid">
+                    <p:row styleClass="headerRow" >
+                        <p:column styleClass="descriptionColumn" colspan="3">Statistic</p:column>
+                        <p:column colspan="2">#{comparisonChart.driver1 ne null and comparisonChart.driver1 ne '' ? comparisonChart.driver1 : 'Driver 1'}</p:column>
+                        <p:column colspan="2">#{comparisonChart.driver2 ne null and comparisonChart.driver2 ne '' ? comparisonChart.driver2 : 'Driver 2'}</p:column>
                     </p:row>
                     <p:row>
                         <p:column styleClass="descriptionColumn" colspan="3">Total Events Attended in this Time</p:column>

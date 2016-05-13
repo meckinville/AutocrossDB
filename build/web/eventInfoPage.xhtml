@@ -50,21 +50,21 @@
                     </p:progressBar>
                 </h:form>
             </p:layoutUnit>
-            <p:layoutUnit position="south" size="520" >
+            <p:layoutUnit position="south" size="450" >
                 <h:form id="eventDetails">
-                    <p:dataGrid var="event" value="#{eventInfo.analyzedEvents}" rows="3" columns="3" paginator="true" paginatorPosition="top" layout="grid">
+                    <p:dataGrid var="event" value="#{eventInfo.analyzedEvents}" rows="3" columns="3" paginator="true" paginatorPosition="top" layout="grid" >
                         <f:facet name="header" >
                             #{eventInfo.eventsSize} events
                         </f:facet>
                         
-                        <p:panel header="#{event.neglectedEvent.eventLocation}" style="text-align:center;" > 
+                        <p:panel styleClass="eventAnalysisPanel" header="#{event.neglectedEvent.eventLocation}" > 
                             <p:panelGrid columns="1" styleClass="noOutlinePanelGrid" style="width: 100%;" >
                                 <h:outputText value="#{event.neglectedEvent.eventDate}" >
                                     <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
                                 </h:outputText>
                                 <h:outputText value="#{event.neglectedEvent.eventClubName}" />
                             </p:panelGrid>
-                             <p:panelGrid styleClass="analysisGrid" columns="2" style="width: 100%;" columnClasses="descriptionColumn" >
+                             <p:panelGrid styleClass="analysisPanelGrid" columns="2" style="width: 100%;" columnClasses="descriptionColumn" >
                                 <h:outputText value="Total Drivers " />
                                 <h:outputText value="#{event.totalDrivers}" />
                                 <h:outputText value="Runs Per Driver" />
@@ -109,7 +109,7 @@
                         <f:facet name="header" >
                             Class Details for #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventDate}
                         </f:facet>
-                        <p:column colspan="2" headerText="Class">
+                        <p:column colspan="1" headerText="Class">
                             #{driver.cls}
                         </p:column>
                         <p:column colspan="1"  headerText="Position">
@@ -134,7 +134,7 @@
                                     <f:setPropertyActionListener value="#{driver.cls}" target="#{eventInfo.selectedAnalyzedEvent.selectedClass}" />
                                 </p:commandLink>
                             </p:column>  
-                            <p:column colspan="11">
+                            <p:column colspan="10">
                                 Lead Changes: #{eventInfo.selectedAnalyzedEvent.currentLeadChange}
                             </p:column>
                         </p:summaryRow>
