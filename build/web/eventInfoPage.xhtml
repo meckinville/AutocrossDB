@@ -6,6 +6,12 @@
       xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Autocross DB</title>
+        <script>
+            function battleChartExtender()
+            {
+                this.cfg.legend.placement = 'outsideGrid';
+            }
+        </script>
     </h:head>
     <h:body>
         <f:facet name="last">
@@ -80,8 +86,8 @@
                                 <h:outputText value="Off-Course Calls " /> 
                                 <h:outputText value="#{event.offCourseRuns}" />
                              </p:panelGrid>
-                                <p:commandLink update="eventDetails eventPopup" oncomplete="PF('eventDialog').show();" action="#{eventInfo.analyzeEvent}" >
-                                    <h:outputText value="More Info" />
+                                <p:commandLink update="eventDetails" oncomplete="window.open('eventBreakdown.xhtml', 'newwindow', 'width=735, height=500');" action="#{eventInfo.analyzeEvent}" >
+                                    <h:outputText value="Event Breakdown" />
                                     <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
                                 </p:commandLink>
                                 <br />
@@ -194,37 +200,6 @@
                 </p:overlayPanel>
             </p:layoutUnit>
         </p:layout>
-        <p:dialog id="eventPopup" modal="true" header="#{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventLocation} -- #{eventInfo.selectedAnalyzedEvent.neglectedEvent.eventClubName}" widgetVar="eventDialog" >
-            <p:outputPanel>
-                <p:panelGrid columns="5" columnClasses="descriptionColumn">
-                    <h:outputText value="" />
-                    <h:outputText value="Driver" styleClass="eventInfoHeaderRow" />
-                    <h:outputText value="Car" styleClass="eventInfoHeaderRow" />
-                    <h:outputText value="Class" styleClass="eventInfoHeaderRow" />
-                    <h:outputText value="Time/Cones" styleClass="eventInfoHeaderRow" />
-                    <h:outputText value="Raw Winner" />
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topRawName}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topRawCar}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topRawClass}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topRawTime}"/>
-                    <h:outputText value="Pax Winner" />
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topPaxName}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topPaxCar}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topPaxClass}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topPaxTime}"/>
-                    <h:outputText value="Cone Killer" />
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topConeKillerName}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topConeKillerCar}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topConeKillerClass}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.topConeKillerCones}"/>
-                    <h:outputText value="Novice Champ" />
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampName}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampCar}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampClass}"/>
-                    <h:outputText value="#{eventInfo.selectedAnalyzedEvent.noviceChampTime}"/>
-                </p:panelGrid>
-            </p:outputPanel>
-        </p:dialog>
         <p:dialog id="battlePopup" modal="true" widgetVar="battleDialog" >
             <p:outputPanel>
                 <p:chart id="battleChart" widgetVar="battleChart" type="line" responsive="true" model="#{eventInfo.selectedAnalyzedEvent.currentClassBattle}" style="height:600px; width:1000px;" />

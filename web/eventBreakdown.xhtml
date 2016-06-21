@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets" >
+    <h:head>
+        <title>Autocross DB</title>
+        <script>
+            function pieChartExtender()
+            {
+                this.cfg.legend.rendererOptions.numberRows = #{eventBreakdown.pieChartLegendRows};
+                this.cfg.seriesDefaults.rendererOptions.dataLabelPositionFactor = 1.1;
+                this.cfg.seriesDefaults.rendererOptions.dataLabelNudge = 2;
+                this.cfg.seriesDefaults.rendererOptions.padding = 30;
+                this.cfg.legend.placement = 'outsideGrid';
+            }
+            function countriesChartExtender()
+            {
+                this.cfg.legend.rendererOptions.numberRows = #{eventBreakdown.countriesChartLegendRows};
+                this.cfg.seriesDefaults.rendererOptions.dataLabelPositionFactor = 1.1;
+                this.cfg.seriesDefaults.rendererOptions.dataLabelNudge = 2;
+                this.cfg.seriesDefaults.rendererOptions.padding = 30;
+                this.cfg.legend.placement = 'outsideGrid';
+            }
+            function battleChartExtender()
+            {
+                this.cfg.legend.rendererOptions.numberRows = #{eventBreakdown.bestBattleLegendRows};
+                this.cfg.legend.placement = 'outsideGrid';
+            }
+        </script>
+    </h:head>
+    <h:body>
+        <f:facet name="last">
+            <h:outputStylesheet library="css" name="autoxDbMainStyle.css"  />
+        </f:facet>
+        <h1 class="breakdownTitle"><h:outputText value="Breakdown of #{eventBreakdown.event.neglectedEvent.eventLocation} on #{eventBreakdown.dateString} with #{eventBreakdown.event.neglectedEvent.eventClubName}" /></h1>
+        <hr/>
+        <p:panelGrid columns="3" style="width:100%;" styleClass="noOutlinePanelGrid threePanels" >
+            <p:panel class="breakdownPanel" header="Participants" >
+                <h:outputText value="#{eventBreakdown.event.totalDrivers} (#{eventBreakdown.participantRank} out of #{eventBreakdown.seasonEventCount})" />
+            </p:panel>
+            <p:panel class="breakdownPanel" header="Average Time" >
+                <h:outputText value="#{eventBreakdown.event.avgRunTime} (#{eventBreakdown.avgTimeRank} out of #{eventBreakdown.seasonEventCount})" />
+            </p:panel>
+            <p:panel class="breakdownPanel" header="Cones Hit" >
+                <h:outputText value="#{eventBreakdown.event.totalCones} (#{eventBreakdown.conesKilledRank} out of #{eventBreakdown.seasonEventCount})" />
+            </p:panel>
+            <p:panel class="breakdownPanel" header="Average Cones" >
+                <h:outputText value="#{eventBreakdown.event.avgCones} (#{eventBreakdown.avgConesRank} out of #{eventBreakdown.seasonEventCount})" />
+            </p:panel>
+            <p:panel class="breakdownPanel" header="Raw Winner (#{eventBreakdown.event.seasonYear} Season Wins)" >
+                <h:outputText value="#{eventBreakdown.event.topRawRun.runDriverName} (#{eventBreakdown.event.topRawWinCount})" />
+            </p:panel>
+            <p:panel class="breakdownPanel" header="Pax Winner (#{eventBreakdown.event.seasonYear} Season Wins)" >
+                <h:outputText value="#{eventBreakdown.event.topPaxRun.runDriverName} (#{eventBreakdown.event.topPaxWinCount})" />
+            </p:panel>
+        </p:panelGrid>
+        <p:panelGrid columns="2" style="width:100%;" styleClass="noOutlinePanelGrid">
+            <p:dataTable var="driver" value="#{eventBreakdown.event.rawTimes}" rows="5" >
+                <f:facet name="header" >
+                    Raw Rankings
+                </f:facet>
+                <p:column headerText="Position" colspan="1">
+                    <h:outputText value="#{driver.position}" />
+                </p:column>
+                <p:column headerText="Driver" colspan="3">
+                    <h:outputText value="#{driver.driver}" />
+                </p:column>
+                <p:column headerText="Class" colspan="1" >
+                    <h:outputText value="#{driver.cls}" />
+                </p:column>
+                <p:column headerText="Car" colspan="3" >
+                    <h:outputText value="#{driver.car}" />
+                </p:column>
+                <p:column headerText="Time" colspan="2" >
+                    <h:outputText value="#{driver.time} (#{driver.diff})" />
+                </p:column>
+            </p:dataTable>
+            <p:dataTable var="driver" value="#{eventBreakdown.event.paxTimes}" rows="5" >
+                <f:facet name="header" >
+                    Pax Rankings
+                </f:facet>
+                <p:column headerText="Position" colspan="1">
+                    <h:outputText value="#{driver.position}" />
+                </p:column>
+                <p:column headerText="Driver" colspan="3">
+                    <h:outputText value="#{driver.driver}" />
+                </p:column>
+                <p:column headerText="Class" colspan="1" >
+                    <h:outputText value="#{driver.cls}" />
+                </p:column>
+                <p:column headerText="Car" colspan="3" >
+                    <h:outputText value="#{driver.car}" />
+                </p:column>
+                <p:column headerText="Time" colspan="2" >
+                    <h:outputText value="#{driver.time} (#{driver.diff})" />
+                </p:column>
+            </p:dataTable>
+            <p:dataTable var="driver" value="#{eventBreakdown.event.coneKillers}" rows="5" >
+                <f:facet name="header" >
+                    Cone Killers
+                </f:facet>
+                <p:column headerText="Position" colspan="1">
+                    <h:outputText value="#{driver.position}" />
+                </p:column>
+                <p:column headerText="Driver" colspan="3">
+                    <h:outputText value="#{driver.driver}" />
+                </p:column>
+                <p:column headerText="Class" colspan="1" >
+                    <h:outputText value="#{driver.cls}" />
+                </p:column>
+                <p:column headerText="Car" colspan="3" >
+                    <h:outputText value="#{driver.car}" />
+                </p:column>
+                <p:column headerText="Cones Killed" colspan="2" >
+                    <h:outputText value="#{driver.cones}" />
+                </p:column>
+            </p:dataTable>
+        </p:panelGrid>
+        <p:panelGrid columns="2" style="width:100%;" styleClass="noOutlinePanelGrid" >
+            <p:chart type="pie" model="#{eventBreakdown.carChart}" style="width:600px;height:600px;" />
+            <p:chart type="pie" model="#{eventBreakdown.countriesChart}" style="width:600px;height:600px;" />
+            <p:chart type="line" model="#{eventBreakdown.bestBattleChart}" style="width:600px;height:600px;" />
+            
+        </p:panelGrid>
+        <p:chart type="ohlc" model="#{eventBreakdown.spreadChart}" style="width:1000px;height:800px;" />
+    </h:body>
+</html>
+

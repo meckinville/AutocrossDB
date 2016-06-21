@@ -6,7 +6,9 @@
 package autocrossdb.component;
 
 import autocrossdb.entities.Events;
+import autocrossdb.entities.Runs;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,42 +20,41 @@ import org.primefaces.model.chart.LineChartModel;
  */
 public class AnalyzedEvent implements Serializable
 {
+    
     private Events neglectedEvent;
+    
+    private static DecimalFormat threeDecimals = new DecimalFormat(".###");
     
     private int totalDrivers;
     private int runs;
     private long offCourseRuns;
     private double avgRunTime;
     private long totalCones;
+    private double avgCones;
+    private int seasonYear;
     
     private List<StandingsTableRow> rawTimes;
     private List<StandingsTableRow> paxTimes;
     private List<StandingsTableRow> classTimes;
+    private List<StandingsTableRow> coneKillers;
     
     private HashMap<String, LineChartModel> classBattle;
     private HashMap<String, Integer> classLeadChanges;
     
+    private String selectedClass;
     private String currentClass;
     private LineChartModel currentClassBattle;
     private int currentLeadChange;
     
-    private String topRawName;
-    private String topRawTime;
-    private String topRawCar;
-    private String topRawClass;
-    private String topPaxName;
-    private String topPaxTime;
-    private String topPaxCar;
-    private String topPaxClass;
-    private String topConeKillerName;
-    private String topConeKillerCones;
-    private String topConeKillerCar;
-    private String topConeKillerClass;
-    private String noviceChampName;
-    private String noviceChampTime;
-    private String noviceChampCar;
-    private String noviceChampClass;
-    private String selectedClass;
+    private Runs topRawRun;
+    private long topRawWinCount;
+    
+    private Runs topPaxRun;
+    private long topPaxWinCount;
+    
+    private Runs topConeKillerRun;
+    
+    private Runs noviceChampRun;
 
     public AnalyzedEvent()
     {
@@ -65,18 +66,20 @@ public class AnalyzedEvent implements Serializable
         this.neglectedEvent = e;
     }
     
-    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones, int runs, long offCourseRuns, List<Object[]> rawTimes, List<Object[]> paxTimes, List<Object[]> classTimes)
+    public AnalyzedEvent(Events e, int totalDrivers, double avgRunTime, long totalCones, int runs, long offCourseRuns, List<Object[]> rawTimes, List<Object[]> paxTimes, List<Object[]> classTimes, List<Object[]> coneKillers)
     {
         this.neglectedEvent = e;
         this.totalDrivers = totalDrivers;
         this.avgRunTime = avgRunTime;
         this.totalCones = totalCones;
+        this.avgCones = Double.parseDouble(threeDecimals.format((double)totalCones/(double)totalDrivers));
         this.runs = runs;
         this.offCourseRuns = offCourseRuns;
         
         this.rawTimes = new ArrayList();
         this.paxTimes = new ArrayList();
         this.classTimes = new ArrayList();
+        this.coneKillers = new ArrayList();
         
         currentClassBattle = new LineChartModel();
         
@@ -140,6 +143,11 @@ public class AnalyzedEvent implements Serializable
                 lastTime = (double)classTimes.get(x)[0];
             }
         }
+        
+        for(int x = 0; x < coneKillers.size(); x++)
+        {
+            this.coneKillers.add(new StandingsTableRow(x+1, String.valueOf(coneKillers.get(x)[1]), String.valueOf(coneKillers.get(x)[3]), String.valueOf(coneKillers.get(x)[2]), Integer.parseInt(coneKillers.get(x)[0].toString()), 0, 0, 0));
+        }
     }
     
     public void summaryRowCalculation(Object o)
@@ -148,135 +156,6 @@ public class AnalyzedEvent implements Serializable
         this.currentClass = o.toString();
     }
     
-    
-    public String getTopRawName() {
-        return topRawName;
-    }
-
-    public void setTopRawName(String topRawName) {
-        this.topRawName = topRawName;
-    }
-
-    public String getTopRawTime() {
-        return topRawTime;
-    }
-
-    public void setTopRawTime(String topRawTime) {
-        this.topRawTime = topRawTime;
-    }
-
-    public String getTopRawCar() {
-        return topRawCar;
-    }
-
-    public void setTopRawCar(String topRawCar) {
-        this.topRawCar = topRawCar;
-    }
-
-    public String getTopRawClass() {
-        return topRawClass;
-    }
-
-    public void setTopRawClass(String topRawClass) {
-        this.topRawClass = topRawClass;
-    }
-
-    public String getTopPaxName() {
-        return topPaxName;
-    }
-
-    public void setTopPaxName(String topPaxName) {
-        this.topPaxName = topPaxName;
-    }
-
-    public String getTopPaxTime() {
-        return topPaxTime;
-    }
-
-    public void setTopPaxTime(String topPaxTime) {
-        this.topPaxTime = topPaxTime;
-    }
-
-    public String getTopPaxCar() {
-        return topPaxCar;
-    }
-
-    public void setTopPaxCar(String topPaxCar) {
-        this.topPaxCar = topPaxCar;
-    }
-
-    public String getTopPaxClass() {
-        return topPaxClass;
-    }
-
-    public void setTopPaxClass(String topPaxClass) {
-        this.topPaxClass = topPaxClass;
-    }
-
-    public String getTopConeKillerName() {
-        return topConeKillerName;
-    }
-
-    public void setTopConeKillerName(String topConeKillerName) {
-        this.topConeKillerName = topConeKillerName;
-    }
-
-    public String getTopConeKillerCones() {
-        return topConeKillerCones;
-    }
-
-    public void setTopConeKillerCones(String topConeKillerCones) {
-        this.topConeKillerCones = topConeKillerCones;
-    }
-
-    public String getTopConeKillerCar() {
-        return topConeKillerCar;
-    }
-
-    public void setTopConeKillerCar(String topConeKillerCar) {
-        this.topConeKillerCar = topConeKillerCar;
-    }
-
-    public String getTopConeKillerClass() {
-        return topConeKillerClass;
-    }
-
-    public void setTopConeKillerClass(String topConeKillerClass) {
-        this.topConeKillerClass = topConeKillerClass;
-    }
-
-    public String getNoviceChampName() {
-        return noviceChampName;
-    }
-
-    public void setNoviceChampName(String noviceChampName) {
-        this.noviceChampName = noviceChampName;
-    }
-
-    public String getNoviceChampTime() {
-        return noviceChampTime;
-    }
-
-    public void setNoviceChampTime(String noviceChampTime) {
-        this.noviceChampTime = noviceChampTime;
-    }
-
-    public String getNoviceChampCar() {
-        return noviceChampCar;
-    }
-
-    public void setNoviceChampCar(String noviceChampCar) {
-        this.noviceChampCar = noviceChampCar;
-    }
-
-    public String getNoviceChampClass() {
-        return noviceChampClass;
-    }
-
-    public void setNoviceChampClass(String noviceChampClass) {
-        this.noviceChampClass = noviceChampClass;
-    }
-
     public Events getNeglectedEvent() {
         return neglectedEvent;
     }
@@ -402,6 +281,79 @@ public class AnalyzedEvent implements Serializable
     public void setCurrentClass(String currentClass) {
         this.currentClass = currentClass;
     }
+
+    public double getAvgCones() {
+        return avgCones;
+    }
+
+    public void setAvgCones(double avgCones) {
+        this.avgCones = avgCones;
+    }
+
+    public long getTopRawWinCount() {
+        return topRawWinCount;
+    }
+
+    public void setTopRawWinCount(long topRawWinCount) {
+        this.topRawWinCount = topRawWinCount;
+    }
+
+    public long getTopPaxWinCount() {
+        return topPaxWinCount;
+    }
+
+    public void setTopPaxWinCount(long topPaxWinCount) {
+        this.topPaxWinCount = topPaxWinCount;
+    }
+
+    public int getSeasonYear() {
+        return seasonYear;
+    }
+
+    public void setSeasonYear(int seasonYear) {
+        this.seasonYear = seasonYear;
+    }
+
+    public Runs getTopRawRun() {
+        return topRawRun;
+    }
+
+    public void setTopRawRun(Runs topRawRun) {
+        this.topRawRun = topRawRun;
+    }
+
+    public Runs getTopPaxRun() {
+        return topPaxRun;
+    }
+
+    public void setTopPaxRun(Runs topPaxRun) {
+        this.topPaxRun = topPaxRun;
+    }
+
+    public Runs getTopConeKillerRun() {
+        return topConeKillerRun;
+    }
+
+    public void setTopConeKillerRun(Runs topConeKillerRun) {
+        this.topConeKillerRun = topConeKillerRun;
+    }
+
+    public Runs getNoviceChampRun() {
+        return noviceChampRun;
+    }
+
+    public void setNoviceChampRun(Runs noviceChampRun) {
+        this.noviceChampRun = noviceChampRun;
+    }
+
+    public List<StandingsTableRow> getConeKillers() {
+        return coneKillers;
+    }
+
+    public void setConeKillers(List<StandingsTableRow> coneKillers) {
+        this.coneKillers = coneKillers;
+    }
+
 
     
 

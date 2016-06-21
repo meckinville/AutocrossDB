@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -26,7 +26,7 @@ import javax.persistence.PersistenceContext;
  * @author rmcconville
  */
 @ManagedBean(name="driverAnalysis")
-@ViewScoped
+@SessionScoped
 public class DriverAnalysisBean 
 {
     private String driver = "";

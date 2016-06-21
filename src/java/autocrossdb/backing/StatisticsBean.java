@@ -8,6 +8,7 @@ package autocrossdb.backing;
 import autocrossdb.component.DriverStat;
 import autocrossdb.component.Theme;
 import autocrossdb.entities.Events;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,7 +18,7 @@ import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -27,8 +28,8 @@ import javax.persistence.PersistenceContext;
  */
 
 @ManagedBean(name="statistics")
-@ViewScoped
-public class StatisticsBean
+@SessionScoped
+public class StatisticsBean implements Serializable
 {
     private List<Theme> themes;
     

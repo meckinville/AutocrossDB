@@ -7,8 +7,10 @@ package autocrossdb.util;
 
 import autocrossdb.component.AwardHelper;
 import autocrossdb.entities.Cars;
+import autocrossdb.entities.Events;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -165,5 +167,11 @@ public class CarUtil
         }
         Collections.sort(carAwards, Collections.reverseOrder());
         return carAwards;
+    }
+    
+    public HashMap<String, Integer> getMakeByEvent(Events e)
+    {
+        HashMap<String,Integer> map = new HashMap();
+        return map;
     }
 }

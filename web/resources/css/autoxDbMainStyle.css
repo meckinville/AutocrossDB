@@ -157,3 +157,20 @@ td>a>span.fa-trophy {
     text-align: center;
     font-size: 14px;
 }
+
+h1.breakdownTitle {
+    font-size: 16px;
+    text-align: center;
+}
+
+.breakdownPanel > .ui-panel-content {
+    text-align: center;
+}
+
+.ui-panelgrid-cell > .jqplot-target {
+    margin: 0 auto;
+}
+
+.threePanels > tbody > tr > td {
+    width: 33%;
+}

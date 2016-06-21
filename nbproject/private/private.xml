@@ -2,6 +2,15 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>jar:file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/lib/primefaces-5.3-sources.jar!/org/primefaces/model/chart/CategoryAxis.java</file>
+            <file>jar:file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/lib/primefaces-5.3-sources.jar!/org/primefaces/model/chart/ChartSeries.java</file>
+            <file>jar:file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/lib/primefaces-5.3-sources.jar!/org/primefaces/model/chart/DateAxis.java</file>
+            <file>jar:file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/lib/primefaces-5.3-sources.jar!/org/primefaces/model/chart/Axis.java</file>
+            <file>jar:file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/lib/primefaces-5.3-sources.jar!/org/primefaces/model/chart/OhlcChartSeries.java</file>
+            <file>file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/src/java/autocrossdb/backing/EventBreakdownBean.java</file>
+            <file>jar:file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/lib/primefaces-5.3-sources.jar!/org/primefaces/model/chart/CartesianChartModel.java</file>
+            <file>jar:file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/lib/primefaces-5.3-sources.jar!/org/primefaces/model/chart/OhlcChartModel.java</file>
+        </group>
     </open-files>
 </project-private>

@@ -7,7 +7,7 @@ package autocrossdb.backing;
 
 import autocrossdb.component.AnalyzedEvent;
 import autocrossdb.component.ClassBattleHelper;
-import autocrossdb.component.StandingsTableRow;
+import autocrossdb.entities.Classes;
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
 import java.io.Serializable;
@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.primefaces.model.chart.Axis;
@@ -33,11 +33,12 @@ import org.primefaces.model.chart.LineChartModel;
  * @author rmcconville
  */
 @ManagedBean(name="eventInfo")
-@ViewScoped
+@SessionScoped
 public class EventInfoBean implements Serializable
 {
     private List<AnalyzedEvent> analyzedEvents;
     private AnalyzedEvent selectedAnalyzedEvent;
+    
 
     private long progress;
     
@@ -63,39 +64,58 @@ public class EventInfoBean implements Serializable
     
     public void analyzeEvent()
     {
+        Calendar eventYear = Calendar.getInstance();
+        eventYear.setTime(selectedAnalyzedEvent.getNeglectedEvent().getEventDate());
+        eventYear.set(Calendar.MONTH, 1);
+        eventYear.set(Calendar.DAY_OF_MONTH, 1);
+        selectedAnalyzedEvent.setSeasonYear(eventYear.get(Calendar.YEAR));
+        
         List<Object[]> rawResults = em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
         List<Object[]> paxResults = em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
         List<Object[]> coneKillerResults = em.createNamedQuery("Runs.findTopConeKiller", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
         List<Object[]> noviceResults = em.createNamedQuery("Runs.findNoviceChamp", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
-        selectedAnalyzedEvent.setTopRawName(rawResults.get(0)[0].toString());
-        selectedAnalyzedEvent.setTopRawCar(rawResults.get(0)[1].toString());
-        selectedAnalyzedEvent.setTopRawClass(rawResults.get(0)[2].toString());
-        selectedAnalyzedEvent.setTopRawTime(rawResults.get(0)[3].toString());
         
-        selectedAnalyzedEvent.setTopPaxName(paxResults.get(0)[0].toString());
-        selectedAnalyzedEvent.setTopPaxCar(paxResults.get(0)[1].toString());
-        selectedAnalyzedEvent.setTopPaxClass(paxResults.get(0)[2].toString());
-        selectedAnalyzedEvent.setTopPaxTime(paxResults.get(0)[3].toString());
+        Runs topRawRun = new Runs();
+        topRawRun.setRunDriverName(rawResults.get(0)[0].toString());
+        topRawRun.setRunCarName(rawResults.get(0)[1].toString());
+        topRawRun.setRunClassName(new Classes(rawResults.get(0)[2].toString()));
+        topRawRun.setRunTime((double)rawResults.get(0)[3]);
+        selectedAnalyzedEvent.setTopRawRun(topRawRun);
+        List<Long> rawWinCount = em.createQuery("SELECT count(e) FROM Events e where e.eventRawWinner = :rawWinner AND e.eventDate < :date AND e.eventDate >= :year").setParameter("rawWinner", selectedAnalyzedEvent.getTopRawRun().getRunDriverName()).setParameter("date", selectedAnalyzedEvent.getNeglectedEvent().getEventDate()).setParameter("year", eventYear.getTime()).getResultList();
+        selectedAnalyzedEvent.setTopRawWinCount(rawWinCount.get(0) + 1);
         
-        selectedAnalyzedEvent.setTopConeKillerName(coneKillerResults.get(0)[0].toString());
-        selectedAnalyzedEvent.setTopConeKillerCar(coneKillerResults.get(0)[1].toString());
-        selectedAnalyzedEvent.setTopConeKillerClass(coneKillerResults.get(0)[2].toString());
-        selectedAnalyzedEvent.setTopConeKillerCones(coneKillerResults.get(0)[3].toString());
+        Runs topPaxRun = new Runs();
+        topPaxRun.setRunDriverName(paxResults.get(0)[0].toString());
+        topPaxRun.setRunCarName(paxResults.get(0)[1].toString());
+        topPaxRun.setRunClassName(new Classes(paxResults.get(0)[2].toString()));
+        topPaxRun.setRunTime((double)paxResults.get(0)[3]);
+        selectedAnalyzedEvent.setTopPaxRun(topPaxRun);
+        List<Long> paxWinCount = em.createQuery("SELECT count(e) FROM Events e where e.eventPaxWinner = :paxWinner AND e.eventDate < :date AND e.eventDate >= :year").setParameter("paxWinner", selectedAnalyzedEvent.getTopPaxRun().getRunDriverName()).setParameter("date", selectedAnalyzedEvent.getNeglectedEvent().getEventDate()).setParameter("year", eventYear.getTime()).getResultList();
+        selectedAnalyzedEvent.setTopPaxWinCount(paxWinCount.get(0) + 1);
         
+        Runs topConeKillerRun = new Runs();
+        topConeKillerRun.setRunDriverName(coneKillerResults.get(0)[0].toString());
+        topConeKillerRun.setRunCarName(coneKillerResults.get(0)[1].toString());
+        topConeKillerRun.setRunClassName(new Classes(coneKillerResults.get(0)[2].toString()));
+        topConeKillerRun.setRunCones(Integer.parseInt(coneKillerResults.get(0)[3].toString()));
+        selectedAnalyzedEvent.setTopConeKillerRun(topConeKillerRun);
+        
+        Runs bestNoviceRun = new Runs();
         if(noviceResults.size() == 0)
         {
-            selectedAnalyzedEvent.setNoviceChampName("No Novices.");
-            selectedAnalyzedEvent.setNoviceChampTime("N/A");
-            selectedAnalyzedEvent.setNoviceChampClass("N/A");
-            selectedAnalyzedEvent.setNoviceChampCar("N/A");
+            bestNoviceRun.setRunDriverName("No Novices");
+            bestNoviceRun.setRunTime(0.000);
+            bestNoviceRun.setRunCarName("N/A");
+            bestNoviceRun.setRunClassName(new Classes("NS"));
         }
         else
         {
-            selectedAnalyzedEvent.setNoviceChampName(noviceResults.get(0)[0].toString());
-            selectedAnalyzedEvent.setNoviceChampCar(noviceResults.get(0)[1].toString());
-            selectedAnalyzedEvent.setNoviceChampClass(noviceResults.get(0)[2].toString());
-            selectedAnalyzedEvent.setNoviceChampTime(noviceResults.get(0)[3].toString());
+            bestNoviceRun.setRunDriverName(noviceResults.get(0)[0].toString());
+            bestNoviceRun.setRunTime((double)noviceResults.get(0)[3]);
+            bestNoviceRun.setRunCarName(noviceResults.get(0)[1].toString());
+            bestNoviceRun.setRunClassName(new Classes(noviceResults.get(0)[2].toString()));
         }
+        selectedAnalyzedEvent.setNoviceChampRun(bestNoviceRun);
     }
     
     public void getEvents()
@@ -138,9 +158,11 @@ public class EventInfoBean implements Serializable
                 List<Object[]> rawTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
                 List<Object[]> paxTimes = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
                 List<Object[]> classTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by r.runClassName.className, min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
+                List<Object[]> coneKillers = em.createQuery("SELECT sum(r.runCones), r.runDriverName,  r.runClassName.className, r.runCarName FROM Runs r where r.runEventUrl.eventUrl = :eventUrl group by r.runDriverName order by sum(r.runCones) desc").setParameter("eventUrl", e.getEventUrl()).getResultList();
                 
+                AnalyzedEvent tempEvent = new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes, coneKillers);
+                        
                 List<Runs> classBattleTimes = em.createQuery("SELECT r from Runs r where r.runEventUrl.eventUrl = :eventUrl order by r.runClassName.className, r.runNumber, r.runTime").setParameter("eventUrl", e.getEventUrl()).getResultList();
-                AnalyzedEvent tempEvent = new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes);
                 //tempEvent.setClassBattle(calculateClassBattles(classBattleTimes));
                 tempEvent.setClassBattle(separateClassesForBattle(classBattleTimes, tempEvent));
                 
@@ -227,6 +249,7 @@ public class EventInfoBean implements Serializable
             LineChartModel chart = new LineChartModel();
             chart.setTitle(s + " Position Battle");
             chart.setLegendPosition("ne");
+            chart.setExtender("battleChartExtender");
             Axis yAxis = chart.getAxis(AxisType.Y);
             Axis xAxis = chart.getAxis(AxisType.X);
             yAxis.setLabel("Position");
@@ -410,7 +433,8 @@ public class EventInfoBean implements Serializable
         this.classBattleSelection = classBattleSelection;
     }
 
-    }
+
+}
 
    
     

@@ -6,11 +6,12 @@
 package autocrossdb.backing;
 
 import autocrossdb.entities.UpcomingEvents;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -19,8 +20,8 @@ import javax.persistence.PersistenceContext;
  * @author rmcconville
  */
 @ManagedBean(name="homePage")
-@ViewScoped
-public class HomePageBean 
+@SessionScoped
+public class HomePageBean implements Serializable
 {
     private List<String> images;
     private List<UpcomingEvents> upcomingEvents;

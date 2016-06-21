@@ -7,6 +7,7 @@ package autocrossdb.backing;
 
 import autocrossdb.component.Nemesis;
 import autocrossdb.entities.Classes;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -25,8 +26,8 @@ import javax.persistence.PersistenceContext;
  * @author rmcconville
  */
 @ManagedBean(name="nemesis")
-@ViewScoped
-public class NemesisBean 
+@SessionScoped
+public class NemesisBean implements Serializable
 {
     private String driver;
     private String driverClass;
