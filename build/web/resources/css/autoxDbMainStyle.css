@@ -174,3 +174,24 @@ h1.breakdownTitle {
 .threePanels > tbody > tr > td {
     width: 33%;
 }
+
+.breakdownClassButtons {
+    text-align: center;
+    display: block;
+}
+
+.breakdownClassButtons > div.ui-button > span.ui-button-text {
+    padding: 2px;
+    margin: 2px;
+    font-size: 12px;
+}
+
+.breakdownTable > div.ui-datatable-tablewrapper > table > tbody {
+    font-size: 14px;
+    text-align: center;
+}
+
+.breakdownTable > div.ui-datatable-scrollable-body > table > tbody {
+    font-size: 14px;
+    text-align: center;
+}

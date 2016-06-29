@@ -86,7 +86,7 @@
                                 <h:outputText value="Off-Course Calls " /> 
                                 <h:outputText value="#{event.offCourseRuns}" />
                              </p:panelGrid>
-                                <p:commandLink update="eventDetails" oncomplete="window.open('eventBreakdown.xhtml', 'newwindow', 'width=735, height=500');" action="#{eventInfo.analyzeEvent}" >
+                                <p:commandLink update="eventDetails" oncomplete="window.open('eventBreakdown.xhtml', '', 'fullscreen=yes');" action="#{eventInfo.analyzeEvent}" >
                                     <h:outputText value="Event Breakdown" />
                                     <f:setPropertyActionListener value="#{event}" target="#{eventInfo.selectedAnalyzedEvent}" />
                                 </p:commandLink>

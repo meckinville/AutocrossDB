@@ -7,6 +7,7 @@ package autocrossdb.backing;
 
 import autocrossdb.component.AnalyzedEvent;
 import autocrossdb.component.AwardHelper;
+import autocrossdb.component.StandingsTableRow;
 import autocrossdb.entities.Cars;
 import autocrossdb.entities.Runs;
 import java.io.Serializable;
@@ -22,9 +23,9 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.primefaces.json.JSONArray;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.CategoryAxis;
-import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.OhlcChartModel;
 import org.primefaces.model.chart.OhlcChartSeries;
@@ -56,16 +57,22 @@ public class EventBreakdownBean implements Serializable
     
     private PieChartModel carChart;
     private HashMap<String,Integer> makesMap;
-    private int pieChartLegendRows = 1;
     
     private PieChartModel countriesChart;
     private HashMap<String,Integer> countriesMap;
-    private int countriesChartLegendRows = 1;
     
     private LineChartModel bestBattleChart;
     private int bestBattleLegendRows = 1;
     
     private OhlcChartModel spreadChart;
+    private List<String> spreadTicks;
+    private JSONArray spreadTicksJson;
+    
+    private List<String> classList;
+    private int currentClassListSize;
+    private String selectedClass;
+    
+    private List<StandingsTableRow> classTableList;
     
     @PostConstruct
     public void init()
@@ -79,10 +86,63 @@ public class EventBreakdownBean implements Serializable
         seasonStart.set(Calendar.DAY_OF_MONTH, 1);
         seasonStart.set(Calendar.YEAR, event.getSeasonYear());
         
+        classList = em.createQuery("SELECT distinct r.runClassName.className from Runs r where r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", event.getNeglectedEvent().getEventUrl()).getResultList();
+        selectedClass = classList.get(0);
+        
         drawCarChart();
         drawBestClassBattle();
-        drawClassSpreadChart();
         getSeasonStatRankings();
+        drawClassTable();
+        drawSpreadChart();
+    }
+    
+    private void drawSpreadChart()
+    {
+        spreadChart = new OhlcChartModel();
+        spreadChart.setExtender("spreadChartExtender");
+        CategoryAxis xAxis = new CategoryAxis("Classes");
+        spreadChart.getAxes().put(AxisType.X, xAxis);
+        
+        spreadTicks = new ArrayList();
+        
+        List<Object[]> query = em.createQuery("SELECT min(r.runTime), r.runClassName.className from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName, r.runClassName.className order by r.runClassName.className, min(r.runTime)").setParameter("eventUrl", event.getNeglectedEvent().getEventUrl()).getResultList();
+        
+        String currentClass = query.get(0)[1].toString();
+        System.out.println("Current class = " + currentClass);
+        double minTime = 100;
+        double maxTime = 0;
+        for(Object[] o : query)
+        {
+            if(!o[1].toString().equals(currentClass))
+            {
+                System.out.println("creating new series: " + currentClass + " " + minTime + " " + maxTime + " " + minTime + " " + maxTime);
+                OhlcChartSeries series = new OhlcChartSeries(currentClass, minTime, maxTime, minTime, maxTime);
+                spreadChart.add(series);
+                spreadTicks.add(currentClass);
+                System.out.println("added " + currentClass + " to spreadticks... size = " + spreadTicks.size());
+                currentClass = o[1].toString();
+                System.out.println("currentClass now = " + currentClass);
+            }
+            else
+            {
+                if((double)o[0] < minTime)
+                {
+                    minTime = (double)o[0];
+                }
+                if((double)o[0] > maxTime)
+                {
+                    maxTime = (double)o[0];
+                }
+            }
+        }
+        System.out.println("spread ticks after loop size = " + spreadTicks.size());
+        System.out.println("is type = " + spreadTicks.getClass().toString());
+        spreadTicksJson = new JSONArray(spreadTicks);
+        
+        //make db query to get spreads grouped by classes
+        //create series for each classs
+        //add series to chart model
+        //make sure you get each individual class and add it to spreadTicks in the same order that the series are added.
     }
     
     private void getSeasonStatRankings()
@@ -211,33 +271,6 @@ public class EventBreakdownBean implements Serializable
         {
             countriesChart.set(key, countriesMap.get(key));
         }
-        pieChartLegendRows = makesMap.keySet().size() / 3;
-        countriesChartLegendRows = countriesMap.keySet().size() / 3;
-    }
-    
-    private void drawClassSpreadChart()
-    {
-        this.spreadChart = new OhlcChartModel();
-        spreadChart.getAxes().put(AxisType.X, new CategoryAxis("Class"));
-        List<Object[]> query = em.createQuery("SELECT min(r.runTime), max(r.runTime), r.runClassName.className from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runClassName.className order by r.runClassName.className").setParameter("eventUrl", event.getNeglectedEvent().getEventUrl()).getResultList();
-
-        int iterator = 1;
-        for(Object[] o : query)
-        {
-            OhlcChartSeries temp = new OhlcChartSeries();
-            temp.setValue(o[2]);
-            //temp.setValue(iterator);
-            //iterator++;
-            temp.setOpen(Double.parseDouble(o[1].toString()));
-            temp.setHigh(Double.parseDouble(o[1].toString())+1);
-            temp.setClose(Double.parseDouble(o[0].toString()));
-            temp.setLow(Double.parseDouble(o[0].toString())-1);
-            //spreadChart.add(new OhlcChartSeries(o[2], Double.parseDouble(o[1].toString()), Double.parseDouble(o[1].toString())+1, Double.parseDouble(o[0].toString())-1, Double.parseDouble(o[0].toString())));
-            spreadChart.add(temp);
-        }
-        
-        spreadChart.setTitle("Class Spreads");
-        spreadChart.getAxis(AxisType.Y).setLabel("Time Spread");
     }
     
     private void populateCarMakesMap(List<Cars> carList, List<Runs> runList)
@@ -331,6 +364,26 @@ public class EventBreakdownBean implements Serializable
                     */
         }
     }
+    
+    private void drawClassTable()
+    {
+        List<StandingsTableRow> tempList = event.getClassTimes();
+        this.classTableList = new ArrayList();
+        
+        for(StandingsTableRow s : tempList)
+        {
+            if(s.getCls().equals(selectedClass))
+            {
+                this.classTableList.add(s);
+            }
+        }
+        currentClassListSize = this.classTableList.size();
+    }
+   
+    public void classChanged()
+    {
+        drawClassTable();
+    }
 
     public EventInfoBean getEventInfo() {
         return eventInfo;
@@ -364,15 +417,6 @@ public class EventBreakdownBean implements Serializable
         this.carChart = carChart;
     }
 
-
-    public int getPieChartLegendRows() {
-        return pieChartLegendRows;
-    }
-
-    public void setPieChartLegendRows(int pieChartLegendRows) {
-        this.pieChartLegendRows = pieChartLegendRows;
-    }
-
     public LineChartModel getBestBattleChart() {
         return bestBattleChart;
     }
@@ -403,14 +447,6 @@ public class EventBreakdownBean implements Serializable
 
     public void setCountriesMap(HashMap<String, Integer> countriesMap) {
         this.countriesMap = countriesMap;
-    }
-
-    public int getCountriesChartLegendRows() {
-        return countriesChartLegendRows;
-    }
-
-    public void setCountriesChartLegendRows(int countriesChartLegendRows) {
-        this.countriesChartLegendRows = countriesChartLegendRows;
     }
 
     public int getBestBattleLegendRows() {
@@ -477,5 +513,56 @@ public class EventBreakdownBean implements Serializable
         this.spreadChart = spreadChart;
     }
 
+    public List<String> getClassList() {
+        return classList;
+    }
+
+    public void setClassList(List<String> classList) {
+        this.classList = classList;
+    }
+
+    public String getSelectedClass() {
+        return selectedClass;
+    }
+
+    public void setSelectedClass(String selectedClass) {
+        this.selectedClass = selectedClass;
+    }
+
+    public List<StandingsTableRow> getClassTableList() {
+        return classTableList;
+    }
+
+    public void setClassTableList(List<StandingsTableRow> classTableList) {
+        this.classTableList = classTableList;
+    }
+
+    public int getCurrentClassListSize() {
+        return currentClassListSize;
+    }
+
+    public void setCurrentClassListSize(int currentClassListSize) {
+        this.currentClassListSize = currentClassListSize;
+    }
+
+    public List<String> getSpreadTicks() {
+        return spreadTicks;
+    }
+
+    public void setSpreadTicks(List<String> spreadTicks) {
+        this.spreadTicks = spreadTicks;
+    }
+
+
+    
+    public JSONArray getSpreadTicksJson() {
+        return spreadTicksJson;
+    }
+
+    public void setSpreadTicksJson(JSONArray spreadTicksJson) {
+        this.spreadTicksJson = spreadTicksJson;
+    }
+
+    
     
 }

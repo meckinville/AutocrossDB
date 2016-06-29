@@ -38,7 +38,6 @@ public class EventInfoBean implements Serializable
 {
     private List<AnalyzedEvent> analyzedEvents;
     private AnalyzedEvent selectedAnalyzedEvent;
-    
 
     private long progress;
     

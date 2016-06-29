@@ -7,10 +7,10 @@
       xmlns:ui="http://java.sun.com/jsf/facelets" >
     <h:head>
         <title>Autocross DB</title>
-        <script>
+        <script type="text/javascript">
             function pieChartExtender()
             {
-                this.cfg.legend.rendererOptions.numberRows = #{eventBreakdown.pieChartLegendRows};
+                this.cfg.legend.rendererOptions.numberRows = 3;
                 this.cfg.seriesDefaults.rendererOptions.dataLabelPositionFactor = 1.1;
                 this.cfg.seriesDefaults.rendererOptions.dataLabelNudge = 2;
                 this.cfg.seriesDefaults.rendererOptions.padding = 30;
@@ -18,17 +18,23 @@
             }
             function countriesChartExtender()
             {
-                this.cfg.legend.rendererOptions.numberRows = #{eventBreakdown.countriesChartLegendRows};
+                this.cfg.legend.rendererOptions.numberRows = 3;
                 this.cfg.seriesDefaults.rendererOptions.dataLabelPositionFactor = 1.1;
                 this.cfg.seriesDefaults.rendererOptions.dataLabelNudge = 2;
                 this.cfg.seriesDefaults.rendererOptions.padding = 30;
                 this.cfg.legend.placement = 'outsideGrid';
             }
+            
             function battleChartExtender()
             {
                 this.cfg.legend.rendererOptions.numberRows = #{eventBreakdown.bestBattleLegendRows};
                 this.cfg.legend.placement = 'outsideGrid';
             }
+            function spreadChartExtender()
+            {
+                this.cfg.axes.xaxis.ticks = #{eventBreakdown.spreadTicksJson};
+            }
+            
         </script>
     </h:head>
     <h:body>
@@ -57,75 +63,119 @@
                 <h:outputText value="#{eventBreakdown.event.topPaxRun.runDriverName} (#{eventBreakdown.event.topPaxWinCount})" />
             </p:panel>
         </p:panelGrid>
-        <p:panelGrid columns="2" style="width:100%;" styleClass="noOutlinePanelGrid">
-            <p:dataTable var="driver" value="#{eventBreakdown.event.rawTimes}" rows="5" >
-                <f:facet name="header" >
-                    Raw Rankings
-                </f:facet>
-                <p:column headerText="Position" colspan="1">
-                    <h:outputText value="#{driver.position}" />
-                </p:column>
-                <p:column headerText="Driver" colspan="3">
-                    <h:outputText value="#{driver.driver}" />
-                </p:column>
-                <p:column headerText="Class" colspan="1" >
-                    <h:outputText value="#{driver.cls}" />
-                </p:column>
-                <p:column headerText="Car" colspan="3" >
-                    <h:outputText value="#{driver.car}" />
-                </p:column>
-                <p:column headerText="Time" colspan="2" >
-                    <h:outputText value="#{driver.time} (#{driver.diff})" />
-                </p:column>
-            </p:dataTable>
-            <p:dataTable var="driver" value="#{eventBreakdown.event.paxTimes}" rows="5" >
-                <f:facet name="header" >
-                    Pax Rankings
-                </f:facet>
-                <p:column headerText="Position" colspan="1">
-                    <h:outputText value="#{driver.position}" />
-                </p:column>
-                <p:column headerText="Driver" colspan="3">
-                    <h:outputText value="#{driver.driver}" />
-                </p:column>
-                <p:column headerText="Class" colspan="1" >
-                    <h:outputText value="#{driver.cls}" />
-                </p:column>
-                <p:column headerText="Car" colspan="3" >
-                    <h:outputText value="#{driver.car}" />
-                </p:column>
-                <p:column headerText="Time" colspan="2" >
-                    <h:outputText value="#{driver.time} (#{driver.diff})" />
-                </p:column>
-            </p:dataTable>
-            <p:dataTable var="driver" value="#{eventBreakdown.event.coneKillers}" rows="5" >
-                <f:facet name="header" >
-                    Cone Killers
-                </f:facet>
-                <p:column headerText="Position" colspan="1">
-                    <h:outputText value="#{driver.position}" />
-                </p:column>
-                <p:column headerText="Driver" colspan="3">
-                    <h:outputText value="#{driver.driver}" />
-                </p:column>
-                <p:column headerText="Class" colspan="1" >
-                    <h:outputText value="#{driver.cls}" />
-                </p:column>
-                <p:column headerText="Car" colspan="3" >
-                    <h:outputText value="#{driver.car}" />
-                </p:column>
-                <p:column headerText="Cones Killed" colspan="2" >
-                    <h:outputText value="#{driver.cones}" />
-                </p:column>
-            </p:dataTable>
+        <p:panelGrid style="width:100%;" styleClass="noOutlinePanelGrid">
+            <h:form>   
+                <p:row>
+                    <p:column>
+                        <p:dataTable class="breakdownTable" var="driver" value="#{eventBreakdown.event.rawTimes}" rows="5" >
+                            <f:facet name="header" >
+                                Raw Rankings
+                            </f:facet>
+                            <p:column headerText="Position" colspan="1">
+                                <h:outputText value="#{driver.position}" />
+                            </p:column>
+                            <p:column headerText="Driver" colspan="3">
+                                <h:outputText value="#{driver.driver}" />
+                            </p:column>
+                            <p:column headerText="Class" colspan="1" >
+                                <h:outputText value="#{driver.cls}" />
+                            </p:column>
+                            <p:column headerText="Car" colspan="3" >
+                                <h:outputText value="#{driver.car}" />
+                            </p:column>
+                            <p:column headerText="Time" colspan="2" >
+                                <h:outputText value="#{driver.time} (#{driver.diff})" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:column>
+                    <p:column>
+                        <p:dataTable class="breakdownTable" var="driver" value="#{eventBreakdown.event.paxTimes}" rows="5" >
+                            <f:facet name="header" >
+                                Pax Rankings
+                            </f:facet>
+                            <p:column headerText="Position" colspan="1">
+                                <h:outputText value="#{driver.position}" />
+                            </p:column>
+                            <p:column headerText="Driver" colspan="3">
+                                <h:outputText value="#{driver.driver}" />
+                            </p:column>
+                            <p:column headerText="Class" colspan="1" >
+                                <h:outputText value="#{driver.cls}" />
+                            </p:column>
+                            <p:column headerText="Car" colspan="3" >
+                                <h:outputText value="#{driver.car}" />
+                            </p:column>
+                            <p:column headerText="Time" colspan="2" >
+                                <h:outputText value="#{driver.time} (#{driver.diff})" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                    <p:dataTable class="breakdownTable" var="driver" value="#{eventBreakdown.event.coneKillers}" rows="5" >
+                        <f:facet name="header" >
+                            Cone Killers
+                        </f:facet>
+                        <p:column headerText="Position" colspan="1">
+                            <h:outputText value="#{driver.position}" />
+                        </p:column>
+                        <p:column headerText="Driver" colspan="3">
+                            <h:outputText value="#{driver.driver}" />
+                        </p:column>
+                        <p:column headerText="Class" colspan="1" >
+                            <h:outputText value="#{driver.cls}" />
+                        </p:column>
+                        <p:column headerText="Car" colspan="3" >
+                            <h:outputText value="#{driver.car}" />
+                        </p:column>
+                        <p:column headerText="Cones Killed" colspan="2" >
+                            <h:outputText value="#{driver.cones}" />
+                        </p:column>
+                    </p:dataTable>
+                    </p:column>
+                    <p:column>
+                        <p:dataTable class="breakdownTable" var="driver" id="classTable" value="#{eventBreakdown.classTableList}" scrollable="#{eventBreakdown.currentClassListSize > 6 ? true : false}" scrollHeight="125">
+                            <f:facet name="header" >
+                                #{eventBreakdown.selectedClass} Standings
+                            </f:facet>
+                            <p:column headerText="Position" colspan="1">
+                                <h:outputText value="#{driver.position}" />
+                            </p:column>
+                            <p:column headerText="Driver" colspan="3">
+                                <h:outputText value="#{driver.driver}" />
+                            </p:column>
+                            <p:column headerText="Class" colspan="1">
+                                <h:outputText value="#{driver.cls}" />
+                            </p:column>
+                            <p:column headerText="Car" colspan="3" >
+                                <h:outputText value="#{driver.car}" />
+                            </p:column>
+                            <p:column headerText="Time" colspan="2" >
+                                <h:outputText value="#{driver.time} (#{driver.diff})" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+
+                    </p:column>
+                    <p:column>
+                        <p:selectOneButton class="breakdownClassButtons" id="cls" value="#{eventBreakdown.selectedClass}" >
+                            <p:ajax listener="#{eventBreakdown.classChanged}" update="classTable" />
+                            <f:selectItems value="#{eventBreakdown.classList}" />
+                        </p:selectOneButton>
+                    </p:column>
+                </p:row>
+            </h:form>
         </p:panelGrid>
-        <p:panelGrid columns="2" style="width:100%;" styleClass="noOutlinePanelGrid" >
+        <p:panelGrid columns="2" style="width:100%;" >
             <p:chart type="pie" model="#{eventBreakdown.carChart}" style="width:600px;height:600px;" />
             <p:chart type="pie" model="#{eventBreakdown.countriesChart}" style="width:600px;height:600px;" />
             <p:chart type="line" model="#{eventBreakdown.bestBattleChart}" style="width:600px;height:600px;" />
-            
+            <p:chart type="ohlc" model="#{eventBreakdown.spreadChart}" style="width:600px;height:600px;" />
         </p:panelGrid>
-        <p:chart type="ohlc" model="#{eventBreakdown.spreadChart}" style="width:1000px;height:800px;" />
     </h:body>
 </html>
 
