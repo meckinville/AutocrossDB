@@ -99,29 +99,41 @@ public class EventBreakdownBean implements Serializable
     private void drawSpreadChart()
     {
         spreadChart = new OhlcChartModel();
-        spreadChart.setExtender("spreadChartExtender");
+        spreadChart.setCandleStick(true);
+        
         CategoryAxis xAxis = new CategoryAxis("Classes");
+        xAxis.setTickAngle(50);
         spreadChart.getAxes().put(AxisType.X, xAxis);
+        spreadChart.setExtender("spreadChartExtender");
+        spreadChart.setTitle("Class Spreads");
+        spreadChart.setShowPointLabels(true);
         
         spreadTicks = new ArrayList();
         
-        List<Object[]> query = em.createQuery("SELECT min(r.runTime), r.runClassName.className from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName, r.runClassName.className order by r.runClassName.className, min(r.runTime)").setParameter("eventUrl", event.getNeglectedEvent().getEventUrl()).getResultList();
+        List<Object[]> query = em.createQuery("SELECT min(r.runTime), r.runClassName.className, r.runDriverName from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName, r.runClassName.className order by r.runClassName.className, min(r.runTime)").setParameter("eventUrl", event.getNeglectedEvent().getEventUrl()).getResultList();
         
         String currentClass = query.get(0)[1].toString();
-        System.out.println("Current class = " + currentClass);
         double minTime = 100;
         double maxTime = 0;
+        int index = 1;
         for(Object[] o : query)
         {
             if(!o[1].toString().equals(currentClass))
             {
-                System.out.println("creating new series: " + currentClass + " " + minTime + " " + maxTime + " " + minTime + " " + maxTime);
-                OhlcChartSeries series = new OhlcChartSeries(currentClass, minTime, maxTime, minTime, maxTime);
+                
+                //this catches if theres only one person in the class
+                if(minTime == 100 && maxTime == 0)
+                {
+                    minTime = (double)o[0];
+                    maxTime = (double)o[0];
+                }
+                OhlcChartSeries series = new OhlcChartSeries(index, minTime, maxTime, minTime, maxTime);
+                index++;
+                minTime = (double)o[0];
+                maxTime = (double)o[0];
                 spreadChart.add(series);
                 spreadTicks.add(currentClass);
-                System.out.println("added " + currentClass + " to spreadticks... size = " + spreadTicks.size());
                 currentClass = o[1].toString();
-                System.out.println("currentClass now = " + currentClass);
             }
             else
             {
@@ -135,14 +147,8 @@ public class EventBreakdownBean implements Serializable
                 }
             }
         }
-        System.out.println("spread ticks after loop size = " + spreadTicks.size());
-        System.out.println("is type = " + spreadTicks.getClass().toString());
-        spreadTicksJson = new JSONArray(spreadTicks);
-        
-        //make db query to get spreads grouped by classes
-        //create series for each classs
-        //add series to chart model
-        //make sure you get each individual class and add it to spreadTicks in the same order that the series are added.
+        spreadTicksJson = new JSONArray(spreadTicks.toArray());
+
     }
     
     private void getSeasonStatRankings()
@@ -553,8 +559,6 @@ public class EventBreakdownBean implements Serializable
         this.spreadTicks = spreadTicks;
     }
 
-
-    
     public JSONArray getSpreadTicksJson() {
         return spreadTicksJson;
     }

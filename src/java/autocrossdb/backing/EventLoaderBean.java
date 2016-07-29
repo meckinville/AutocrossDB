@@ -400,18 +400,20 @@ public class EventLoaderBean
                         }
                         //prevent double last names from the double spans below
                         String[] driverNames = driverName.split(" ");
-                        if(driverNames[driverNames.length-1].equals(driverNames[driverNames.length-2]))
+                        if(driverNames.length >= 2)
                         {
-                            driverName = driverNames[0];
-                            for(int i = 1; i < driverNames.length-1;i++)
+                            if(driverNames[driverNames.length-1].equals(driverNames[driverNames.length-2]))
                             {
-                                driverName += " " + driverNames[i];
+                                driverName = driverNames[0];
+                                for(int i = 1; i < driverNames.length-1;i++)
+                                {
+                                    driverName += " " + driverNames[i];
+                                }
+
                             }
-                            
+                            driverName = driverName.replace("'", "");
+                            driverName = driverName.replace(".", "");
                         }
-                        driverName = driverName.replace("'", "");
-                        driverName = driverName.replace(".", "");
-                        
                         carName = columns.get(4).select("span").text();
                         if(carName.length() == 0)
                         {
@@ -656,6 +658,10 @@ public class EventLoaderBean
                         if(className.equals("cams"))
                         {
                             className = "CAM-S";
+                        }
+                        if(className.equalsIgnoreCase("nss"))
+                        {
+                            className = "NS";
                         }
 
                         className = className.toUpperCase();
