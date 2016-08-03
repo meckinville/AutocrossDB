@@ -2,7 +2,8 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <h:head>
         <title>Autocross DB</title>
     </h:head>
@@ -30,22 +31,61 @@
             </p:layoutUnit>
             <p:layoutUnit position="center" >
                 <h:form id="trophyForm" >
-                    <p:carousel id="rawCarousel" value="#{trophyRoom.rawTrophies}" headerText="Raw Trophies" var="trophy" itemStyle="text-align:center" responsive="true">
-                        <p:graphicImage name="images/#{trophy.position}.png" style="width:200px; height:200px"/>
-                        <h:outputText value="#{trophy.toString()}" />
+                    <p:carousel class="trophyCarousel" rendered="#{ fn:length(trophyRoom.rawTrophies) > 0}" id="rawCarousel" value="#{trophyRoom.rawTrophies}" headerText="#{fn:length(trophyRoom.rawTrophies)} Raw Trophies" var="trophy" itemStyle="text-align:center" responsive="true">
+                        <p:panelGrid class="trophyGrid noOutlinePanelGrid" columns="1">
+                            <p:graphicImage name="images/#{trophy.position}.png" style="width:100px; height:100px"/>
+                            <h:outputText value="#{trophy.event.eventLocation}" />
+                            <h:outputText value="#{trophy.event.eventDate}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                            <h:outputText value="#{trophy.event.eventClubName}"/>
+                            <h:outputText value="#{trophy.cls.className}"/>
+                        </p:panelGrid>
+                        <f:facet name="footer">
+                            #{trophyRoom.rawGold} Gold - #{trophyRoom.rawSilver} Silver - #{trophyRoom.rawBronze} Bronze
+                        </f:facet>
                     </p:carousel>
-                    <p:carousel id="paxCarousel" value="#{trophyRoom.paxTrophies}" headerText="Pax Trophies" var="trophy" itemStyle="text-align:center" responsive="true">
-                        <p:graphicImage name="images/#{trophy.position}.png" style="width:200px; height:200px"/>
-                        <h:outputText value="#{trophy.toString()}" />
+                    <p:carousel class="trophyCarousel" rendered="#{ fn:length(trophyRoom.paxTrophies) > 0}"  id="paxCarousel" value="#{trophyRoom.paxTrophies}" headerText="#{fn:length(trophyRoom.paxTrophies)} Pax Trophies" var="trophy" itemStyle="text-align:center" responsive="true">
+                        <p:panelGrid class="trophyGrid noOutlinePanelGrid" columns="1">
+                            <p:graphicImage name="images/#{trophy.position}.png" style="width:100px; height:100px"/>
+                            <h:outputText value="#{trophy.event.eventLocation}" />
+                            <h:outputText value="#{trophy.event.eventDate}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                            <h:outputText value="#{trophy.event.eventClubName}"/>
+                            <h:outputText value="#{trophy.cls.className}"/>
+                        </p:panelGrid>
+                        <f:facet name="footer">
+                            #{trophyRoom.paxGold} Gold - #{trophyRoom.paxSilver} Silver - #{trophyRoom.paxBronze} Bronze
+                        </f:facet>
                     </p:carousel>
-                    <p:carousel id="noviceCarousel" value="#{trophyRoom.noviceTrophies}" headerText="Novice Trophies" var="trophy" itemStyle="text-align:center" responsive="true">
-                        <p:graphicImage name="images/#{trophy.position}.png" style="width:200px; height:200px"/>
-                        <h:outputText value="#{trophy.toString()}" />
+                    <p:carousel class="trophyCarousel" rendered="#{ fn:length(trophyRoom.noviceTrophies) > 0}"  id="noviceCarousel" value="#{trophyRoom.noviceTrophies}" headerText="#{fn:length(trophyRoom.noviceTrophies)} Novice Trophies" var="trophy" itemStyle="text-align:center" responsive="true">
+                        <p:panelGrid class="trophyGrid noOutlinePanelGrid" columns="1">
+                            <p:graphicImage name="images/#{trophy.position}.png" style="width:100px; height:100px"/>
+                            <h:outputText value="#{trophy.event.eventLocation}" />
+                            <h:outputText value="#{trophy.event.eventDate}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                            <h:outputText value="#{trophy.event.eventClubName}"/>
+                            <h:outputText value="#{trophy.cls.className}"/>
+                        </p:panelGrid>
+                        <f:facet name="footer">
+                            #{trophyRoom.noviceGold} Gold - #{trophyRoom.noviceSilver} Silver - #{trophyRoom.noviceBronze} Bronze
+                        </f:facet>
                     </p:carousel>
-                    <p:carousel id="classCarousel" value="#{trophyRoom.classTrophies}" headerText="Class Trophies" var="trophy" itemStyle="text-align:center" responsive="true">
-                        <p:graphicImage name="images/#{trophy.position}.png" style="width:200px; height:200px"/>
-                        <
-                        <h:outputText value="#{trophy.toString()}" />
+                    <p:carousel class="trophyCarousel" rendered="#{ fn:length(trophyRoom.classTrophies) > 0}"  id="classCarousel" value="#{trophyRoom.classTrophies}" headerText="#{fn:length(trophyRoom.classTrophies)} Class Trophies" var="trophy" itemStyle="text-align:center" responsive="true">
+                        <p:panelGrid class="trophyGrid noOutlinePanelGrid" columns="1">
+                            <p:graphicImage name="images/#{trophy.position}.png" style="width:100px; height:100px"/>
+                            <h:outputText value="#{trophy.event.eventLocation}" />
+                            <h:outputText value="#{trophy.event.eventDate}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                            <h:outputText value="#{trophy.event.eventClubName}"/>
+                            <h:outputText value="#{trophy.cls.className}"/>
+                        </p:panelGrid>
+                        <f:facet name="footer">
+                            #{trophyRoom.classGold} Gold - #{trophyRoom.classSilver} Silver - #{trophyRoom.classBronze} Bronze
+                        </f:facet>
                     </p:carousel>
                 </h:form>
             </p:layoutUnit>

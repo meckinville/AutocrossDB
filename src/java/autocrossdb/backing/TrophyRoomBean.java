@@ -47,7 +47,7 @@ public class TrophyRoomBean implements Serializable
     
     public void populateTrophies()
     {
-        eventList = em.createQuery("select e from Events e join e.runsCollection r where r.runDriverName = :driverName group by r.runDriverName, r.runEventUrl having count(r.runDriverName) >= 1 ").setParameter("driverName", driver).getResultList();
+        eventList = em.createQuery("select e from Events e join e.runsCollection r where r.runDriverName = :driverName group by r.runDriverName, r.runEventUrl having count(r.runDriverName) >= 1 order by r.runEventUrl.eventDate desc").setParameter("driverName", driver).getResultList();
         populateRawTrophies();
         progress = 25;
         populatePaxTrophies();
@@ -56,26 +56,7 @@ public class TrophyRoomBean implements Serializable
         progress = 75;
         populateClassTrophies();
         progress = 100;
-        
-        for(Trophy t : rawTrophies)
-        {
-            System.out.println(t.toString());
-        }
-        
-        for(Trophy t : paxTrophies)
-        {
-            System.out.println(t.toString());
-        }
-        
-        for(Trophy t : noviceTrophies)
-        {
-            System.out.println(t.toString());
-        }
-        
-        for(Trophy t : classTrophies)
-        {
-            System.out.println(t.toString());
-        }
+
         
     }
     
@@ -172,6 +153,226 @@ public class TrophyRoomBean implements Serializable
             }
         }
         return results;
+    }
+    
+    public int getRawGold()
+    {
+        if(rawTrophies == null || rawTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : rawTrophies)
+        {
+            if(t.getPosition() == 0 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    public int getRawSilver()
+    {
+        if(rawTrophies == null || rawTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : rawTrophies)
+        {
+            if(t.getPosition() == 1 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    public int getRawBronze()
+    {
+        if(rawTrophies == null || rawTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : rawTrophies)
+        {
+            if(t.getPosition() == 2 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    public int getPaxGold()
+    {
+        if(paxTrophies == null || paxTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : paxTrophies)
+        {
+            if(t.getPosition() == 0 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    public int getPaxSilver()
+    {
+        if(paxTrophies == null || paxTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : paxTrophies)
+        {
+            if(t.getPosition() == 1 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    public int getPaxBronze()
+    {
+        if(paxTrophies == null || paxTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : paxTrophies)
+        {
+            if(t.getPosition() == 2 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    public int getClassGold()
+    {
+        if(classTrophies == null || classTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : classTrophies)
+        {
+            if(t.getPosition() == 0 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    public int getClassSilver()
+    {
+        if(classTrophies == null || classTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : classTrophies)
+        {
+            if(t.getPosition() == 1 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    public int getClassBronze()
+    {
+        if(classTrophies == null || classTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : classTrophies)
+        {
+            if(t.getPosition() == 2 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    public int getNoviceGold()
+    {
+        if(noviceTrophies == null || noviceTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : noviceTrophies)
+        {
+            if(t.getPosition() == 0 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    public int getNoviceSilver()
+    {
+        if(noviceTrophies == null || noviceTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : noviceTrophies)
+        {
+            if(t.getPosition() == 1 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    public int getNoviceBronze()
+    {
+        if(noviceTrophies == null || noviceTrophies.size() == 0)
+        {
+            return 0;
+        }
+        
+        int count = 0;
+        for(Trophy t : noviceTrophies)
+        {
+            if(t.getPosition() == 2 )
+            {
+                count++;
+            }
+        }
+        
+        return count;
     }
     
     public void onComplete()

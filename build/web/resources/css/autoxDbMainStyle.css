@@ -54,6 +54,15 @@ td>a>span.fa-trophy {
     margin-bottom: 5px;
 }
 
+.trophyGrid {
+    margin: auto;
+    width: 75%;
+    text-align: center;
+}
+
+.trophyCarousel {
+    margin-bottom:15px;
+}
 
 .nemesisPanel {
     height: 300px;
@@ -66,6 +75,8 @@ td>a>span.fa-trophy {
     padding-top:5px;
     padding-bottom:5px;
 }
+
+
 
 .nemesisGrid {
     margin: auto;
