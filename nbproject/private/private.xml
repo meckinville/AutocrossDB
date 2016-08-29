@@ -2,6 +2,12 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/web/loadEventPage.xhtml</file>
+            <file>file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/src/java/autocrossdb/component/UpcomingEventMap.java</file>
+            <file>file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/src/java/autocrossdb/backing/HomePageBean.java</file>
+            <file>file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/web/nemesisPage.xhtml</file>
+            <file>file:/C:/Users/rmcconville/Documents/NetBeansProjects/AutoxDB/web/index.xhtml</file>
+        </group>
     </open-files>
 </project-private>

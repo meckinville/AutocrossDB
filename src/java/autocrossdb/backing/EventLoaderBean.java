@@ -192,7 +192,7 @@ public class EventLoaderBean
                     driverName = driverName.trim();
                 }
                 
-                for(int y = 5; y < driverCells.size()-2; y++)
+                for(int y = 5; y < driverCells.size()-1; y++)
                 {
                     //if we're on the last column... check the next row to see if the driver field is blank.
                     //if it is blank, the results must be on 2 different lines.
@@ -218,7 +218,7 @@ public class EventLoaderBean
                                         double paxTime = 0;
                                         if(time.contains("+"))
                                         {
-                                            if(time.substring(time.indexOf("+")+1).equals("DNF"))
+                                            if(time.substring(time.indexOf("+")+1).equals("DNF") || time.substring(time.indexOf("+")+1).equals("OFF"))
                                             {
                                                 offcourse = "Y";
                                             }
