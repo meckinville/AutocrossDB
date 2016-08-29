@@ -5,7 +5,6 @@
  */
 package autocrossdb.backing;
 
-import autocrossdb.component.UpcomingEventMap;
 import autocrossdb.entities.UpcomingEvents;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -15,10 +14,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.primefaces.model.map.DefaultMapModel;
-import org.primefaces.model.map.LatLng;
-import org.primefaces.model.map.MapModel;
-import org.primefaces.model.map.Polygon;
 
 /**
  *
@@ -30,9 +25,6 @@ public class HomePageBean implements Serializable
 {
     private List<String> images;
     private List<UpcomingEvents> upcomingEvents;
-    private UpcomingEvents selectedUpcomingEvent;
-    private UpcomingEventMap map;
-    
     
     private long eventCount;
     private long driverCount;
@@ -45,7 +37,13 @@ public class HomePageBean implements Serializable
     @PostConstruct
     public void init()
     {
-        map = new UpcomingEventMap();
+        /*
+        images = new ArrayList<String>();
+        for(int x = 1; x <= 9; x++)
+        {
+            images.add(x + ".jpg");
+        }
+        */
         upcomingEvents = em.createQuery("SELECT ue from UpcomingEvents ue where ue.upcomingDate > :today order by ue.upcomingDate asc").setParameter("today", Calendar.getInstance().getTime()).getResultList();    
         eventCount = (long)em.createQuery("SELECT count(e) from Events e").getResultList().get(0);
         runCount = (long)em.createQuery("SELECT count(r) from Runs r").getResultList().get(0);
@@ -125,23 +123,6 @@ public class HomePageBean implements Serializable
         this.upcomingEvents = upcomingEvents;
     }
 
-    public UpcomingEvents getSelectedUpcomingEvent() {
-        return selectedUpcomingEvent;
-    }
-
-    public void setSelectedUpcomingEvent(UpcomingEvents selectedUpcomingEvent) 
-    {
-        this.selectedUpcomingEvent = selectedUpcomingEvent;
-        map = new UpcomingEventMap(selectedUpcomingEvent);
-    }
-
-    public UpcomingEventMap getMap() {
-        return map;
-    }
-
-    public void setMap(UpcomingEventMap map) {
-        this.map = map;
-    }
     
     
 }
