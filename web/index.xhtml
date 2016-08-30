@@ -7,6 +7,13 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <title>Autocross DB</title>
+        <script>
+            function initMap()
+            {
+                
+            }
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDHFpxYF-r9-3TVTYOXhSi96BLD7I0CMCI&amp;callback=initMap" type="text/javascript"></script>
     </h:head>
     <h:body>
         <f:facet name="last">
@@ -36,29 +43,33 @@
                 </ui:repeat>
             </p:imageSwitch-->
             <p:layoutUnit position="center">
-                <p:dataTable var="event" value="#{homePage.upcomingEvents}" >
-                    <p:column headerText="Date" >
-                        <h:outputText value="#{event.upcomingDate}" >
-                            <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Club" style="text-align:center;" >
-                        <h:outputLink value="#{homePage.getClubLink(event)}" >
-                            <p:graphicImage name="images/clubs/#{event.upcomingClub}.jpg" alt="#{event.upcomingClub}" style="width:100px; height:48px;" />
-                        </h:outputLink>
-                    </p:column>
-                    <p:column headerText="Location" style="text-align:center;" >
-                        <h:outputText value="#{event.upcomingLocation}" />
-                    </p:column>
-                    <p:column headerText="Type" >
-                        <h:outputText value="#{event.upcomingType}" />
-                    </p:column>
-                    <p:column headerText="Registration" >
-                        <h:outputLink value="#{event.upcomingRegistration}" >
-                            <h:outputText value="#{event.upcomingRegistration ne '' and event.upcomingRegistration ne null ? 'Register' : ''}" />
-                        </h:outputLink>
-                    </p:column>
-                </p:dataTable>
+                <h:form id="upcomingForm">
+                    <p:dataTable var="event" value="#{homePage.upcomingEvents}" >
+                        <p:column headerText="Date" >
+                            <h:outputText value="#{event.upcomingDate}" >
+                                <f:convertDateTime type="date" pattern="EEE MMM d, yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Club" style="text-align:center;" >
+                            <h:outputLink value="#{homePage.getClubLink(event)}" >
+                                <p:graphicImage name="images/clubs/#{event.upcomingClub}.jpg" alt="#{event.upcomingClub}" style="width:100px; height:48px;" />
+                            </h:outputLink>
+                        </p:column>
+                        <p:column headerText="Location" style="text-align:center;" >
+                            <p:commandLink value="#{event.upcomingLocation}" oncomplete="PF('mapDialog').show()" update="mapDialogForm" >
+                                <f:setPropertyActionListener value="#{event}" target="#{homePage.selectedUpcomingEvent}" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Type" >
+                            <h:outputText value="#{event.upcomingType}" />
+                        </p:column>
+                        <p:column headerText="Registration" >
+                            <h:outputLink value="#{event.upcomingRegistration}" >
+                                <h:outputText value="#{event.upcomingRegistration ne '' and event.upcomingRegistration ne null ? 'Register' : ''}" />
+                            </h:outputLink>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
             </p:layoutUnit>
             <p:layoutUnit position="south" size="100">
                 <p:panelGrid columns="5" style="padding: 5px; margin-top: 5px;">
@@ -70,6 +81,16 @@
                 </p:panelGrid>
             </p:layoutUnit>
         </p:layout>
+        <h:form id="mapDialogForm" >
+            <p:dialog id="mapPopup" modal="true" widgetVar="mapDialog" >
+                <f:facet name="header">
+                    #{homePage.map.address}
+                </f:facet>
+                <p:outputPanel>
+                    <p:gmap center="#{homePage.map.center1}, #{homePage.map.center2}" zoom="#{homePage.map.zoom}" type="HYBRID" style="width:800px;height:400px" model="#{homePage.map.map}"/>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
         <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
