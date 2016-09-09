@@ -13,6 +13,7 @@ import autocrossdb.entities.Runs;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.primefaces.json.JSONArray;
+import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.CategoryAxis;
 import org.primefaces.model.chart.LineChartModel;
@@ -116,27 +118,36 @@ public class EventBreakdownBean implements Serializable
         double minTime = 100;
         double maxTime = 0;
         int index = 1;
+        int numberInClass = 0;
+        int chartMaxHeight = 0;
+        int chartMinHeight = 100;
         for(Object[] o : query)
         {
             if(!o[1].toString().equals(currentClass))
             {
-                
-                //this catches if theres only one person in the class
-                if(minTime == 100 && maxTime == 0)
+                if(numberInClass > 1)
                 {
-                    minTime = (double)o[0];
-                    maxTime = (double)o[0];
+                    OhlcChartSeries series = new OhlcChartSeries(index, minTime, maxTime, minTime, maxTime);
+                    spreadChart.add(series);
+                    spreadTicks.add(currentClass);
+                    if(minTime < chartMinHeight)
+                    {
+                        chartMinHeight = (int)minTime;
+                    }
+                    if(maxTime > chartMaxHeight)
+                    {
+                        chartMaxHeight = (int)maxTime;
+                    }
+                    numberInClass = 0;
+                    index++;
                 }
-                OhlcChartSeries series = new OhlcChartSeries(index, minTime, maxTime, minTime, maxTime);
-                index++;
                 minTime = (double)o[0];
                 maxTime = (double)o[0];
-                spreadChart.add(series);
-                spreadTicks.add(currentClass);
                 currentClass = o[1].toString();
             }
             else
             {
+                numberInClass++;
                 if((double)o[0] < minTime)
                 {
                     minTime = (double)o[0];
@@ -148,6 +159,10 @@ public class EventBreakdownBean implements Serializable
             }
         }
         spreadTicksJson = new JSONArray(spreadTicks.toArray());
+        
+        Axis yAxis = spreadChart.getAxis(AxisType.Y);
+        yAxis.setMax(chartMaxHeight + 2);
+        yAxis.setMin(chartMinHeight - 2);
 
     }
     
