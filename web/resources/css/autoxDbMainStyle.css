@@ -208,3 +208,19 @@ h1.breakdownTitle {
     font-size: 14px;
     text-align: center;
 }
+
+.awardsTabView > ul.ui-tabs-nav > li {
+    width: 33%;
+}
+
+.awardsTabView > ul.ui-tabs-nav > li > a {
+    width: 100%;
+    text-align: center;
+}
+
+.awardsHeaderGrid > tbody > tr > td {
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    
+}

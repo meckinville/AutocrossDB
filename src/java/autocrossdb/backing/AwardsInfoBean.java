@@ -10,10 +10,10 @@ import autocrossdb.component.AwardHelper;
 import autocrossdb.entities.Cars;
 import autocrossdb.util.AwardInfoUtil;
 import autocrossdb.util.CarUtil;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -32,12 +32,14 @@ import javax.persistence.PersistenceContext;
  * @author rmcconville
  */
 @ManagedBean(name="awardsInfo")
-@ApplicationScoped
-public class AwardsInfoBean 
+@SessionScoped
+public class AwardsInfoBean implements Serializable
 {
     private static final DateFormat webFormat = new SimpleDateFormat("MM-dd-yyyy");
     
     private static final int PLACES_TO_POPULATE = 5;
+    
+    private List<String> filterList;
     
     private List<Award> xindividualAwards2016;
     
@@ -69,6 +71,36 @@ public class AwardsInfoBean
     @PostConstruct
     public void init()
     {   
+        filterList = new ArrayList();
+        filterList.add("CFRSCCA");
+        filterList.add("MARTINSCC");
+        filterList.add("BUCCANEER");
+        filterList.add("GULFCOAST");
+        
+        stats2014 = getStatsForYear(2014);
+        stats2015 = getStatsForYear(2015);
+        stats2016 = getStatsForYear(2016);
+        
+        individualAwards2016 = getIndividualAwardsForYear(2016);
+        individualAwards2015 = getIndividualAwardsForYear(2015);
+        individualAwards2014 = getIndividualAwardsForYear(2014);
+        
+        classAwards2016 = getClassAwardsForYear(2016);
+        classAwards2015 = getClassAwardsForYear(2015);
+        classAwards2014 = getClassAwardsForYear(2014);
+        
+        eventAwards2016 = getEventAwardsForYear(2016);
+        eventAwards2015 = getEventAwardsForYear(2015);
+        eventAwards2014 = getEventAwardsForYear(2014);
+        
+        carAwards2016 = getCarAwardsForYear(2016);
+        carAwards2015 = getCarAwardsForYear(2015);
+        carAwards2014 = getCarAwardsForYear(2014);
+    }
+    
+    public void filterAwards()
+    {
+       
         stats2014 = getStatsForYear(2014);
         stats2015 = getStatsForYear(2015);
         stats2016 = getStatsForYear(2016);
@@ -99,8 +131,8 @@ public class AwardsInfoBean
         beginYear.set(year, Calendar.JANUARY, 1);
         endYear.set(year, Calendar.DECEMBER, 31);
         
-        stats.add((long)em.createQuery("SELECT e FROM Events e where e.eventDate > :begin AND e.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList().size());
-        stats.add((long)em.createQuery("SELECT count(distinct r.runDriverName) FROM Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList().get(0));
+        stats.add((long)em.createQuery("SELECT e FROM Events e where e.eventDate > :begin AND e.eventDate < :end and e.eventClubName in :clubList").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList().size());
+        stats.add((long)em.createQuery("SELECT count(distinct r.runDriverName) FROM Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName  in :clubList").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList().get(0));
         return stats;
     }
     
@@ -112,19 +144,19 @@ public class AwardsInfoBean
         Calendar endYear = Calendar.getInstance();
         beginYear.set(year, Calendar.JANUARY, 1);
         endYear.set(year, Calendar.DECEMBER, 31);
-        List<Object[]> eventsAttendedQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 group by r.runDriverName having count(r.runDriverName) > 3 order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        List<Object[]> objectQuery = em.createQuery("SELECT count(e.eventRawWinner), e.eventRawWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventRawWinner order by count(e.eventRawWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        List<Object[]> eventsAttendedQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runEventUrl.eventClubName in :clubList group by r.runDriverName having count(r.runDriverName) > 3 order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
+        List<Object[]> objectQuery = em.createQuery("SELECT count(e.eventRawWinner), e.eventRawWinner from Events e where e.eventDate > :begin AND e.eventDate < :end and e.eventClubName in :clubList group by e.eventRawWinner order by count(e.eventRawWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         
         //add raw event winners and raw percent wins
         awards.add(populateAward(objectQuery, "Most Raw Wins", "[1] with [0] raw time wins.", AwardInfoUtil.MOST_RAW_WINS_INFO, 1));
         awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Highest Percent Raw Wins", "[name] had top raw time at [value]% of attended events.", AwardInfoUtil.HIGHEST_RAW_PERCENT_INFO));
         
-        objectQuery = em.createQuery("SELECT count(e.eventPaxWinner), e.eventPaxWinner from Events e where e.eventDate > :begin AND e.eventDate < :end group by e.eventPaxWinner order by count(e.eventPaxWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT count(e.eventPaxWinner), e.eventPaxWinner from Events e where e.eventDate > :begin AND e.eventDate < :end and e.eventClubName in :clubList group by e.eventPaxWinner order by count(e.eventPaxWinner) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add pax event winners and pax percent wins
         awards.add(populateAward(objectQuery, "Most Pax Wins", "[1] with [0] pax time wins.", AwardInfoUtil.MOST_PAX_WINS_INFO, 1));
         awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Highest Percent Pax Wins", "[name] had top pax time at [value]% of attended events.", AwardInfoUtil.HIGHEST_PAX_PERCENT_INFO));
         
-        objectQuery = em.createQuery("SELECT sum(r.runCones), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT sum(r.runCones), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList group by r.runDriverName order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add most cones total and most cones per event
         awards.add(populateAward(objectQuery, "Most Cones Hit", "[1] with [0] total cones hit.", AwardInfoUtil.MOST_CONES_HIT_INFO, 1));
         awards.add(populateAward(calculatePercent(eventsAttendedQuery, objectQuery), "Most Cones Hit Per Event Average", "[name] hit [value] cones per attended event.", AwardInfoUtil.MOST_CONES_HIT_AVG_INFO));
@@ -132,19 +164,19 @@ public class AwardsInfoBean
         //add most events attended
         awards.add(populateAward(eventsAttendedQuery, "Most Events Attended", "[1] with [0] events attended.", AwardInfoUtil.MOST_EVENTS_ATTENDED_INFO, 1));
         
-        objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList group by r.runDriverName order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add most runs taken
         awards.add(populateAward(objectQuery, "Most Runs Taken", "[1] with [0] runs taken.", AwardInfoUtil.MOST_RUNS_TAKEN_INFO, 1));
         
-        objectQuery = em.createQuery("SELECT count(distinct r.runClassName.className), r.runDriverName from Runs r where r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runDriverName order by count(distinct r.runClassName.className) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT count(distinct r.runClassName.className), r.runDriverName from Runs r where r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList group by r.runDriverName order by count(distinct r.runClassName.className) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add class jumper
         awards.add(populateAward(objectQuery, "Class Jumper", "[1] participated in [0] different classes.", AwardInfoUtil.CLASS_JUMPER_INFO, 1));
         
-        objectQuery = em.createQuery("SELECT max(r.runCones), r.runDriverName, r.runEventUrl.eventDate, r.runEventUrl.eventLocation, r.runNumber from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runOffcourse = 'N' group by r.runId order by max(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT max(r.runCones), r.runDriverName, r.runEventUrl.eventDate, r.runEventUrl.eventLocation, r.runNumber from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList and r.runOffcourse = 'N' group by r.runId order by max(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add dirtiest run
         awards.add(populateAward(objectQuery, "Dirtiest Run", "[1] hit [0] cones on run #[4] at [3] [2].", AwardInfoUtil.DIRTIEST_RUN_INFO, 4));
         
-        objectQuery = em.createQuery("SELECT min(r.runTime)-min(r.runTime - (2 * r.runCones)) as diff, r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin and r.runEventUrl.eventDate < :end group by r.runEventUrl, r.runDriverName having min(r.runTime)-min(r.runTime - (2 * r.runCones)) > 0 order by r.runDriverName, diff").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT min(r.runTime)-min(r.runTime - (2 * r.runCones)) as diff, r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin and r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList and r.runOffcourse = 'N' group by r.runEventUrl, r.runDriverName having min(r.runTime)-min(r.runTime - (2 * r.runCones)) > 0 order by r.runDriverName, diff").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add most time lost from cones
         Map<String, AwardHelper> lostTimeMap = new TreeMap();
         for(Object[] o : objectQuery)
@@ -184,31 +216,31 @@ public class AwardsInfoBean
         beginYear.set(year, Calendar.JANUARY, 1);
         endYear.set(year, Calendar.DECEMBER, 31);
         
-        List<Object[]> objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        List<Object[]> objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runEventUrl.eventClubName in :clubList group by r.runEventUrl order by count(r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add biggest event
         awards.add(populateAward(objectQuery, "Largest Event Attendance", "[0] participants at [1] [2] with [3].", AwardInfoUtil.LARGEST_EVENT_INFO,  3));
         
-        objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by count(r.runDriverName) asc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runEventUrl.eventClubName in :clubList group by r.runEventUrl order by count(r.runDriverName) asc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add smallest event
         awards.add(populateAward(objectQuery, "Smallest Event Attendance", "[0] participants at [1] [2] with [3].", AwardInfoUtil.SMALLEST_EVENT_INFO, 3));
         
-        objectQuery = em.createQuery("SELECT max(r.runNumber), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runEventUrl order by max(r.runNumber) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT max(r.runNumber), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList group by r.runEventUrl order by max(r.runNumber) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add most runs at an event
         awards.add(populateAward(objectQuery, "Most Runs at Event", "[0] runs at [1] [3] with [2].", AwardInfoUtil.MOST_RUNS_AT_EVENT_INFO,  3));
         
-        objectQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runEventUrl.eventClubName in :clubList group by r.runEventUrl order by sum(r.runCones) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add cone carnage
         awards.add(populateAward(objectQuery, "Cone Carnage", "[0] cones hit at [1] [2] with [3].", AwardInfoUtil.CONE_CARNAGE_INFO, 3));
         
-        objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as average, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin group by r.runEventUrl order by average desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as average, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runEventUrl.eventClubName in :clubList group by r.runEventUrl order by average desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add average cones per driver
         awards.add(populateAward(objectQuery, "Average Cones Per Driver", "[0] cones hit per driver at [1] [2] with [3].", AwardInfoUtil.AVG_CONES_PER_DRIVER_INFO, 3));
         
-        objectQuery = em.createQuery("SELECT count(*), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate FROM Runs r WHERE r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runOffcourse = 'Y' group by r.runEventUrl order by count(*) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT count(*), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate FROM Runs r WHERE r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runOffcourse = 'Y' and r.runEventUrl.eventClubName in :clubList group by r.runEventUrl order by count(*) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add most offcourses
         awards.add(populateAward(objectQuery, "Most Confusing Course", "[0] offcourse calls at [1] [3] with [2].", AwardInfoUtil.MOST_CONFUSING_COURSE_INFO, 3));
         
-        objectQuery = em.createQuery("SELECT count(*), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runNumber = 1 and r.runClassName.className = 'NS' group by r.runEventUrl order by count(*) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT count(*), r.runEventUrl.eventLocation, r.runEventUrl.eventClubName, r.runEventUrl.eventDate from Runs r where r.runEventUrl.eventDate < :end and r.runEventUrl.eventDate > :begin and r.runNumber = 1 and r.runClassName.className = 'NS' and r.runEventUrl.eventClubName in :clubList group by r.runEventUrl order by count(*) desc ").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add novice invasion
         awards.add(populateAward(objectQuery, "Novice Invasion", "[0] novices attended [1] [3] with [2].", AwardInfoUtil.NOVICE_INVASION_INFO, 3));
         
@@ -223,17 +255,17 @@ public class AwardsInfoBean
         beginYear.set(year, Calendar.JANUARY, 1);
         endYear.set(year, Calendar.DECEMBER, 31);
         
-        List<Object[]> objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runClassName.className, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName, r.runEventUrl order by count(r.runDriverName) desc" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        List<Object[]> objectQuery = em.createQuery("SELECT count(r.runDriverName), r.runClassName.className, r.runEventUrl.eventLocation, r.runEventUrl.eventDate, r.runEventUrl.eventClubName from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runEventUrl.eventClubName in :clubList and r.runClassName.className != 'NS' group by r.runClassName, r.runEventUrl order by count(r.runDriverName) desc" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add biggest class at event
         awards.add(populateAward(objectQuery, "Largest Class Attendance", "[1] with [0] participants at [2] [3].", AwardInfoUtil.LARGEST_CLASS_ATTENDANCE_INFO, 3));
         
-        objectQuery = em.createQuery("SELECT count(distinct r.runDriverName), r.runClassName.className from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' group by r.runClassName order by count(distinct r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT count(distinct r.runDriverName), r.runClassName.className from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1 and r.runClassName.className != 'NS' and r.runEventUrl.eventClubName in :clubList group by r.runClassName order by count(distinct r.runDriverName) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         //add most unique drivers in class for the year
         awards.add(populateAward(objectQuery, "Most Unique Drivers in Class", "[1] with [0] unique participants.", AwardInfoUtil.MOST_UNIQUE_DRIVERS_CLASS_INFO, 1));
          
         //highest average participation
-        objectQuery = em.createQuery("SELECT count(r), r.runClassName.className from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runClassName.className != 'NS' group by r.runClassName order by count(r) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
-        long totalEvents = em.createQuery("SELECT e FROM Events e where e.eventDate > :begin AND e.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList().size();
+        objectQuery = em.createQuery("SELECT count(r), r.runClassName.className from Runs r where r.runNumber = 1 and r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runClassName.className != 'NS' and r.runEventUrl.eventClubName in :clubList group by r.runClassName order by count(r) desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
+        long totalEvents = em.createQuery("SELECT e FROM Events e where e.eventDate > :begin AND e.eventDate < :end and e.eventClubName in :clubList").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList().size();
         List<Object[]> tempQuery = new ArrayList();
         for(Object[] o : objectQuery)
         {
@@ -245,7 +277,7 @@ public class AwardsInfoBean
         awards.add(populateAward(tempQuery, "Highest Average Participation", "[1] had an average of [0] participants.", AwardInfoUtil.HIGHEST_AVG_PARTICIPATION_INFO, 1));
         
         //dirtiest class
-        objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runClassName having count(distinct r.runDriverName) > 2 order by avgCones desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        objectQuery = em.createQuery("SELECT cast(sum(r.runCones) as float) / cast(count(distinct r.runDriverName) as float) as avgCones, r.runClassName.className, r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList group by r.runClassName having count(distinct r.runDriverName) > 2 order by avgCones desc").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         awards.add(populateAward(objectQuery, "Dirtiest Class", "[1] hit [0] cones per driver per event.", AwardInfoUtil.DIRTIEST_CLASS_INFO, 2));
         return awards;
     }
@@ -258,13 +290,13 @@ public class AwardsInfoBean
         beginYear.set(year, Calendar.JANUARY, 1);
         endYear.set(year, Calendar.DECEMBER, 31);
         
-        List<Object[]> objectQuery = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runCarName from Runs r where r.runOffcourse = 'N' AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end group by r.runEventUrl, r.runClassName" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        List<Object[]> objectQuery = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runCarName from Runs r where r.runOffcourse = 'N' AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList group by r.runEventUrl, r.runClassName" ).setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         List<Cars> carList = em.createQuery("SELECT c FROM Cars c").getResultList();
         CarUtil carUtil = new CarUtil(carList);
         List<AwardHelper> classWinsAwards = carUtil.getClassWins(objectQuery);
         awards.add(populateAward(classWinsAwards, "Most Class Wins by Make", "[name] had [value] class wins.", AwardInfoUtil.MOST_CLASS_WINS_CARMAKE_INFO));
         
-        List<String> query = em.createQuery("SELECT r.runCarName from Runs r WHERE r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        List<String> query = em.createQuery("SELECT r.runCarName from Runs r WHERE r.runNumber = 1 AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runEventUrl.eventClubName in :clubList").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).setParameter("clubList", filterList).getResultList();
         List<AwardHelper> participationAward = carUtil.getParticipation(query);
         awards.add(populateAward(participationAward, "Highest Participation by Make", "[name] had [value] cars show up.", AwardInfoUtil.HIGHEST_ATTENDANCE_CARMAKE_INFO));
         
@@ -520,11 +552,13 @@ public class AwardsInfoBean
         this.selectedAward = selectedAward;
     }
 
+    public List<String> getFilterList() {
+        return filterList;
+    }
 
-    
+    public void setFilterList(List<String> filterList) {
+        this.filterList = filterList;
+    }
 
-    
-   
-    
-    
+
 }
