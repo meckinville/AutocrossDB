@@ -15,17 +15,20 @@ public class AwardHelper implements Comparable<AwardHelper>
 {
     private double value;
     private String name;
+    private int count;
     
     public AwardHelper(Object[] award)
     {
         this.value = (double)award[0];
         this.name = String.valueOf(award[1]);
+        this.count = 1;
     }
     
     public AwardHelper(double l, String s)
     {
         this.name = s; 
         this.value = l;
+        this.count = 1;
     }
 
     public double getValue() {
@@ -43,6 +46,16 @@ public class AwardHelper implements Comparable<AwardHelper>
     public void setName(String name) {
         this.name = name;
     }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+    
+    
     
     @Override
     public boolean equals(Object object)

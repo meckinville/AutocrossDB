@@ -28,6 +28,7 @@ public class AwardInfoUtil
     public static final String MOST_RUNS_TAKEN_INFO = "The drivers who took the most runs throughout the year.";
     public static final String CLASS_JUMPER_INFO = "The drivers who participated in the most different classes at events throughout the year.";
     public static final String DIRTIEST_RUN_INFO = "The most cones hit on a single run throughout the year.";
+    public static final String TIME_LOST_INFO = "Most time lost off best runs.";
     
     //Event Awards
     public static final String LARGEST_EVENT_INFO = "Most attendees to a single event.";
@@ -54,4 +55,5 @@ public class AwardInfoUtil
     //Car Awards
     public static final String MOST_CLASS_WINS_CARMAKE_INFO = "Shows the car maker who had the most event class wins throughout the year.";
     public static final String HIGHEST_ATTENDANCE_CARMAKE_INFO = "Shows the total number of cars that showed up at events throughout the year.";
+    
 }

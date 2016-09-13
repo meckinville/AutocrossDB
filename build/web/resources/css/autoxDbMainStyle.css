@@ -10,6 +10,7 @@ and open the template in the editor.
 
 body {
     font-family: Arial;
+    background-color: black;
 }
 
 .menuBar.ui-layout-north>div {

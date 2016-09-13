@@ -13,6 +13,7 @@ import autocrossdb.util.CarUtil;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -143,6 +144,36 @@ public class AwardsInfoBean
         //add dirtiest run
         awards.add(populateAward(objectQuery, "Dirtiest Run", "[1] hit [0] cones on run #[4] at [3] [2].", AwardInfoUtil.DIRTIEST_RUN_INFO, 4));
         
+        objectQuery = em.createQuery("SELECT min(r.runTime)-min(r.runTime - (2 * r.runCones)) as diff, r.runDriverName from Runs r where r.runEventUrl.eventDate > :begin and r.runEventUrl.eventDate < :end group by r.runEventUrl, r.runDriverName having min(r.runTime)-min(r.runTime - (2 * r.runCones)) > 0 order by r.runDriverName, diff").setParameter("begin", beginYear.getTime()).setParameter("end", endYear.getTime()).getResultList();
+        //add most time lost from cones
+        Map<String, AwardHelper> lostTimeMap = new TreeMap();
+        for(Object[] o : objectQuery)
+        {
+            if(lostTimeMap.containsKey(o[1].toString()))
+            {
+                AwardHelper tempHelper = lostTimeMap.get(o[1].toString());
+                tempHelper.setValue(tempHelper.getValue() + (double)o[0]);
+                tempHelper.setCount(tempHelper.getCount() + 1);
+                lostTimeMap.put(o[1].toString(), tempHelper);
+            }
+            else
+            {
+                AwardHelper tempHelper = new AwardHelper((double)o[0], o[1].toString());
+                lostTimeMap.put(o[1].toString(), tempHelper);
+            }
+        }
+        List<AwardHelper> lostTimeList = new ArrayList();
+        for(String key : lostTimeMap.keySet())
+        {
+            if(lostTimeMap.get(key).getCount() > 2)
+            {
+                lostTimeList.add(lostTimeMap.get(key));
+            }
+            
+        }
+        
+        Collections.sort(lostTimeList, Collections.reverseOrder());
+        awards.add(populateAward(lostTimeList, "Most Time Lost from Cones", "[name] coned away [count] best runs for a loss of [value] seconds.", AwardInfoUtil.TIME_LOST_INFO));
         return awards;
     }
     public List<Award> getEventAwardsForYear(int year)
@@ -286,6 +317,7 @@ public class AwardsInfoBean
             for(int i = 0; i < PLACES_TO_POPULATE; i++)
             {
                 awardText = awardText.replace("[name]", award.get(i).getName());
+                awardText = awardText.replace("[count]", Integer.toString(award.get(i).getCount()));
                 if(awardText.contains("cones per attended event"))
                 {
                     awardText = awardText.replace("[value]", String.format("%.3f" , award.get(i).getValue()/100));
