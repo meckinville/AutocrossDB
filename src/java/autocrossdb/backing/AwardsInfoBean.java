@@ -37,9 +37,13 @@ public class AwardsInfoBean implements Serializable
 {
     private static final DateFormat webFormat = new SimpleDateFormat("MM-dd-yyyy");
     
-    private static final int PLACES_TO_POPULATE = 5;
+    private static final int PLACES_TO_POPULATE = 100;
     
     private List<String> filterList;
+    private String driverToFind;
+    private String foundDriver;
+    
+    private long progress;
     
     private List<Award> xindividualAwards2016;
     
@@ -100,26 +104,27 @@ public class AwardsInfoBean implements Serializable
     
     public void filterAwards()
     {
-       
+        progress = 0;
         stats2014 = getStatsForYear(2014);
         stats2015 = getStatsForYear(2015);
         stats2016 = getStatsForYear(2016);
-        
+        progress = 20;
         individualAwards2016 = getIndividualAwardsForYear(2016);
         individualAwards2015 = getIndividualAwardsForYear(2015);
         individualAwards2014 = getIndividualAwardsForYear(2014);
-        
+        progress = 40;
         classAwards2016 = getClassAwardsForYear(2016);
         classAwards2015 = getClassAwardsForYear(2015);
         classAwards2014 = getClassAwardsForYear(2014);
-        
+        progress = 60;
         eventAwards2016 = getEventAwardsForYear(2016);
         eventAwards2015 = getEventAwardsForYear(2015);
         eventAwards2014 = getEventAwardsForYear(2014);
-        
+        progress = 80;
         carAwards2016 = getCarAwardsForYear(2016);
         carAwards2015 = getCarAwardsForYear(2015);
         carAwards2014 = getCarAwardsForYear(2014);
+        progress = 100;
     }
     
     private List<Long> getStatsForYear(int year)
@@ -309,7 +314,8 @@ public class AwardsInfoBean implements Serializable
         String originalAwardText = awardText;
         try
         {
-            for(int i = 0; i < PLACES_TO_POPULATE; i++)
+            int i = 0;
+            for(Object[] o : query)
             {
                 for(int x = 0; x <= replace; x++)
                 {
@@ -328,6 +334,12 @@ public class AwardsInfoBean implements Serializable
                 }
                 award.add(awardText);
                 awardText = originalAwardText;
+                i++;
+            }
+            
+            while(award.getAwardStrings().size() < 5)
+            {
+                award.add("No others eligible.");
             }
         }
         catch(IndexOutOfBoundsException e)
@@ -412,6 +424,45 @@ public class AwardsInfoBean implements Serializable
         
         Collections.sort(awardList, Collections.reverseOrder());
         return awardList;
+    }
+    
+    public void findAwardForDriver()
+    {
+        List<String> awardList = selectedAward.getAwardStrings();
+        int iterator = 1;
+        for(String s : awardList)
+        {
+            System.out.println(iterator);
+            if(s.contains(driverToFind))
+            {
+                foundDriver = iterator + ". " + s;
+                System.out.println("found the driver -- " + foundDriver);
+                break;
+            }
+            else
+            {
+                iterator++;
+            }
+        }
+    }
+    
+    public void onCompleteLoad()
+    {
+        progress = 0;
+    }
+    
+    public List<String> completeDriverText(String query)
+    {
+        List<String> results = new ArrayList<String>();
+        List<String> driverList = em.createQuery("SELECT distinct(r.runDriverName) FROM Runs r ", String.class).getResultList();
+        for(int x = 0; x < driverList.size(); x++)
+        {
+            if(driverList.get(x).contains(query.toUpperCase()))
+            {
+                results.add(driverList.get(x));
+            }
+        }
+        return results;
     }
 
     public List<Award> getIndividualAwards2016() {
@@ -558,6 +609,30 @@ public class AwardsInfoBean implements Serializable
 
     public void setFilterList(List<String> filterList) {
         this.filterList = filterList;
+    }
+
+    public long getProgress() {
+        return progress;
+    }
+
+    public void setProgress(long progress) {
+        this.progress = progress;
+    }
+
+    public String getDriverToFind() {
+        return driverToFind;
+    }
+
+    public void setDriverToFind(String driverToFind) {
+        this.driverToFind = driverToFind;
+    }
+
+    public String getFoundDriver() {
+        return foundDriver;
+    }
+
+    public void setFoundDriver(String foundDriver) {
+        this.foundDriver = foundDriver;
     }
 
 
