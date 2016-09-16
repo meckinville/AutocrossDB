@@ -47,6 +47,9 @@
                                       The driver must also be within 2 seconds differential of you to be considered a nemesis. If the nemesis finder is unable to find
                                       a nemesis for you, it is either because you have not attended enough events or there are no other drivers that are consistently within
                                       2 seconds of you." />
+                        <br />
+                        <br />
+                        <h:outputText value="If the diff number is in green it means you are faster than them. If the diff number is in red it means they are faster than you." />
                     </p:panel>
                     <p:dataGrid id="nemesisGrid" value="#{nemesis.nemesisList}" var="nem" rows="4" columns="2" paginatorPosition="top" paginator="true" >
                         <p:panel header="#{nem.name}" styleClass="nemesisPanel" >

@@ -213,7 +213,16 @@ h1.breakdownTitle {
     width: 33%;
 }
 
+.awardsInnerTabView > ul.ui-tabs-nav > li {
+    width: 24.5%;
+}
+
 .awardsTabView > ul.ui-tabs-nav > li > a {
+    width: 100%;
+    text-align: center;
+}
+
+.awardsInnerTabView > ul.ui-tabs-nav > li > a {
     width: 100%;
     text-align: center;
 }
@@ -223,4 +232,13 @@ h1.breakdownTitle {
     font-weight: bold;
     font-size: 14px;
     
+}
+
+.findMeDialogDataList {
+    text-align: center;
+    
+}
+
+.findMeDialogDataList > div > ul {
+    list-style-type: none;
 }

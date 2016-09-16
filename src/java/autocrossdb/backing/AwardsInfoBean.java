@@ -42,6 +42,7 @@ public class AwardsInfoBean implements Serializable
     private List<String> filterList;
     private String driverToFind;
     private String foundDriver;
+    private List<String> foundDriverRange;
     
     private long progress;
     
@@ -429,21 +430,49 @@ public class AwardsInfoBean implements Serializable
     public void findAwardForDriver()
     {
         List<String> awardList = selectedAward.getAwardStrings();
-        int iterator = 1;
-        for(String s : awardList)
+        foundDriverRange = new ArrayList();
+        boolean found = false;
+        for(int i = 0; i < awardList.size(); i++)
         {
-            System.out.println(iterator);
-            if(s.contains(driverToFind))
+            if(awardList.get(i).contains(driverToFind))
             {
-                foundDriver = iterator + ". " + s;
-                System.out.println("found the driver -- " + foundDriver);
+                //found the driver. lets check the previous 2 records and next 2 records to make sure we don't go out of bounds
+                //if we don't go out of bounds we will add them to foundDriverRange for a list of 5 awards with foundDriver in the middle
+                if(i - 2 >= 0)
+                {
+                    foundDriverRange.add(i-1 + ". " + awardList.get(i-2));
+                }
+                if(i - 1 >= 0)
+                {
+                    foundDriverRange.add(i + ". " + awardList.get(i-1));
+                }
+                
+                foundDriver = i+1 + ". " + awardList.get(i);
+                foundDriverRange.add(i+1 + ". " + awardList.get(i));
+                
+                if(i + 1 < awardList.size())
+                {
+                    foundDriverRange.add(i+2 + ". " + awardList.get(i+1));
+                }
+                if(i + 2 < awardList.size())
+                {
+                    foundDriverRange.add(i+3 + ". " + awardList.get(i+2));
+                }
+                found = true;
                 break;
             }
-            else
-            {
-                iterator++;
-            }
         }
+        
+        if(!found)
+        {
+            foundDriverRange.add("Could not find " + driverToFind + " in this award.");
+        }
+    }
+    
+    public void clearFindMeDialog()
+    {
+        foundDriverRange = new ArrayList();
+        driverToFind = "";
     }
     
     public void onCompleteLoad()
@@ -634,6 +663,16 @@ public class AwardsInfoBean implements Serializable
     public void setFoundDriver(String foundDriver) {
         this.foundDriver = foundDriver;
     }
+
+    public List<String> getFoundDriverRange() {
+        return foundDriverRange;
+    }
+
+    public void setFoundDriverRange(List<String> foundDriverRange) {
+        this.foundDriverRange = foundDriverRange;
+    }
+
+    
 
 
 }
