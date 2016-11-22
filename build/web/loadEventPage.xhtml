@@ -68,7 +68,7 @@
                                 <f:selectItem id="pointsCheckBox" itemLabel="Points" itemValue="POINTS"></f:selectItem>
                                 <f:selectItem id="practiceCheckBox" itemLabel="Practice" itemValue="PRACTICE"></f:selectItem>
                             </p:selectOneRadio>
-                            <p:commandButton disabled="true" onclick="PF('pbAjax').start();PF('loadEventButton').disable()" widgetVar="loadEventButton" value="Load Event" action="#{eventLoader.loadEvent}"/>
+                            <p:commandButton disabled="false" onclick="PF('pbAjax').start();PF('loadEventButton').disable()" widgetVar="loadEventButton" value="Load Event" action="#{eventLoader.loadEvent}"/>
                             <p:progressBar id="progressBar" labelTemplate="{value}%" ajax="true" interval="500" widgetVar="pbAjax" value="#{eventLoader.progress}" style="width:300px" >
                                 <p:ajax event="complete" listener="#{eventLoader.onCompleteLoad}" oncomplete="PF('loadEventButton').enable()" update="messages progressBar" />
                             </p:progressBar>

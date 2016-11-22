@@ -138,7 +138,7 @@ public class EventBreakdownBean implements Serializable
                     {
                         chartMaxHeight = (int)maxTime;
                     }
-                    numberInClass = 0;
+                    numberInClass = 1;
                     index++;
                 }
                 minTime = (double)o[0];

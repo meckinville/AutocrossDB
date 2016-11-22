@@ -44,7 +44,7 @@ public class Events implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 120)
+    @Size(min = 1, max = 200)
     @Column(name = "EVENT_URL")
     private String eventUrl;
     @Basic(optional = false)

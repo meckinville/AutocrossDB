@@ -707,10 +707,14 @@ public class EventLoaderBean
                                         offcourse = "Y";
                                         runTime = runTime.substring(0,runTime.indexOf("+"));
                                     }
+                                    else if(runTime.charAt(runTime.length()-1) == '+')
+                                    {
+                                        runTime = runTime.substring(0,runTime.length()-2);
+                                    }
                                     //else it must be cones
                                     else
                                     {
-                                        cones = Integer.parseInt(runTime.substring(runTime.indexOf("+")));
+                                        cones = Integer.parseInt(runTime.substring(runTime.indexOf("+")+1));
                                         runTime = runTime.substring(0,runTime.indexOf("+"));
                                         double tempRunTime = Double.parseDouble(runTime);
                                         tempRunTime += cones * 2;
@@ -745,10 +749,14 @@ public class EventLoaderBean
                                     offcourse = "Y";
                                     runTime = runTime.substring(0,runTime.indexOf("+"));
                                 }
+                                else if(runTime.charAt(runTime.length()-1) == '+')
+                                {
+                                    runTime = runTime.substring(0,runTime.length()-2);
+                                }
                                 //else it must be cones
                                 else
                                 {
-                                    cones = Integer.parseInt(runTime.substring(runTime.indexOf("+")));
+                                    cones = Integer.parseInt(runTime.substring(runTime.indexOf("+")+1));
                                     runTime = runTime.substring(0,runTime.indexOf("+"));
                                     double tempRunTime = Double.parseDouble(runTime);
                                     tempRunTime += cones * 2;
