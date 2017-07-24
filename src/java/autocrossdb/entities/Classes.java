@@ -41,6 +41,10 @@ public class Classes implements Serializable, Comparable<Classes> {
     private String className;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "CLASS_2017_PAX")
+    private double class2017Pax;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "CLASS_2016_PAX")
     private double class2016Pax;
     @Basic(optional = false)
@@ -67,6 +71,7 @@ public class Classes implements Serializable, Comparable<Classes> {
 
     public Classes(String className, double class2016Pax, double class2015Pax, double class2014Pax, double class2013Pax) {
         this.className = className;
+        this.class2017Pax = class2017Pax;
         this.class2016Pax = class2016Pax;
         this.class2015Pax = class2015Pax;
         this.class2014Pax = class2014Pax;
@@ -111,6 +116,14 @@ public class Classes implements Serializable, Comparable<Classes> {
 
     public void setClass2013Pax(double class2013Pax) {
         this.class2013Pax = class2013Pax;
+    }
+    
+    public double getClass2017Pax() {
+        return class2017Pax;
+    }
+
+    public void setClass2017Pax(double class2017Pax) {
+        this.class2017Pax = class2017Pax;
     }
 /*
     @XmlTransient

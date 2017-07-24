@@ -194,9 +194,46 @@ public class EventLoaderBean
                 
                 for(int y = 5; y < driverCells.size()-2; y++)
                 {
+                    
+                    if(driverCells.get(y).text().length() >= 6 && driverCells.get(y).text().contains("."))
+                    {
+                        String time = driverCells.get(y).text();
+                        String offcourse = "N";
+                        int cones = 0;
+                        double paxTime = 0;
+                        if(time.contains("+"))
+                        {
+                            if(time.substring(time.indexOf("+")+1).equalsIgnoreCase("OFF") || time.substring(time.indexOf("+")+1).equalsIgnoreCase("DNF") || time.substring(time.indexOf("+")+1).equalsIgnoreCase("DSQ"))
+                            {
+                                offcourse = "Y";
+                            }
+                            else
+                            {
+                                cones = Integer.parseInt(time.substring(time.indexOf("+")+1));
+                            }
+                            time = time.substring(0, time.indexOf("+"));
+                            if(cones > 0)
+                            {
+                                double tempRunTime = Double.parseDouble(time);
+                                tempRunTime += 2 * cones;
+                                time = Double.toString(tempRunTime);
+                            }
+                        }
+                        paxTime = calculatePax(classToWrite, time);
+                        
+                        if(time.length() > 0)
+                        {
+                            runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(),  position, Double.parseDouble(time), paxTime, offcourse, cones);
+                            position++;
+                            runToWrite.setRunClassName(classToWrite);
+                            runToWrite.setRunEventUrl(eventToWrite);
+                            runsCollection.add(runToWrite);
+                        }
+                        
+                    }
                     //if we're on the last column... check the next row to see if the driver field is blank.
                     //if it is blank, the results must be on 2 different lines.
-                    if(y == driverCells.size()-2)
+                    if(y == driverCells.size()-3)
                     {
                         Elements extraDriverCells = null;
                         if(driverRows.size() > x+1)
@@ -246,43 +283,6 @@ public class EventLoaderBean
                                 }
                                 
                             }
-                        }
-                        
-                    }
-                    
-                    if(driverCells.get(y).text().length() >= 6 && driverCells.get(y).text().contains("."))
-                    {
-                        String time = driverCells.get(y).text();
-                        String offcourse = "N";
-                        int cones = 0;
-                        double paxTime = 0;
-                        if(time.contains("+"))
-                        {
-                            if(time.substring(time.indexOf("+")+1).equalsIgnoreCase("OFF") || time.substring(time.indexOf("+")+1).equalsIgnoreCase("DNF") || time.substring(time.indexOf("+")+1).equalsIgnoreCase("DSQ"))
-                            {
-                                offcourse = "Y";
-                            }
-                            else
-                            {
-                                cones = Integer.parseInt(time.substring(time.indexOf("+")+1));
-                            }
-                            time = time.substring(0, time.indexOf("+"));
-                            if(cones > 0)
-                            {
-                                double tempRunTime = Double.parseDouble(time);
-                                tempRunTime += 2 * cones;
-                                time = Double.toString(tempRunTime);
-                            }
-                        }
-                        paxTime = calculatePax(classToWrite, time);
-                        
-                        if(time.length() > 0)
-                        {
-                            runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(),  position, Double.parseDouble(time), paxTime, offcourse, cones);
-                            position++;
-                            runToWrite.setRunClassName(classToWrite);
-                            runToWrite.setRunEventUrl(eventToWrite);
-                            runsCollection.add(runToWrite);
                         }
                         
                     }
@@ -919,7 +919,10 @@ public class EventLoaderBean
     public double calculatePax(Classes classToWrite, String runTime)
     {
         double paxTime = 0;
-        
+        if(webFormat.format(date).contains("2017"))
+        {
+            paxTime = Double.parseDouble(runTime) * classToWrite.getClass2017Pax();
+        }
         if(webFormat.format(date).contains("2016"))
         {
             paxTime = Double.parseDouble(runTime) * classToWrite.getClass2016Pax();
