@@ -41,20 +41,22 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Events.findClubEventsInDateRange", query = "SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate and e.eventClubName = :clubName ORDER BY e.eventDate desc")})
 public class Events implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
     @Column(name = "EVENT_URL")
     private String eventUrl;
+    @Id
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "EVENT_CLUB_NAME")
     private String eventClubName;
+    @Id
     @Size(min = 1, max = 25)
     @Column(name = "EVENT_LOCATION")
     private String eventLocation;
+    @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "EVENT_DATE")
@@ -80,6 +82,13 @@ public class Events implements Serializable {
         this.eventUrl = eventUrl;
     }
 
+    public Events(String eventClubName, String eventLocation, Date eventDate, String eventType) {
+        this.eventClubName = eventClubName;
+        this.eventLocation = eventLocation;
+        this.eventDate = eventDate;
+        this.eventType = eventType;
+    }
+    
     public Events(String eventUrl, String eventClubName, String eventLocation, Date eventDate, String eventType) {
         this.eventUrl = eventUrl;
         this.eventClubName = eventClubName;

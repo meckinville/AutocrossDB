@@ -45,9 +45,6 @@ public class AwardsInfoBean implements Serializable
     private List<String> foundDriverRange;
     
     private long progress;
-    
-    private List<Award> xindividualAwards2016;
-    
     private List<Award> individualAwards2016;
     private List<Award> classAwards2016;
     private List<Award> eventAwards2016;
@@ -616,13 +613,6 @@ public class AwardsInfoBean implements Serializable
         this.stats2014 = stats2014;
     }
 
-    public List<Award> getXindividualAwards2016() {
-        return xindividualAwards2016;
-    }
-
-    public void setXindividualAwards2016(List<Award> xindividualAwards2016) {
-        this.xindividualAwards2016 = xindividualAwards2016;
-    }
 
     public Award getSelectedAward() {
         return selectedAward;
