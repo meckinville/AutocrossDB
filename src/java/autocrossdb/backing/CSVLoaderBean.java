@@ -80,7 +80,7 @@ public class CSVLoaderBean
             {
                 Scanner reader = new Scanner(file.getInputstream());
                 
-                eventToWrite = new Events(club, location, date, points);
+                eventToWrite = new Events(null, club, location, date, points);
                 runsCollection = new ArrayList<Runs>();
                 while(reader.hasNextLine())
                 {

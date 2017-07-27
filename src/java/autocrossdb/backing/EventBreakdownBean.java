@@ -88,7 +88,7 @@ public class EventBreakdownBean implements Serializable
         seasonStart.set(Calendar.DAY_OF_MONTH, 1);
         seasonStart.set(Calendar.YEAR, event.getSeasonYear());
         
-        classList = em.createQuery("SELECT distinct r.runClassName.className from Runs r where r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", event.getNeglectedEvent().getEventUrl()).getResultList();
+        classList = em.createQuery("SELECT distinct r.runClassName.className from Runs r where r.runEventId.eventId = :eventId").setParameter("eventId", event.getNeglectedEvent().getEventId()).getResultList();
         selectedClass = classList.get(0);
         
         drawCarChart();
@@ -112,7 +112,7 @@ public class EventBreakdownBean implements Serializable
         
         spreadTicks = new ArrayList();
         
-        List<Object[]> query = em.createQuery("SELECT min(r.runTime), r.runClassName.className, r.runDriverName from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName, r.runClassName.className order by r.runClassName.className, min(r.runTime)").setParameter("eventUrl", event.getNeglectedEvent().getEventUrl()).getResultList();
+        List<Object[]> query = em.createQuery("SELECT min(r.runTime), r.runClassName.className, r.runDriverName from Runs r where r.runEventId.eventId = :eventId and r.runOffcourse = 'N' group by r.runDriverName, r.runClassName.className order by r.runClassName.className, min(r.runTime)").setParameter("eventId", event.getNeglectedEvent().getEventId()).getResultList();
         
         String currentClass = query.get(0)[1].toString();
         double minTime = 100;
@@ -168,7 +168,7 @@ public class EventBreakdownBean implements Serializable
     
     private void getSeasonStatRankings()
     {
-        List<Object[]> query = em.createQuery("SELECT count(*), r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :seasonStart and r.runNumber = 1 group by r.runEventUrl order by count(*)").setParameter("seasonStart", seasonStart.getTime()).getResultList();
+        List<Object[]> query = em.createQuery("SELECT count(*), r.runEventId.eventId from Runs r where r.runEventUrl.eventDate > :seasonStart and r.runNumber = 1 group by r.runEventUrl order by count(*)").setParameter("seasonStart", seasonStart.getTime()).getResultList();
         this.seasonEventCount = query.size();
         
         List<AwardHelper> participants = new ArrayList();
@@ -179,7 +179,7 @@ public class EventBreakdownBean implements Serializable
         Collections.sort(participants, Collections.reverseOrder());
         for(int x = 0; x < participants.size(); x++)
         {
-            if(participants.get(x).getName().equals(event.getNeglectedEvent().getEventUrl()))
+            if(participants.get(x).getName().equals(event.getNeglectedEvent().getEventId()))
             {
                 this.participantRank = x+1;
                 break;
@@ -188,7 +188,7 @@ public class EventBreakdownBean implements Serializable
         
         List<AwardHelper> cones = new ArrayList();
         List<AwardHelper> avgCones = new ArrayList();
-        query = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventUrl, count(r.runDriverName) from Runs r where r.runEventUrl.eventDate > :seasonStart group by r.runEventUrl order by sum(r.runCones)").setParameter("seasonStart", seasonStart.getTime()).getResultList();
+        query = em.createQuery("SELECT sum(r.runCones), r.runEventId.eventId, count(r.runDriverName) from Runs r where r.runEventUrl.eventDate > :seasonStart group by r.runEventUrl order by sum(r.runCones)").setParameter("seasonStart", seasonStart.getTime()).getResultList();
         for(Object[] o : query)
         {
             cones.add(new AwardHelper(Integer.parseInt(o[0].toString()), o[1].toString()));
@@ -199,11 +199,11 @@ public class EventBreakdownBean implements Serializable
         Collections.sort(avgCones, Collections.reverseOrder());
         for(int x = 0; x < cones.size(); x++)
         {
-            if(cones.get(x).getName().equals(event.getNeglectedEvent().getEventUrl()))
+            if(cones.get(x).getName().equals(event.getNeglectedEvent().getEventId()))
             {
                 this.conesKilledRank = x+1;
             }
-            if(avgCones.get(x).getName().equals(event.getNeglectedEvent().getEventUrl()))
+            if(avgCones.get(x).getName().equals(event.getNeglectedEvent().getEventId()))
             {
                 this.avgConesRank = x+1;
             }
@@ -215,7 +215,7 @@ public class EventBreakdownBean implements Serializable
         }
         
         List<AwardHelper> avgTimes = new ArrayList();
-        query = em.createQuery("SELECT avg(r.runTime), r.runEventUrl.eventUrl from Runs r where r.runEventUrl.eventDate > :seasonStart group by r.runEventUrl order by avg(r.runTime) asc").setParameter("seasonStart", seasonStart.getTime()).getResultList();
+        query = em.createQuery("SELECT avg(r.runTime), r.runEventId.eventId from Runs r where r.runEventUrl.eventDate > :seasonStart group by r.runEventUrl order by avg(r.runTime) asc").setParameter("seasonStart", seasonStart.getTime()).getResultList();
         for(Object[] o : query)
         {
             avgTimes.add(new AwardHelper(Double.parseDouble(o[0].toString()), o[1].toString()));
@@ -223,7 +223,7 @@ public class EventBreakdownBean implements Serializable
         Collections.sort(avgTimes);
         for(int x = 0; x < avgTimes.size(); x++)
         {
-            if(avgTimes.get(x).getName().equals(event.getNeglectedEvent().getEventUrl()))
+            if(avgTimes.get(x).getName().equals(event.getNeglectedEvent().getEventId()))
             {
                 this.avgTimeRank = x+1;
                 break;
@@ -280,7 +280,7 @@ public class EventBreakdownBean implements Serializable
         countriesChart.setSliceMargin(2);
         
         List<Cars> carList = em.createQuery("SELECT c FROM Cars c").getResultList();
-        List<Runs> runList = em.createQuery("SELECT r FROM Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runNumber = 1").setParameter("eventUrl", event.getNeglectedEvent().getEventUrl()).getResultList();
+        List<Runs> runList = em.createQuery("SELECT r FROM Runs r where r.runEventId.eventId = :eventUrl and r.runNumber = 1").setParameter("eventUrl", event.getNeglectedEvent().getEventId()).getResultList();
         populateCarMakesMap(carList, runList);
         
         for(String key : makesMap.keySet())

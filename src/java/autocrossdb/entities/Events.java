@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Events.findAll", query = "SELECT e FROM Events e ORDER BY e.eventDate desc"),
-    @NamedQuery(name = "Events.findByEventUrl", query = "SELECT e FROM Events e WHERE e.eventUrl = :eventUrl"),
+    @NamedQuery(name = "Events.findByEventId", query = "SELECT e FROM Events e WHERE e.eventId = :eventId"),
     @NamedQuery(name = "Events.findByEventClubName", query = "SELECT e FROM Events e WHERE e.eventClubName = :eventClubName"),
     @NamedQuery(name = "Events.findByEventLocation", query = "SELECT e FROM Events e WHERE e.eventLocation = :eventLocation"),
     @NamedQuery(name = "Events.findByEventDate", query = "SELECT e FROM Events e WHERE e.eventDate = :eventDate"),
@@ -41,22 +41,19 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Events.findClubEventsInDateRange", query = "SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate and e.eventClubName = :clubName ORDER BY e.eventDate desc")})
 public class Events implements Serializable {
     private static final long serialVersionUID = 1L;
+    @Id
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 200)
-    @Column(name = "EVENT_URL")
-    private String eventUrl;
-    @Id
+    @Column(name = "EVENT_ID")
+    private int eventId;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "EVENT_CLUB_NAME")
     private String eventClubName;
-    @Id
     @Size(min = 1, max = 25)
     @Column(name = "EVENT_LOCATION")
     private String eventLocation;
-    @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "EVENT_DATE")
@@ -66,7 +63,7 @@ public class Events implements Serializable {
     @Size(min = 1, max = 10)
     @Column(name = "EVENT_TYPE")
     private String eventType;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "runEventUrl")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "runEventId")
     private Collection<Runs> runsCollection;
     @Size(min = 1, max = 45)
     @Column(name = "EVENT_PAX_WINNER")
@@ -74,23 +71,31 @@ public class Events implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "EVENT_RAW_WINNER")
     private String eventRawWinner;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "EVENT_DRIVERS")
+    private int eventDrivers;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "EVENT_RUNS_PER")
+    private int eventRunsPer;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "EVENT_CONES")
+    private int eventCones;
+    
 
     public Events() {
     }
-
-    public Events(String eventUrl) {
-        this.eventUrl = eventUrl;
-    }
-
-    public Events(String eventClubName, String eventLocation, Date eventDate, String eventType) {
-        this.eventClubName = eventClubName;
-        this.eventLocation = eventLocation;
-        this.eventDate = eventDate;
-        this.eventType = eventType;
-    }
     
-    public Events(String eventUrl, String eventClubName, String eventLocation, Date eventDate, String eventType) {
-        this.eventUrl = eventUrl;
+    public Events(Integer eventId)
+    {
+        this.eventId = eventId;
+    }
+
+
+    public Events(Integer eventId, String eventClubName, String eventLocation, Date eventDate, String eventType) {
+        this.eventId = eventId;
         this.eventClubName = eventClubName;
         this.eventLocation = eventLocation;
         this.eventDate = eventDate;
@@ -98,21 +103,12 @@ public class Events implements Serializable {
     }
     
     public Events(String eventUrl, String eventClubName, String eventLocation, Date eventDate, String eventType, String eventPaxWinner, String eventRawWinner) {
-        this.eventUrl = eventUrl;
         this.eventClubName = eventClubName;
         this.eventLocation = eventLocation;
         this.eventDate = eventDate;
         this.eventType = eventType;
         this.eventPaxWinner = eventPaxWinner;
         this.eventRawWinner = eventRawWinner;
-    }
-
-    public String getEventUrl() {
-        return eventUrl;
-    }
-
-    public void setEventUrl(String eventUrl) {
-        this.eventUrl = eventUrl;
     }
 
     public String getEventClubName() {
@@ -173,12 +169,55 @@ public class Events implements Serializable {
         this.runsCollection = runsCollection;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (eventUrl != null ? eventUrl.hashCode() : 0);
-        return hash;
+    public int getEventId() {
+        return eventId;
     }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
+    }
+
+    public String getEventPaxWinner() {
+        return eventPaxWinner;
+    }
+
+    public void setEventPaxWinner(String eventPaxWinner) {
+        this.eventPaxWinner = eventPaxWinner;
+    }
+
+    public String getEventRawWinner() {
+        return eventRawWinner;
+    }
+
+    public void setEventRawWinner(String eventRawWinner) {
+        this.eventRawWinner = eventRawWinner;
+    }
+
+    public int getEventDrivers() {
+        return eventDrivers;
+    }
+
+    public void setEventDrivers(int eventDrivers) {
+        this.eventDrivers = eventDrivers;
+    }
+
+    public int getEventRunsPer() {
+        return eventRunsPer;
+    }
+
+    public void setEventRunsPer(int eventRunsPer) {
+        this.eventRunsPer = eventRunsPer;
+    }
+
+    public int getEventCones() {
+        return eventCones;
+    }
+
+    public void setEventCones(int eventCones) {
+        this.eventCones = eventCones;
+    }
+    
+    
 
     @Override
     public boolean equals(Object object) {
@@ -187,7 +226,7 @@ public class Events implements Serializable {
             return false;
         }
         Events other = (Events) object;
-        if ((this.eventUrl == null && other.eventUrl != null) || (this.eventUrl != null && !this.eventUrl.equals(other.eventUrl))) {
+        if (this.eventId != other.eventId) {
             return false;
         }
         return true;
@@ -195,7 +234,7 @@ public class Events implements Serializable {
 
     @Override
     public String toString() {
-        return "autocrossdb.entities.Events[ eventUrl=" + eventUrl + " ]";
+        return "autocrossdb.entities.Events[ eventId=" + eventId + " ]";
     }
     
 }

@@ -122,7 +122,7 @@ public class EventLoaderBean
                     }
                 }
             }*/
-            eventToWrite = new Events(url, club, location, date, points);
+            eventToWrite = new Events(null, club, location, date, points);
             Element driversTable = tables.get(1);
             Elements driverRows = driversTable.select("tr:has(td)");
             runsCollection = new ArrayList<Runs>();
@@ -226,7 +226,7 @@ public class EventLoaderBean
                             runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(),  position, Double.parseDouble(time), paxTime, offcourse, cones);
                             position++;
                             runToWrite.setRunClassName(classToWrite);
-                            runToWrite.setRunEventUrl(eventToWrite);
+                            runToWrite.setRunEventId(eventToWrite);
                             runsCollection.add(runToWrite);
                         }
                         
@@ -277,7 +277,7 @@ public class EventLoaderBean
                                         runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(),  position, Double.parseDouble(time), paxTime, offcourse, cones);
                                         position++;
                                         runToWrite.setRunClassName(classToWrite);
-                                        runToWrite.setRunEventUrl(eventToWrite);
+                                        runToWrite.setRunEventId(eventToWrite);
                                         runsCollection.add(runToWrite);
                                     }
                                 }
@@ -289,7 +289,7 @@ public class EventLoaderBean
                 }
             }
             eventToWrite.setRunsCollection(runsCollection);
-            if(eventsFacade.find(eventToWrite.getEventUrl()) == null)
+            if(eventsFacade.find(eventToWrite.getEventId()) == null)
             {
                 eventsFacade.create(eventToWrite);
                 Iterator<Runs> it = runsCollection.iterator();
@@ -299,8 +299,8 @@ public class EventLoaderBean
                     progDoub += 100.0 / completeProgress;
                     progress = Math.round(progDoub);
                 }
-                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
-                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
+                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
+                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
                 eventToWrite.setPaxWinner(paxWinner);
                 eventToWrite.setRawWinner(rawWinner);
                 eventsFacade.edit(eventToWrite);
@@ -340,7 +340,7 @@ public class EventLoaderBean
             int runNumber = 1;
             Classes classToWrite = new Classes();
             Runs runToWrite = new Runs();
-            Events eventToWrite = new Events(url, club, location, date, points);
+            Events eventToWrite = new Events(null, club, location, date, points);
             Element classHeaderRow = null;
             ArrayList<Runs> runsCollection = new ArrayList();
             completeProgress = rows.size() * 2;
@@ -456,7 +456,7 @@ public class EventLoaderBean
                                         double paxTime = calculatePax(classToWrite, runTime);
                                         runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "Y", 0);
                                         runToWrite.setRunClassName(classToWrite);
-                                        runToWrite.setRunEventUrl(eventToWrite);
+                                        runToWrite.setRunEventId(eventToWrite);
                                         runsCollection.add(runToWrite);
                                         runNumber++;
                                     }
@@ -469,7 +469,7 @@ public class EventLoaderBean
                                         double paxTime = calculatePax(classToWrite, String.valueOf(runTime));
                                         runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, runTime, paxTime, "N", cones);
                                         runToWrite.setRunClassName(classToWrite);
-                                        runToWrite.setRunEventUrl(eventToWrite);
+                                        runToWrite.setRunEventId(eventToWrite);
                                         runsCollection.add(runToWrite);
                                         runNumber++;
                                     }
@@ -480,7 +480,7 @@ public class EventLoaderBean
                                     double paxTime = calculatePax(classToWrite, runTime);
                                     runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "N", 0);
                                     runToWrite.setRunClassName(classToWrite);
-                                    runToWrite.setRunEventUrl(eventToWrite);
+                                    runToWrite.setRunEventId(eventToWrite);
                                     runsCollection.add(runToWrite);
                                     runNumber++;
                                 }
@@ -491,7 +491,7 @@ public class EventLoaderBean
                             {
                                 runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, 999.999, 999.999, "Y", 0);
                                 runToWrite.setRunClassName(classToWrite);
-                                runToWrite.setRunEventUrl(eventToWrite);
+                                runToWrite.setRunEventId(eventToWrite);
                                 runsCollection.add(runToWrite);
                                 runNumber++;
                             }
@@ -521,7 +521,7 @@ public class EventLoaderBean
                                     double paxTime = calculatePax(classToWrite, runTime);
                                     runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "Y", 0);
                                     runToWrite.setRunClassName(classToWrite);
-                                    runToWrite.setRunEventUrl(eventToWrite);
+                                    runToWrite.setRunEventId(eventToWrite);
                                     runsCollection.add(runToWrite);
                                     runNumber++;
                                 }
@@ -534,7 +534,7 @@ public class EventLoaderBean
                                     double paxTime = calculatePax(classToWrite, String.valueOf(runTime));
                                     runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, runTime, paxTime, "N", cones);
                                     runToWrite.setRunClassName(classToWrite);
-                                    runToWrite.setRunEventUrl(eventToWrite);
+                                    runToWrite.setRunEventId(eventToWrite);
                                     runsCollection.add(runToWrite);
                                     runNumber++;
                                 }
@@ -547,7 +547,7 @@ public class EventLoaderBean
                                 
                                 runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, "N", 0);
                                 runToWrite.setRunClassName(classToWrite);
-                                runToWrite.setRunEventUrl(eventToWrite);
+                                runToWrite.setRunEventId(eventToWrite);
                                 runsCollection.add(runToWrite);
                                 runNumber++;
                             }
@@ -557,7 +557,7 @@ public class EventLoaderBean
                         {
                             runToWrite = new Runs(null, driverName.replace("'", "").toUpperCase(), carName.replace("'", "").toUpperCase(), runNumber, 999.999, 999.999, "Y", 0);
                             runToWrite.setRunClassName(classToWrite);
-                            runToWrite.setRunEventUrl(eventToWrite);
+                            runToWrite.setRunEventId(eventToWrite);
                             runsCollection.add(runToWrite);
                             runNumber++;
                         }
@@ -565,7 +565,7 @@ public class EventLoaderBean
                 }
             }
             eventToWrite.setRunsCollection(runsCollection);
-            if(eventsFacade.find(eventToWrite.getEventUrl()) == null)
+            if(eventsFacade.find(eventToWrite.getEventId()) == null)
             {
                 eventsFacade.create(eventToWrite);
                 Iterator<Runs> it = runsCollection.iterator();
@@ -575,8 +575,8 @@ public class EventLoaderBean
                     progDoub += 100.0 / completeProgress;
                     progress = Math.round(progDoub);
                 }
-                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
-                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
+                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
+                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
                 eventToWrite.setPaxWinner(paxWinner);
                 eventToWrite.setRawWinner(rawWinner);
                 eventsFacade.edit(eventToWrite);
@@ -607,7 +607,7 @@ public class EventLoaderBean
             Elements rows = table.select("tr:has(td)");
             
             completeProgress = rows.size() * 2;
-            Events eventToWrite = new Events(url, club, location, date, points);
+            Events eventToWrite = new Events(null, club, location, date, points);
             Classes classToWrite =  new Classes();
             String driverName = "";
             String carName = "";
@@ -724,7 +724,7 @@ public class EventLoaderBean
                                 double paxTime = calculatePax(classToWrite, runTime);
                                 runToWrite = new Runs(null, driverName.toUpperCase(), carName.toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, offcourse, cones);
                                 runToWrite.setRunClassName(classToWrite);
-                                runToWrite.setRunEventUrl(eventToWrite);
+                                runToWrite.setRunEventId(eventToWrite);
                                 runsCollection.add(runToWrite);
                                 runNumber++;
                             }
@@ -766,7 +766,7 @@ public class EventLoaderBean
                             double paxTime = calculatePax(classToWrite, runTime);
                             runToWrite = new Runs(null, driverName.toUpperCase(), carName.toUpperCase(), runNumber, Double.parseDouble(runTime), paxTime, offcourse, cones);
                             runToWrite.setRunClassName(classToWrite);
-                            runToWrite.setRunEventUrl(eventToWrite);
+                            runToWrite.setRunEventId(eventToWrite);
                             runsCollection.add(runToWrite);
                             runNumber++;
                         }
@@ -774,7 +774,7 @@ public class EventLoaderBean
                 }
             }
             eventToWrite.setRunsCollection(runsCollection);
-            if(eventsFacade.find(eventToWrite.getEventUrl()) == null)
+            if(eventsFacade.find(eventToWrite.getEventId()) == null)
             {
                 eventsFacade.create(eventToWrite);
                 Iterator<Runs> it = runsCollection.iterator();
@@ -784,8 +784,8 @@ public class EventLoaderBean
                     progDoub += 100.0 / completeProgress;
                     progress = Math.round(progDoub);
                 }
-                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
-                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
+                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
+                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
                 eventToWrite.setPaxWinner(paxWinner);
                 eventToWrite.setRawWinner(rawWinner);
                 eventsFacade.edit(eventToWrite);
@@ -814,7 +814,7 @@ public class EventLoaderBean
             Element table = results.select("table:has(tr.rowhigh)").first();
             Elements driverRows = table.select("tr:has(td)");
             
-            Events eventToWrite = new Events(url, club, location, date, points);
+            Events eventToWrite = new Events(null, club, location, date, points);
             Classes classToWrite =  new Classes();
             String driverName = "";
             String carName = "";
@@ -877,7 +877,7 @@ public class EventLoaderBean
                             
                             Runs runToWrite = new Runs(null, driverName.toUpperCase(), carName.toUpperCase(), runNumber, runTime, paxTime, offCourse, cones);
                             runToWrite.setRunClassName(classToWrite);
-                            runToWrite.setRunEventUrl(eventToWrite);
+                            runToWrite.setRunEventId(eventToWrite);
                             runsCollection.add(runToWrite);
                             runNumber++;
                         }
@@ -886,7 +886,7 @@ public class EventLoaderBean
             }
             progress = 50;
             eventToWrite.setRunsCollection(runsCollection);
-            if(eventsFacade.find(eventToWrite.getEventUrl()) == null)
+            if(eventsFacade.find(eventToWrite.getEventId()) == null)
             {
                 eventsFacade.create(eventToWrite);
                 Iterator<Runs> it = runsCollection.iterator();
@@ -895,8 +895,8 @@ public class EventLoaderBean
                     runsFacade.edit(it.next());
                     progress += runsCollection.size() / 100.0;
                 }
-                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
-                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventUrl()).getResultList().get(0)[0];
+                String paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
+                String rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
                 eventToWrite.setPaxWinner(paxWinner);
                 eventToWrite.setRawWinner(rawWinner);
                 eventsFacade.edit(eventToWrite);

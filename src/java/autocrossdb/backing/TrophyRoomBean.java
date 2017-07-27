@@ -66,7 +66,7 @@ public class TrophyRoomBean implements Serializable
         
         for(Events e : eventList)
         {
-            List<Object[]> driverList = em.createQuery("select min(r.runTime), r.runDriverName, r.runClassName from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime)").setParameter("eventUrl", e.getEventUrl()).getResultList();
+            List<Object[]> driverList = em.createQuery("select min(r.runTime), r.runDriverName, r.runClassName from Runs r where r.runEventId.eventId = :eventId and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime)").setParameter("eventId", e.getEventId()).getResultList();
             for(int x = 0; x < 3; x++)
             {
                 if(driverList.get(x)[1].equals(driver))
@@ -84,7 +84,7 @@ public class TrophyRoomBean implements Serializable
         
         for(Events e : eventList)
         {
-            List<Object[]> driverList = em.createQuery("select min(r.runPaxTime), r.runDriverName, r.runClassName from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime)").setParameter("eventUrl", e.getEventUrl()).getResultList();
+            List<Object[]> driverList = em.createQuery("select min(r.runPaxTime), r.runDriverName, r.runClassName from Runs r where r.runEventId.eventId = :eventId and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime)").setParameter("eventId", e.getEventId()).getResultList();
             for(int x = 0; x < 3; x++)
             {
                 if(driverList.get(x)[1].equals(driver))
@@ -102,7 +102,7 @@ public class TrophyRoomBean implements Serializable
         
         for(Events e : eventList)
         {
-            List<Object[]> driverList = em.createQuery("select min(r.runTime), r.runDriverName, r.runClassName from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' and r.runClassName.className = 'NS' group by r.runDriverName order by min(r.runTime)").setParameter("eventUrl", e.getEventUrl()).getResultList();
+            List<Object[]> driverList = em.createQuery("select min(r.runTime), r.runDriverName, r.runClassName from Runs r where r.runEventId.eventId = :eventId and r.runOffcourse = 'N' and r.runClassName.className = 'NS' group by r.runDriverName order by min(r.runTime)").setParameter("eventId", e.getEventId()).getResultList();
             
             int size = (driverList.size() >= 3) ? 3 : driverList.size();
             for(int x = 0; x < size; x++)
@@ -122,8 +122,8 @@ public class TrophyRoomBean implements Serializable
         
         for(Events e : eventList)
         {
-            String driverClass = em.createQuery("select r.runClassName.className from Runs r where r.runDriverName = :driverName and r.runEventUrl.eventUrl = :eventUrl and r.runNumber = 1").setParameter("driverName", driver).setParameter("eventUrl", e.getEventUrl()).getResultList().get(0).toString();
-            List<Object[]> driverList = em.createQuery("select min(r.runTime), r.runDriverName, r.runClassName from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' and r.runClassName.className = :className group by r.runDriverName order by min(r.runTime)").setParameter("eventUrl", e.getEventUrl()).setParameter("className", driverClass).getResultList();
+            String driverClass = em.createQuery("select r.runClassName.className from Runs r where r.runDriverName = :driverName and r.runEventId.eventId = :eventId and r.runNumber = 1").setParameter("driverName", driver).setParameter("eventId", e.getEventId()).getResultList().get(0).toString();
+            List<Object[]> driverList = em.createQuery("select min(r.runTime), r.runDriverName, r.runClassName from Runs r where r.runEventId.eventId = :eventId and r.runOffcourse = 'N' and r.runClassName.className = :className group by r.runDriverName order by min(r.runTime)").setParameter("eventId", e.getEventId()).setParameter("className", driverClass).getResultList();
             int size = (driverList.size() >= 3) ? 3 : driverList.size();
             for(int x = 0; x < size; x++)
             {

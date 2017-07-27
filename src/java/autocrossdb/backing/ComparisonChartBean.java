@@ -234,7 +234,7 @@ public class ComparisonChartBean implements Serializable
         if(type.equals("raw"))
         {
            avgSeries.setLabel("AVERAGE RAW");
-           averageQuery = em.createQuery("SELECT min(r.runTime), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+           averageQuery = em.createQuery("SELECT min(r.runTime), r.runEventId.eventId, r.runEventId.eventDate, r.runEventId.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventId.eventId in :event group by r.runDriverName order by r.runEventId.eventDate ASC").setParameter("event", events).getResultList(); 
            Map<String, Object[]> avgMap = new LinkedHashMap();
            for(Object[] o : averageQuery)
            {
@@ -270,7 +270,7 @@ public class ComparisonChartBean implements Serializable
         else if(type.equals("pax"))
         {
             avgSeries.setLabel("AVERAGE PAX");
-            averageQuery = em.createQuery("SELECT min(r.runPaxTime), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+            averageQuery = em.createQuery("SELECT min(r.runPaxTime), r.runEventId.eventId, r.runEventId.eventDate, r.runEventId.eventLocation FROM Runs r where r.runOffcourse = 'N' and r.runEventId.eventId in :event group by r.runDriverName order by r.runEventId.eventDate ASC").setParameter("event", events).getResultList(); 
             Map<String, Object[]> avgMap = new LinkedHashMap();
             for(Object[] o : averageQuery)
             {
@@ -307,7 +307,7 @@ public class ComparisonChartBean implements Serializable
         else
         {
             avgSeries.setLabel("AVERAGE CONES");
-            averageQuery = em.createQuery("SELECT sum(r.runCones), r.runEventUrl.eventUrl, r.runEventUrl.eventDate, r.runEventUrl.eventLocation FROM Runs r where r.runEventUrl.eventUrl in :event group by r.runDriverName order by r.runEventUrl.eventDate ASC").setParameter("event", events).getResultList(); 
+            averageQuery = em.createQuery("SELECT sum(r.runCones), r.runEventId.eventId, r.runEventId.eventDate, r.runEventId.eventLocation FROM Runs r where r.runEventId.eventId in :event group by r.runDriverName order by r.runEventId.eventDate ASC").setParameter("event", events).getResultList(); 
             Map<String, Object[]> avgMap = new LinkedHashMap();
             for(Object[] o : averageQuery)
             {
@@ -387,13 +387,13 @@ public class ComparisonChartBean implements Serializable
         if(!driver1.equals("") && driver1 != null && !driver2.equals("") && driver2 != null && !driver1.equals("Driver 1") && !driver2.equals("Driver 2"))
         {
             //total events attended over time period
-            List<Object[]> query = em.createQuery("SELECT count(r.runDriverName) from Runs r where r.runDriverName = :name AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1").setParameter("name", driver1).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
+            List<Object[]> query = em.createQuery("SELECT count(r.runDriverName) from Runs r where r.runDriverName = :name AND r.runEventId.eventDate > :begin AND r.runEventId.eventDate < :end and r.runNumber = 1").setParameter("name", driver1).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
             d1TotalEvents = String.valueOf(query.get(0));
-            query = em.createQuery("SELECT count(r.runDriverName) from Runs r where r.runDriverName = :name AND r.runEventUrl.eventDate > :begin AND r.runEventUrl.eventDate < :end and r.runNumber = 1").setParameter("name", driver2).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
+            query = em.createQuery("SELECT count(r.runDriverName) from Runs r where r.runDriverName = :name AND r.runEventId.eventDate > :begin AND r.runEventId.eventDate < :end and r.runNumber = 1").setParameter("name", driver2).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
             d2TotalEvents = String.valueOf(query.get(0));
             
             //head to head raw wins
-            query = em.createQuery("SELECT min(a.runTime), a.runDriverName, a.runEventUrl.eventUrl from Runs a, Runs b where a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runOffcourse = 'N' AND b.runOffcourse = 'N' AND a.runEventUrl.eventUrl = b.runEventUrl.eventUrl and a.runEventUrl.eventDate > :begin AND a.runEventUrl.eventDate < :end GROUP BY a.runEventUrl.eventUrl, a.runDriverName ORDER BY a.runEventUrl.eventUrl, min(a.runTime)").setParameter("driverList", selectedDrivers).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
+            query = em.createQuery("SELECT min(a.runTime), a.runDriverName, a.runEventId.eventId from Runs a, Runs b where a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runOffcourse = 'N' AND b.runOffcourse = 'N' AND a.runEventId.eventId = b.runEventId.eventId and a.runEventId.eventDate > :begin AND a.runEventId.eventDate < :end GROUP BY a.runEventId.eventId, a.runDriverName ORDER BY a.runEventId.eventId, min(a.runTime)").setParameter("driverList", selectedDrivers).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
             int d1Wins = 0;
             int d2Wins = 0;
             for(int x = 0; x < query.size(); x+=2)
@@ -436,7 +436,7 @@ public class ComparisonChartBean implements Serializable
             d1RawDiff = String.format("%.3f", d1Total /= eventsAttended);
             d2RawDiff = String.format("%.3f", d2Total /= eventsAttended);
             //head to head pax wins
-            query = em.createQuery("SELECT min(a.runPaxTime), a.runDriverName, a.runEventUrl.eventUrl from Runs a, Runs b where a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runOffcourse = 'N' AND b.runOffcourse = 'N' AND a.runEventUrl.eventUrl = b.runEventUrl.eventUrl and a.runEventUrl.eventDate > :begin AND a.runEventUrl.eventDate < :end GROUP BY a.runEventUrl.eventUrl, a.runDriverName ORDER BY a.runEventUrl.eventUrl, min(a.runPaxTime)").setParameter("driverList", selectedDrivers).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
+            query = em.createQuery("SELECT min(a.runPaxTime), a.runDriverName, a.runEventId.eventId from Runs a, Runs b where a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runOffcourse = 'N' AND b.runOffcourse = 'N' AND a.runEventId.eventId = b.runEventId.eventId and a.runEventId.eventDate > :begin AND a.runEventId.eventDate < :end GROUP BY a.runEventId.eventId, a.runDriverName ORDER BY a.runEventId.eventId, min(a.runPaxTime)").setParameter("driverList", selectedDrivers).setParameter("begin", startDate).setParameter("end", endDate).getResultList();
             d1Wins = 0;
             d2Wins = 0;
             for(int x = 0; x < query.size(); x+=2)

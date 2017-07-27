@@ -38,16 +38,16 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Runs.findByRunPaxTime", query = "SELECT r FROM Runs r WHERE r.runPaxTime = :runPaxTime"),
     @NamedQuery(name = "Runs.findByRunOffcourse", query = "SELECT r FROM Runs r WHERE r.runOffcourse = :runOffcourse"),
     @NamedQuery(name = "Runs.findByRunCones", query = "SELECT r FROM Runs r WHERE r.runCones = :runCones"),
-    @NamedQuery(name = "Runs.findBestRawByEvent", query = "SELECT r.runDriverName, r.runCarName, r.runClassName.className, min(r.runTime) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl AND r.runOffcourse = 'N' GROUP BY r.runDriverName ORDER BY min(r.runTime) asc"),
-    @NamedQuery(name = "Runs.findTotalDriversAtEvent", query = "SELECT distinct(r.runDriverName) from Runs r where r.runEventUrl.eventUrl = :eventUrl"),
-    @NamedQuery(name = "Runs.findBestPaxByEvent", query = "SELECT r.runDriverName, r.runCarName, r.runClassName.className, min(r.runPaxTime) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl AND r.runOffcourse = 'N' GROUP BY r.runDriverName ORDER BY min(r.runPaxTime) asc"),
-    @NamedQuery(name = "Runs.findTotalConesHitAtEvent", query = "SELECT sum(r.runCones) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl"),
-    @NamedQuery(name = "Runs.findTopConeKiller", query = "SELECT r.runDriverName, r.runCarName, r.runClassName.className, sum(r.runCones) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl GROUP BY r.runDriverName ORDER BY sum(r.runCones) desc"),
-    @NamedQuery(name = "Runs.findNoviceChamp", query = "SELECT r.runDriverName, r.runCarName, r.runClassName.className, min(r.runTime) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl AND r.runClassName.className = 'NS' AND r.runOffcourse = 'N' GROUP BY r.runDriverName ORDER BY min(r.runTime) asc"),
-    @NamedQuery(name = "Runs.findBestRunForDriver", query = "SELECT min(r.runTime) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl AND r.runDriverName = :driverName AND r.runOffcourse = 'N'"),
-    @NamedQuery(name = "Runs.findCommonEventsForDriversRaw", query = "SELECT a.runEventUrl.eventDate, a.runEventUrl.eventLocation, a.runDriverName, min(a.runTime), a.runEventUrl.eventUrl from Runs a, Runs b where a.runEventUrl = b.runEventUrl AND a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runEventUrl.eventDate > :startDate AND a.runEventUrl.eventDate < :endDate AND a.runOffcourse = 'N' GROUP BY a.runDriverName, a.runEventUrl ORDER BY a.runEventUrl.eventDate ASC"),
-    @NamedQuery(name = "Runs.findCommonEventsForDriversPax", query = "SELECT a.runEventUrl.eventDate, a.runEventUrl.eventLocation, a.runDriverName, min(a.runPaxTime), a.runEventUrl.eventUrl from Runs a, Runs b where a.runEventUrl = b.runEventUrl AND a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runEventUrl.eventDate > :startDate AND a.runEventUrl.eventDate < :endDate AND a.runOffcourse = 'N' GROUP BY a.runDriverName, a.runEventUrl ORDER BY a.runEventUrl.eventDate ASC"),
-    @NamedQuery(name = "Runs.findCommonEventsForDriversCones", query = "SELECT a.runEventUrl.eventDate, a.runEventUrl.eventLocation, a.runDriverName, sum(a.runCones), a.runEventUrl.eventUrl from Runs a, Runs b where a.runEventUrl.eventUrl = b.runEventUrl.eventUrl AND a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runEventUrl.eventDate > :startDate AND a.runEventUrl.eventDate < :endDate AND a.runNumber = b.runNumber GROUP BY a.runDriverName, a.runEventUrl ORDER BY a.runEventUrl.eventDate ASC")})
+    @NamedQuery(name = "Runs.findBestRawByEvent", query = "SELECT r.runDriverName, r.runCarName, r.runClassName.className, min(r.runTime) FROM Runs r where r.runEventId.eventId = :eventId AND r.runOffcourse = 'N' GROUP BY r.runDriverName ORDER BY min(r.runTime) asc"),
+    @NamedQuery(name = "Runs.findTotalDriversAtEvent", query = "SELECT distinct(r.runDriverName) from Runs r where r.runEventId.eventId = :eventId"),
+    @NamedQuery(name = "Runs.findBestPaxByEvent", query = "SELECT r.runDriverName, r.runCarName, r.runClassName.className, min(r.runPaxTime) FROM Runs r where r.runEventId.eventId = :eventId AND r.runOffcourse = 'N' GROUP BY r.runDriverName ORDER BY min(r.runPaxTime) asc"),
+    @NamedQuery(name = "Runs.findTotalConesHitAtEvent", query = "SELECT sum(r.runCones) FROM Runs r where r.runEventId.eventId = :eventId"),
+    @NamedQuery(name = "Runs.findTopConeKiller", query = "SELECT r.runDriverName, r.runCarName, r.runClassName.className, sum(r.runCones) FROM Runs r where r.runEventId.eventId = :eventId GROUP BY r.runDriverName ORDER BY sum(r.runCones) desc"),
+    @NamedQuery(name = "Runs.findNoviceChamp", query = "SELECT r.runDriverName, r.runCarName, r.runClassName.className, min(r.runTime) FROM Runs r where r.runEventId.eventId = :eventId AND r.runClassName.className = 'NS' AND r.runOffcourse = 'N' GROUP BY r.runDriverName ORDER BY min(r.runTime) asc"),
+    @NamedQuery(name = "Runs.findBestRunForDriver", query = "SELECT min(r.runTime) FROM Runs r where r.runEventId.eventId = :eventId AND r.runDriverName = :driverName AND r.runOffcourse = 'N'"),
+    @NamedQuery(name = "Runs.findCommonEventsForDriversRaw", query = "SELECT a.runEventId.eventDate, a.runEventId.eventLocation, a.runDriverName, min(a.runTime), a.runEventId.eventId from Runs a, Runs b where a.runEventId = b.runEventId AND a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runEventId.eventDate > :startDate AND a.runEventId.eventDate < :endDate AND a.runOffcourse = 'N' GROUP BY a.runDriverName, a.runEventId ORDER BY a.runEventId.eventDate ASC"),
+    @NamedQuery(name = "Runs.findCommonEventsForDriversPax", query = "SELECT a.runEventId.eventDate, a.runEventId.eventLocation, a.runDriverName, min(a.runPaxTime), a.runEventId.eventId from Runs a, Runs b where a.runEventId = b.runEventId AND a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runEventId.eventDate > :startDate AND a.runEventId.eventDate < :endDate AND a.runOffcourse = 'N' GROUP BY a.runDriverName, a.runEventId ORDER BY a.runEventId.eventDate ASC"),
+    @NamedQuery(name = "Runs.findCommonEventsForDriversCones", query = "SELECT a.runEventId.eventDate, a.runEventId.eventLocation, a.runDriverName, sum(a.runCones), a.runEventId.eventId from Runs a, Runs b where a.runEventId.eventId = b.runEventId.eventId AND a.runDriverName in :driverList AND b.runDriverName in :driverList AND a.runDriverName != b.runDriverName AND a.runEventId.eventDate > :startDate AND a.runEventId.eventDate < :endDate AND a.runNumber = b.runNumber GROUP BY a.runDriverName, a.runEventId ORDER BY a.runEventId.eventDate ASC")})
 public class Runs implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -85,9 +85,9 @@ public class Runs implements Serializable {
     @NotNull
     @Column(name = "RUN_CONES")
     private int runCones;
-    @JoinColumn(name = "RUN_EVENT_URL", referencedColumnName = "EVENT_URL")
+    @JoinColumn(name = "RUN_EVENT_ID", referencedColumnName = "EVENT_ID")
     @ManyToOne(optional = false)
-    private Events runEventUrl;
+    private Events runEventId;
     @JoinColumn(name = "RUN_CLASS_NAME", referencedColumnName = "CLASS_NAME")
     @ManyToOne(optional = false)
     private Classes runClassName;
@@ -174,12 +174,12 @@ public class Runs implements Serializable {
         this.runCones = runCones;
     }
 
-    public Events getRunEventUrl() {
-        return runEventUrl;
+    public Events getRunEventId() {
+        return runEventId;
     }
 
-    public void setRunEventUrl(Events runEventUrl) {
-        this.runEventUrl = runEventUrl;
+    public void setRunEventId(Events runEventId) {
+        this.runEventId = runEventId;
     }
 
     public Classes getRunClassName() {

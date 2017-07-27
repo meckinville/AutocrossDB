@@ -50,7 +50,7 @@ public class HomePageBean implements Serializable
         eventCount = (long)em.createQuery("SELECT count(e) from Events e").getResultList().get(0);
         runCount = (long)em.createQuery("SELECT count(r) from Runs r").getResultList().get(0);
         driverCount = (long)em.createQuery("SELECT count(distinct r.runDriverName) from Runs r").getResultList().get(0);
-        clubCount = (long)em.createQuery("SELECT count(distinct r.runEventUrl.eventClubName) from Runs r").getResultList().get(0);
+        clubCount = (long)em.createQuery("SELECT count(distinct r.runEventId.eventClubName) from Runs r").getResultList().get(0);
     }
     
     public String getClubLink(UpcomingEvents e)

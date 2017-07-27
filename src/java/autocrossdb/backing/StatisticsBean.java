@@ -67,9 +67,9 @@ public class StatisticsBean implements Serializable
         progressIncrement = 50.0 / (double)eventList.size();
         for(Events e : eventList)
         {
-            List<Object[]> rawList = em.createQuery("SELECT min(r.runTime), r.runDriverName From Runs r where r.runEventUrl = :event and r.runOffcourse = 'N' and r.runClassName.className != 'NS' group by r.runDriverName order by min(r.runTime) asc").setParameter("event", e).getResultList();
-            List<Object[]> paxList = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName From Runs r where r.runEventUrl = :event and r.runOffcourse = 'N' and r.runClassName.className != 'NS' group by r.runDriverName order by min(r.runPaxTime) asc").setParameter("event", e).getResultList();
-            List<Object[]> conesList = em.createQuery("SELECT sum(r.runCones), r.runDriverName From Runs r where r.runEventUrl = :event and r.runClassName.className != 'NS' group by r.runDriverName order by sum(r.runCones) desc").setParameter("event", e).getResultList();
+            List<Object[]> rawList = em.createQuery("SELECT min(r.runTime), r.runDriverName From Runs r where r.runEventId = :event and r.runOffcourse = 'N' and r.runClassName.className != 'NS' group by r.runDriverName order by min(r.runTime) asc").setParameter("event", e).getResultList();
+            List<Object[]> paxList = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName From Runs r where r.runEventId = :event and r.runOffcourse = 'N' and r.runClassName.className != 'NS' group by r.runDriverName order by min(r.runPaxTime) asc").setParameter("event", e).getResultList();
+            List<Object[]> conesList = em.createQuery("SELECT sum(r.runCones), r.runDriverName From Runs r where r.runEventId = :event and r.runClassName.className != 'NS' group by r.runDriverName order by sum(r.runCones) desc").setParameter("event", e).getResultList();
             
             //we iterate through all the runs for an event.
             //we have a hashmap that uses driver name as key.

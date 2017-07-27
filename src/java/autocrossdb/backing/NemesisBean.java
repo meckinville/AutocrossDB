@@ -60,7 +60,7 @@ public class NemesisBean implements Serializable
         if(nemesisType != null)
         {
             Map<String, Nemesis> nemesisMap = new LinkedHashMap();
-            List<Object[]> ourRuns = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runEventUrl, r.runClassName FROM Runs r WHERE r.runDriverName = :driver AND r.runOffcourse = 'N' and r.runEventUrl.eventDate > :startDate and r.runEventUrl.eventDate < :endDate and r.runClassName.className = :class group by r.runEventUrl order by r.runEventUrl.eventDate ASC ").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("class", driverClass).getResultList();
+            List<Object[]> ourRuns = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runEventId, r.runClassName FROM Runs r WHERE r.runDriverName = :driver AND r.runOffcourse = 'N' and r.runEventId.eventDate > :startDate and r.runEventId.eventDate < :endDate and r.runClassName.className = :class group by r.runEventId order by r.runEventId.eventDate ASC ").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).setParameter("class", driverClass).getResultList();
 
 
             for(Object[] o : ourRuns)
@@ -69,8 +69,8 @@ public class NemesisBean implements Serializable
                 List<Object[]> tempList = new ArrayList();
 
                 //find all drivers within 1 second raw
-                tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl having ((:ourTime - min(r.runTime)) < 1) AND ((:ourTime - min(r.runTime)) > -1) order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).setParameter("ourTime", o[0]).getResultList();
-                //tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventUrl, r.runClassName, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventUrl = :event group by r.runDriverName, r.runEventUrl order by r.runEventUrl.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).getResultList();
+                tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventId, r.runClassName, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventId = :event group by r.runDriverName, r.runEventId having ((:ourTime - min(r.runTime)) < 1) AND ((:ourTime - min(r.runTime)) > -1) order by r.runEventId.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).setParameter("ourTime", o[0]).getResultList();
+                //tempList = em.createQuery("SELECT min(r.runTime), min(r.runPaxTime), r.runDriverName, r.runEventId, r.runClassName, r.runCarName FROM Runs r WHERE r.runDriverName != :driver AND r.runOffcourse = 'N' AND r.runEventId = :event group by r.runDriverName, r.runEventId order by r.runEventId.eventDate asc").setParameter("driver", driver).setParameter("event", o[2]).getResultList();
 
                 for(Object[] x : tempList)
                 {
@@ -153,7 +153,7 @@ public class NemesisBean implements Serializable
     
     public void onDriverSelect()
     {
-        driverClassList = em.createQuery("SELECT DISTINCT r.runClassName.className from Runs r where r.runDriverName = :driver AND r.runEventUrl.eventDate > :startDate AND r.runEventUrl.eventDate < :endDate").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
+        driverClassList = em.createQuery("SELECT DISTINCT r.runClassName.className from Runs r where r.runDriverName = :driver AND r.runEventId.eventDate > :startDate AND r.runEventId.eventDate < :endDate").setParameter("driver", driver).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
     }
 
     public void onCompleteLoad()

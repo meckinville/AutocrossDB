@@ -69,10 +69,10 @@ public class EventInfoBean implements Serializable
         eventYear.set(Calendar.DAY_OF_MONTH, 1);
         selectedAnalyzedEvent.setSeasonYear(eventYear.get(Calendar.YEAR));
         
-        List<Object[]> rawResults = em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
-        List<Object[]> paxResults = em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
-        List<Object[]> coneKillerResults = em.createNamedQuery("Runs.findTopConeKiller", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
-        List<Object[]> noviceResults = em.createNamedQuery("Runs.findNoviceChamp", Object[].class).setParameter("eventUrl", selectedAnalyzedEvent.getNeglectedEvent().getEventUrl()).getResultList();
+        List<Object[]> rawResults = em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventId", selectedAnalyzedEvent.getNeglectedEvent().getEventId()).getResultList();
+        List<Object[]> paxResults = em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventId", selectedAnalyzedEvent.getNeglectedEvent().getEventId()).getResultList();
+        List<Object[]> coneKillerResults = em.createNamedQuery("Runs.findTopConeKiller", Object[].class).setParameter("eventId", selectedAnalyzedEvent.getNeglectedEvent().getEventId()).getResultList();
+        List<Object[]> noviceResults = em.createNamedQuery("Runs.findNoviceChamp", Object[].class).setParameter("eventId", selectedAnalyzedEvent.getNeglectedEvent().getEventId()).getResultList();
         
         Runs topRawRun = new Runs();
         topRawRun.setRunDriverName(rawResults.get(0)[0].toString());
@@ -139,9 +139,9 @@ public class EventInfoBean implements Serializable
             for(Events e : eventsList)
             {
                 
-                int totalDrivers = em.createNamedQuery("Runs.findTotalDriversAtEvent", Object[].class).setParameter("eventUrl", e.getEventUrl()).getResultList().size();
+                int totalDrivers = em.createNamedQuery("Runs.findTotalDriversAtEvent", Object[].class).setParameter("eventId", e.getEventId()).getResultList().size();
                 
-                List<Double> doubleResults = em.createQuery("SELECT min(r.runTime) FROM Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse='N' group by r.runDriverName order by min(r.runTime) asc", Double.class).setParameter("eventUrl", e.getEventUrl()).getResultList();
+                List<Double> doubleResults = em.createQuery("SELECT min(r.runTime) FROM Runs r where r.runEventId.eventId = :eventId and r.runOffcourse='N' group by r.runDriverName order by min(r.runTime) asc", Double.class).setParameter("eventId", e.getEventId()).getResultList();
                 double sum = 0;
                 for(Double d : doubleResults)
                 {
@@ -151,17 +151,17 @@ public class EventInfoBean implements Serializable
                 tempAvg = (double)Math.round(tempAvg * 1000d)/1000d;
                 double avgRunTime = tempAvg;
                
-                long totalCones = em.createNamedQuery("Runs.findTotalConesHitAtEvent", Long.class).setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
-                int runs = (int)em.createQuery("SELECT max(r.runNumber) from Runs r where r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
-                long offCourseRuns = (long)em.createQuery("SELECT count(r) from Runs r where r.runOffcourse = 'Y' and r.runEventUrl.eventUrl = :eventUrl").setParameter("eventUrl", e.getEventUrl()).getResultList().get(0);
-                List<Object[]> rawTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
-                List<Object[]> paxTimes = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
-                List<Object[]> classTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventUrl.eventUrl = :eventUrl and r.runOffcourse = 'N' group by r.runDriverName order by r.runClassName.className, min(r.runTime) asc").setParameter("eventUrl", e.getEventUrl()).getResultList();
-                List<Object[]> coneKillers = em.createQuery("SELECT sum(r.runCones), r.runDriverName,  r.runClassName.className, r.runCarName FROM Runs r where r.runEventUrl.eventUrl = :eventUrl group by r.runDriverName order by sum(r.runCones) desc").setParameter("eventUrl", e.getEventUrl()).getResultList();
+                long totalCones = em.createNamedQuery("Runs.findTotalConesHitAtEvent", Long.class).setParameter("eventId", e.getEventId()).getResultList().get(0);
+                int runs = (int)em.createQuery("SELECT max(r.runNumber) from Runs r where r.runEventId.eventId = :eventId").setParameter("eventId", e.getEventId()).getResultList().get(0);
+                long offCourseRuns = (long)em.createQuery("SELECT count(r) from Runs r where r.runOffcourse = 'Y' and r.runEventId.eventId = :eventId").setParameter("eventId", e.getEventId()).getResultList().get(0);
+                List<Object[]> rawTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventId.eventId = :eventId and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runTime) asc").setParameter("eventId", e.getEventId()).getResultList();
+                List<Object[]> paxTimes = em.createQuery("SELECT min(r.runPaxTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventId.eventId = :eventId and r.runOffcourse = 'N' group by r.runDriverName order by min(r.runPaxTime) asc").setParameter("eventId", e.getEventId()).getResultList();
+                List<Object[]> classTimes = em.createQuery("SELECT min(r.runTime), r.runDriverName, r.runClassName.className, r.runCarName, r.runCones from Runs r where r.runEventId.eventId = :eventId and r.runOffcourse = 'N' group by r.runDriverName order by r.runClassName.className, min(r.runTime) asc").setParameter("eventId", e.getEventId()).getResultList();
+                List<Object[]> coneKillers = em.createQuery("SELECT sum(r.runCones), r.runDriverName,  r.runClassName.className, r.runCarName FROM Runs r where r.runEventId.eventId = :eventId group by r.runDriverName order by sum(r.runCones) desc").setParameter("eventId", e.getEventId()).getResultList();
                 
                 AnalyzedEvent tempEvent = new AnalyzedEvent(e, totalDrivers, avgRunTime, totalCones, runs, offCourseRuns, rawTimes, paxTimes, classTimes, coneKillers);
                         
-                List<Runs> classBattleTimes = em.createQuery("SELECT r from Runs r where r.runEventUrl.eventUrl = :eventUrl order by r.runClassName.className, r.runNumber, r.runTime").setParameter("eventUrl", e.getEventUrl()).getResultList();
+                List<Runs> classBattleTimes = em.createQuery("SELECT r from Runs r where r.runEventId.eventId = :eventId order by r.runClassName.className, r.runNumber, r.runTime").setParameter("eventId", e.getEventId()).getResultList();
                 //tempEvent.setClassBattle(calculateClassBattles(classBattleTimes));
                 tempEvent.setClassBattle(separateClassesForBattle(classBattleTimes, tempEvent));
                 
