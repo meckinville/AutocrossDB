@@ -9,7 +9,7 @@ package autocrossdb.component;
  *
  * @author rmcconville
  */
-public class DriverStat implements Comparable<DriverStat>
+public class PercentageHelper implements Comparable<PercentageHelper>
 {
     private String name;
     private double rawPercentile;
@@ -24,7 +24,7 @@ public class DriverStat implements Comparable<DriverStat>
     private int eventsAttended;
     
     
-    public DriverStat(String name)
+    public PercentageHelper(String name)
     {
         this.name = name;
         rawPercentile = 0;
@@ -37,7 +37,7 @@ public class DriverStat implements Comparable<DriverStat>
         runningCones = 0;
     }
     
-    public DriverStat(DriverStat d)
+    public PercentageHelper(PercentageHelper d)
     {
         this.name = d.getName();
         this.rawPercentile = d.getRawPercentile();
@@ -51,7 +51,7 @@ public class DriverStat implements Comparable<DriverStat>
     }
     
     @Override
-    public int compareTo(DriverStat d)
+    public int compareTo(PercentageHelper d)
     {
         return this.name.compareTo(d.getName());
     }

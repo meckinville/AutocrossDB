@@ -6,6 +6,8 @@
 package autocrossdb.backing;
 
 import autocrossdb.entities.Classes;
+import autocrossdb.entities.DriverStats;
+import autocrossdb.entities.DriverStatsPK;
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
 import autocrossdb.facades.ClassesFacade;
@@ -15,8 +17,12 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -52,6 +58,8 @@ public class CSVLoaderBean
     private Date date;
     private String points;
     private String growlMessage;
+    private String paxWinner;
+    private String rawWinner;
     
     private long progress;
     private long completeProgress;
@@ -59,7 +67,6 @@ public class CSVLoaderBean
     
     private Events eventToWrite;
     private Classes classToWrite;
-    private Runs runToWrite;
     private Collection<Runs> runsCollection;
     
     private DateFormat webFormat;
@@ -89,7 +96,7 @@ public class CSVLoaderBean
                     int runNumber = 1;
                     int cones = 0;
                     String offcourse = "N";
-                    Classes classToWrite = new Classes(split[1].toString());
+                    classToWrite = new Classes(split[1]);
                     //Each comma separated value at 3 or higher is a run time
                     for(int x = 3; x < split.length; x++)
                     {
@@ -113,10 +120,69 @@ public class CSVLoaderBean
                     }
                     eventToWrite.setRunsCollection(runsCollection);
                     
+                    //update driver stats
+                    Map<String, DriverStats> statsMap = new HashMap<String, DriverStats>();
+                    paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
+                    rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
+                    
+                    for(Runs r : runsCollection)
+                    {
+                        DriverStats ds = statsMap.get(r.getRunDriverName());
+
+                        if(ds == null)
+                        {
+                            ds = new DriverStats();
+                            DriverStatsPK dsPk = new DriverStatsPK();
+                            
+                            dsPk.setDsName(r.getRunDriverName());
+                            dsPk.setDsClass(r.getRunClassName().getClassName());
+                            Calendar cal =  Calendar.getInstance();
+                            cal.setTime(date);
+                            dsPk.setDsYear(cal.get(Calendar.YEAR));
+                            
+                            ds.setDriverStatsPK(dsPk);
+                            
+                            /*
+                            
+                            
+                                LEFT OFF HERE
+                            
+                            TODO
+                            
+                            */
+                            
+                            
+                            
+                        }
+                        else
+                        {
+                            
+                        }
+                    }
+                    
                 }
-                
-                FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
-                FacesContext.getCurrentInstance().addMessage(null, message);
+                if(eventsFacade.find(eventToWrite.getEventId()) == null)
+                {
+                    eventsFacade.create(eventToWrite);
+                    Iterator<Runs> it = runsCollection.iterator();
+                    while(it.hasNext())
+                    {
+                        runsFacade.edit(it.next());
+                        progDoub += 100.0 / completeProgress;
+                        progress = Math.round(progDoub);
+                    }
+                    eventToWrite.setPaxWinner(paxWinner);
+                    eventToWrite.setRawWinner(rawWinner);
+                    eventsFacade.edit(eventToWrite);
+
+                    progress = 100;
+                    growlMessage = "Loaded Event: " + eventToWrite.getEventLocation() + " " + webFormat.format(eventToWrite.getEventDate());
+                }
+                else
+                {
+                    progress = 100;
+                    growlMessage = eventToWrite.getEventLocation() + " " + webFormat.format(eventToWrite.getEventDate()) + " has already been loaded.";
+                }
             }
             catch(Exception e)
             {

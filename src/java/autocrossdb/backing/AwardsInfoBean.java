@@ -45,6 +45,12 @@ public class AwardsInfoBean implements Serializable
     private List<String> foundDriverRange;
     
     private long progress;
+    private List<Award> individualAwards2017;
+    private List<Award> classAwards2017;
+    private List<Award> eventAwards2017;
+    private List<Award> carAwards2017;
+    private List<Long> stats2017;
+    
     private List<Award> individualAwards2016;
     private List<Award> classAwards2016;
     private List<Award> eventAwards2016;
@@ -82,19 +88,24 @@ public class AwardsInfoBean implements Serializable
         stats2014 = getStatsForYear(2014);
         stats2015 = getStatsForYear(2015);
         stats2016 = getStatsForYear(2016);
+        stats2017 = getStatsForYear(2017);
         
-        individualAwards2016 = getIndividualAwardsForYear(2016);
-        individualAwards2015 = getIndividualAwardsForYear(2015);
+        individualAwards2017 = getIndividualAwardsForYear(2017);
+        individualAwards2015 = getIndividualAwardsForYear(2016);
+        individualAwards2014 = getIndividualAwardsForYear(2015);
         individualAwards2014 = getIndividualAwardsForYear(2014);
         
+        classAwards2017 = getClassAwardsForYear(2017);
         classAwards2016 = getClassAwardsForYear(2016);
         classAwards2015 = getClassAwardsForYear(2015);
         classAwards2014 = getClassAwardsForYear(2014);
         
+        eventAwards2017 = getEventAwardsForYear(2017);
         eventAwards2016 = getEventAwardsForYear(2016);
         eventAwards2015 = getEventAwardsForYear(2015);
         eventAwards2014 = getEventAwardsForYear(2014);
         
+        carAwards2017 = getCarAwardsForYear(2017);
         carAwards2016 = getCarAwardsForYear(2016);
         carAwards2015 = getCarAwardsForYear(2015);
         carAwards2014 = getCarAwardsForYear(2014);
@@ -106,19 +117,24 @@ public class AwardsInfoBean implements Serializable
         stats2014 = getStatsForYear(2014);
         stats2015 = getStatsForYear(2015);
         stats2016 = getStatsForYear(2016);
+        stats2017 = getStatsForYear(2017);
         progress = 20;
+        individualAwards2017 = getIndividualAwardsForYear(2017);
         individualAwards2016 = getIndividualAwardsForYear(2016);
         individualAwards2015 = getIndividualAwardsForYear(2015);
         individualAwards2014 = getIndividualAwardsForYear(2014);
         progress = 40;
+        classAwards2016 = getClassAwardsForYear(2017);
         classAwards2016 = getClassAwardsForYear(2016);
         classAwards2015 = getClassAwardsForYear(2015);
         classAwards2014 = getClassAwardsForYear(2014);
         progress = 60;
+        eventAwards2016 = getEventAwardsForYear(2017);
         eventAwards2016 = getEventAwardsForYear(2016);
         eventAwards2015 = getEventAwardsForYear(2015);
         eventAwards2014 = getEventAwardsForYear(2014);
         progress = 80;
+        carAwards2016 = getCarAwardsForYear(2017);
         carAwards2016 = getCarAwardsForYear(2016);
         carAwards2015 = getCarAwardsForYear(2015);
         carAwards2014 = getCarAwardsForYear(2014);
@@ -660,6 +676,46 @@ public class AwardsInfoBean implements Serializable
 
     public void setFoundDriverRange(List<String> foundDriverRange) {
         this.foundDriverRange = foundDriverRange;
+    }
+
+    public List<Award> getIndividualAwards2017() {
+        return individualAwards2017;
+    }
+
+    public void setIndividualAwards2017(List<Award> individualAwards2017) {
+        this.individualAwards2017 = individualAwards2017;
+    }
+
+    public List<Award> getClassAwards2017() {
+        return classAwards2017;
+    }
+
+    public void setClassAwards2017(List<Award> classAwards2017) {
+        this.classAwards2017 = classAwards2017;
+    }
+
+    public List<Award> getEventAwards2017() {
+        return eventAwards2017;
+    }
+
+    public void setEventAwards2017(List<Award> eventAwards2017) {
+        this.eventAwards2017 = eventAwards2017;
+    }
+
+    public List<Award> getCarAwards2017() {
+        return carAwards2017;
+    }
+
+    public void setCarAwards2017(List<Award> carAwards2017) {
+        this.carAwards2017 = carAwards2017;
+    }
+
+    public List<Long> getStats2017() {
+        return stats2017;
+    }
+
+    public void setStats2017(List<Long> stats2017) {
+        this.stats2017 = stats2017;
     }
 
     

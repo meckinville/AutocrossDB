@@ -5,7 +5,7 @@
  */
 package autocrossdb.backing;
 
-import autocrossdb.component.DriverStat;
+import autocrossdb.component.PercentageHelper;
 import autocrossdb.component.Theme;
 import autocrossdb.entities.Events;
 import java.io.Serializable;
@@ -36,8 +36,8 @@ public class StatisticsBean implements Serializable
     @ManagedProperty(value="#{themeService}")
     private ThemeServiceBean themeService;
     
-    List<DriverStat> drivers;
-    List<DriverStat> filteredDrivers;
+    List<PercentageHelper> drivers;
+    List<PercentageHelper> filteredDrivers;
 
     private Date endDate;
     private Date startDate;
@@ -63,7 +63,7 @@ public class StatisticsBean implements Serializable
     {
         List<Events> eventList = em.createQuery("SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate ORDER BY e.eventDate asc").setParameter("endDate", endDate).setParameter("startDate", startDate).getResultList();
         
-        LinkedHashMap<String, DriverStat> driverMap = new LinkedHashMap();
+        LinkedHashMap<String, PercentageHelper> driverMap = new LinkedHashMap();
         progressIncrement = 50.0 / (double)eventList.size();
         for(Events e : eventList)
         {
@@ -79,11 +79,11 @@ public class StatisticsBean implements Serializable
             //by the number of events.
             for(int x = 0; x < rawList.size(); x++)
             {
-                DriverStat tempStat = driverMap.get(rawList.get(x)[1].toString());
+                PercentageHelper tempStat = driverMap.get(rawList.get(x)[1].toString());
                 
                 if(tempStat == null)
                 {
-                    tempStat = new DriverStat(rawList.get(x)[1].toString());
+                    tempStat = new PercentageHelper(rawList.get(x)[1].toString());
                     if(x == 0)
                     {
                         tempStat.setRunningRawPercentile(tempStat.getRunningRawPercentile() + 100);
@@ -113,7 +113,7 @@ public class StatisticsBean implements Serializable
             
             for(int x = 0; x < paxList.size(); x++)
             {
-                DriverStat tempStat = driverMap.get(paxList.get(x)[1].toString());
+                PercentageHelper tempStat = driverMap.get(paxList.get(x)[1].toString());
                 
                 if(x == 0)
                 {
@@ -127,13 +127,13 @@ public class StatisticsBean implements Serializable
             
             for(int x = 0; x < conesList.size(); x++)
             {
-                DriverStat tempStat = driverMap.get(conesList.get(x)[1].toString());
+                PercentageHelper tempStat = driverMap.get(conesList.get(x)[1].toString());
                 
                 //if the driver doesnt exist in the map yet it's because they were off course
                 //for every single run in the runsList and paxList.
                 if(tempStat == null)
                 {
-                    tempStat = new DriverStat(conesList.get(x)[1].toString());
+                    tempStat = new PercentageHelper(conesList.get(x)[1].toString());
                     tempStat.setRunningCones(tempStat.getRunningCones() + (long)conesList.get(x)[0]);
                 }
                 else
@@ -150,7 +150,7 @@ public class StatisticsBean implements Serializable
         drivers = new ArrayList();
         for(String key : driverMap.keySet())
         {
-            DriverStat tempStat = driverMap.get(key);
+            PercentageHelper tempStat = driverMap.get(key);
             if(tempStat.getRunningRawPercentile() == 0)
             {
                 tempStat.setRawPercentile(0);
@@ -204,11 +204,11 @@ public class StatisticsBean implements Serializable
         progress = 0;
     }
 
-    public List<DriverStat> getDrivers() {
+    public List<PercentageHelper> getDrivers() {
         return drivers;
     }
 
-    public void setDrivers(List<DriverStat> drivers) {
+    public void setDrivers(List<PercentageHelper> drivers) {
         this.drivers = drivers;
     }
 
@@ -228,11 +228,11 @@ public class StatisticsBean implements Serializable
         this.startDate = startDate;
     }
 
-    public List<DriverStat> getFilteredDrivers() {
+    public List<PercentageHelper> getFilteredDrivers() {
         return filteredDrivers;
     }
 
-    public void setFilteredDrivers(List<DriverStat> filteredDrivers) {
+    public void setFilteredDrivers(List<PercentageHelper> filteredDrivers) {
         this.filteredDrivers = filteredDrivers;
     }
 

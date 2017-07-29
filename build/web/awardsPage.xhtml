@@ -73,6 +73,285 @@
                 </h:form>
                 <h:form id="awardsForm">
                     <p:tabView styleClass="awardsTabView" >
+                        <p:tab title="2017 Awards" >
+                            <p:panelGrid style="width:100%" styleClass="noOutlinePanelGrid awardsHeaderGrid" columns="1">
+                                <h:outputText value="Number of Events in 2017: #{awardsInfo.stats2017.get(0)}" />
+                                <h:outputText value="Total Unique Drivers in 2017: #{awardsInfo.stats2017.get(1)}" />
+                            </p:panelGrid>
+                            <p:tabView styleClass="awardsInnerTabView">
+                                <p:tab title="Individual Awards">
+                                    <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(0).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(0).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(0)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(0)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>               
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(1).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(1).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(1)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(1)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(2).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(2).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(2)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(2)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(3).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(3).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(3)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(3)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(4).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(4).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(4)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(4)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(5).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(5).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(5)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(5)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(6).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(6).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(6)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(6)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(7).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(7).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(7)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(7)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(8).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(8).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(8)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(8)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(9).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(9).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(9)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(9)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.individualAwards2017.get(10).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.individualAwards2017.get(10).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" action="#{awardsInfo.clearFindMeDialog}" icon="fa fa-search" oncomplete="PF('findMeDialog').show()" update="findMeDialog">
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(10)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.individualAwards2017.get(10)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+
+
+
+                                    </p:panelGrid>
+                                </p:tab>
+                                <p:tab title="Event Awards" >
+                                    <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                        <p:dataList rows="5" value="#{awardsInfo.eventAwards2017.get(0).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.eventAwards2017.get(0).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.eventAwards2017.get(0)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.eventAwards2017.get(1).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.eventAwards2017.get(1).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.eventAwards2017.get(1)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.eventAwards2017.get(2).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.eventAwards2017.get(2).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.eventAwards2017.get(2)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.eventAwards2017.get(3).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.eventAwards2017.get(3).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.eventAwards2017.get(3)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.eventAwards2017.get(4).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.eventAwards2017.get(4).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.eventAwards2017.get(4)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.eventAwards2017.get(5).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.eventAwards2017.get(5).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.eventAwards2017.get(5)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.eventAwards2017.get(6).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.eventAwards2017.get(6).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.eventAwards2017.get(6)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                    </p:panelGrid>
+                                </p:tab>
+                                <p:tab title="Class Awards" >
+                                    <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                        <p:dataList rows="5" value="#{awardsInfo.classAwards2017.get(0).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.classAwards2017.get(0).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.classAwards2017.get(0)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.classAwards2017.get(1).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.classAwards2017.get(1).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.classAwards2017.get(1)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.classAwards2017.get(2).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.classAwards2017.get(2).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.classAwards2017.get(2)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.classAwards2017.get(3).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.classAwards2017.get(3).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.classAwards2017.get(3)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+
+                                    </p:panelGrid>
+                                </p:tab>
+                                <p:tab title="Car Awards" >
+                                    <p:panelGrid columns="2" styleClass="award noOutlinePanelGrid">
+                                        <p:dataList rows="5" value="#{awardsInfo.carAwards2017.get(0).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.carAwards2017.get(0).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.carAwards2017.get(0)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                        <p:dataList rows="5" value="#{awardsInfo.carAwards2017.get(1).awardStrings}" var="driver" type="ordered" >
+                                            <f:facet name="header" >
+                                                #{awardsInfo.carAwards2017.get(1).awardTitle}
+                                                <p:commandButton styleClass="awardInfoButton" icon="fa fa-question" oncomplete="PF('infoDialog').show()" update="infoDialog" >
+                                                    <f:setPropertyActionListener value="#{awardsInfo.carAwards2017.get(1)}" target="#{awardsInfo.selectedAward}" />
+                                                </p:commandButton>
+                                            </f:facet>
+                                            #{driver} 
+                                        </p:dataList>
+                                    </p:panelGrid>
+                                </p:tab>
+                            </p:tabView>
+
+                        </p:tab>
                         <p:tab title="2016 Awards" >
                             <p:panelGrid style="width:100%" styleClass="noOutlinePanelGrid awardsHeaderGrid" columns="1">
                                 <h:outputText value="Number of Events in 2016: #{awardsInfo.stats2016.get(0)}" />
