@@ -1,5 +1,7 @@
 package org.json;
 
+import java.util.Map.Entry;
+
 /*
 Copyright (c) 2002 JSON.org
 
@@ -24,8 +26,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import java.util.Iterator;
-
 /**
  * Convert a web browser cookie list string to a JSONObject and back.
  * @author JSON.org
@@ -39,7 +39,7 @@ public class CookieList {
      * The pairs are separated by ';'. The names and the values
      * will be unescaped, possibly converting '+' and '%' sequences.
      *
-     * To add a cookie to a cooklist,
+     * To add a cookie to a cookie list,
      * cookielistJSONObject.put(cookieJSONObject.getString("name"),
      *     cookieJSONObject.getString("value"));
      * @param string  A cookie list string
@@ -69,18 +69,17 @@ public class CookieList {
      */
     public static String toString(JSONObject jo) throws JSONException {
         boolean             b = false;
-        Iterator<String>    keys = jo.keys();
-        String              string;
         StringBuilder sb = new StringBuilder();
-        while (keys.hasNext()) {
-            string = keys.next();
-            if (!jo.isNull(string)) {
+        for (final Entry<String,?> entry : jo.entrySet()) {
+        	final String key = entry.getKey();
+        	final Object value = entry.getValue();
+            if (!JSONObject.NULL.equals(value)) {
                 if (b) {
                     sb.append(';');
                 }
-                sb.append(Cookie.escape(string));
+                sb.append(Cookie.escape(key));
                 sb.append("=");
-                sb.append(Cookie.escape(jo.getString(string)));
+				sb.append(Cookie.escape(value.toString()));
                 b = true;
             }
         }
