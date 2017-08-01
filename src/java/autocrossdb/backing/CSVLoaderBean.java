@@ -11,9 +11,9 @@ import autocrossdb.entities.DriverStatsPK;
 import autocrossdb.entities.Events;
 import autocrossdb.entities.Runs;
 import autocrossdb.facades.ClassesFacade;
+import autocrossdb.facades.DriverStatsFacade;
 import autocrossdb.facades.EventsFacade;
 import autocrossdb.facades.RunsFacade;
-import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,6 +49,8 @@ public class CSVLoaderBean
     private RunsFacade runsFacade;
     @EJB
     private EventsFacade eventsFacade;
+    @EJB
+    private DriverStatsFacade driverStatsFacade;
     @PersistenceContext
     private EntityManager em;
 
@@ -60,6 +62,11 @@ public class CSVLoaderBean
     private String growlMessage;
     private String paxWinner;
     private String rawWinner;
+    
+    private int totalCones = 0;
+    private int totalOffcourse = 0;
+    private int runCount = 0;
+    private int totalDrivers = 0;
     
     private long progress;
     private long completeProgress;
@@ -89,79 +96,60 @@ public class CSVLoaderBean
                 
                 eventToWrite = new Events(null, club, location, date, points);
                 runsCollection = new ArrayList<Runs>();
+                Map<String, DriverStats> statsMap = new HashMap<String, DriverStats>();
+                
                 while(reader.hasNextLine())
                 {
                     String line = reader.nextLine();
                     String[] split = line.split(",");
                     int runNumber = 1;
                     int cones = 0;
+                    totalDrivers += 1;
                     String offcourse = "N";
-                    classToWrite = new Classes(split[1]);
+                    classToWrite = classesFacade.find(split[1]);
                     //Each comma separated value at 3 or higher is a run time
                     for(int x = 3; x < split.length; x++)
                     {
                         //Check if the run contains cone count or offcourse
                         if(split[x].contains("+"))
                         {
-                            if(split[x].contains("OFF"))
+                            if(split[x].contains("OFF") || split[x].contains("DNF"))
                             {
                                 offcourse = "Y";
                                 split[x] = split[x].substring(0, split[x].indexOf("+")-1);
+                                totalOffcourse += 1;
                             }
                             else
                             {   
                                 cones = Integer.parseInt(split[x].substring(split[x].indexOf("+")));
                                 split[x] = split[x].substring(0, split[x].indexOf("+")-1);
+                                totalCones += cones;
                             }
                         }
-                        
-                        runsCollection.add(new Runs(null, split[0], split[2], runNumber, Double.parseDouble(split[x]), calculatePax(classToWrite, split[x]), offcourse, cones));
+                        Runs runToWrite = new Runs(null, split[0], split[2], runNumber, Double.parseDouble(split[x]) + 2 * cones, calculatePax(classToWrite, split[x] + (2 * cones)), offcourse, cones);
+                        runToWrite.setRunClassName(classToWrite);
+                        runToWrite.setRunEventId(eventToWrite);
+                        runsCollection.add(runToWrite);
+                        if(runNumber >= runCount)
+                        {
+                            runCount = runNumber;
+                        }
                         runNumber++;
+                        
+                        
                     }
                     eventToWrite.setRunsCollection(runsCollection);
-                    
-                    //update driver stats
-                    Map<String, DriverStats> statsMap = new HashMap<String, DriverStats>();
-                    paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
-                    rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventUrl", eventToWrite.getEventId()).getResultList().get(0)[0];
-                    
-                    for(Runs r : runsCollection)
-                    {
-                        DriverStats ds = statsMap.get(r.getRunDriverName());
-
-                        if(ds == null)
-                        {
-                            ds = new DriverStats();
-                            DriverStatsPK dsPk = new DriverStatsPK();
-                            
-                            dsPk.setDsName(r.getRunDriverName());
-                            dsPk.setDsClass(r.getRunClassName().getClassName());
-                            Calendar cal =  Calendar.getInstance();
-                            cal.setTime(date);
-                            dsPk.setDsYear(cal.get(Calendar.YEAR));
-                            
-                            ds.setDriverStatsPK(dsPk);
-                            
-                            /*
-                            
-                            
-                                LEFT OFF HERE
-                            
-                            TODO
-                            
-                            */
-                            
-                            
-                            
-                        }
-                        else
-                        {
-                            
-                        }
-                    }
+                    eventToWrite.setEventCones(totalCones);
+                    eventToWrite.setEventOffcourses(totalOffcourse);
+                    eventToWrite.setEventRunsPer(runCount);
+                    eventToWrite.setEventDrivers(totalDrivers);
                     
                 }
-                if(eventsFacade.find(eventToWrite.getEventId()) == null)
+                
+                //check if event already exists
+                Events e = (Events) em.createQuery("SELECT e FROM Events e WHERE e.eventDate = :date AND e.eventClub = :club AND e.eventLocation = :location").setParameter("date", date).setParameter("club", club).setParameter("location", location).getResultList().get(0);
+                
+                if(e == null && eventsFacade.find(eventToWrite.getEventId()) == null)
                 {
                     eventsFacade.create(eventToWrite);
                     Iterator<Runs> it = runsCollection.iterator();
@@ -171,10 +159,92 @@ public class CSVLoaderBean
                         progDoub += 100.0 / completeProgress;
                         progress = Math.round(progDoub);
                     }
+                    paxWinner = (String)em.createNamedQuery("Runs.findBestPaxByEvent", Object[].class).setParameter("eventId", eventToWrite.getEventId()).getResultList().get(0)[0];
+                    rawWinner = (String)em.createNamedQuery("Runs.findBestRawByEvent", Object[].class).setParameter("eventId", eventToWrite.getEventId()).getResultList().get(0)[0];
                     eventToWrite.setPaxWinner(paxWinner);
                     eventToWrite.setRawWinner(rawWinner);
                     eventsFacade.edit(eventToWrite);
-
+                    
+                    Calendar cal =  Calendar.getInstance();
+                    cal.setTime(date);  
+                    
+                    for(Runs r : runsCollection)
+                    {
+                        DriverStats ds = statsMap.get(r.getRunDriverName());
+                        
+                        if(ds == null)
+                        {
+                            ds = new DriverStats();
+                            DriverStatsPK dsPk = new DriverStatsPK();
+                            
+                            dsPk.setDsName(r.getRunDriverName());
+                            dsPk.setDsClass(r.getRunClassName().getClassName());
+                            dsPk.setDsYear(cal.get(Calendar.YEAR));
+                            ds.setDriverStatsPK(dsPk);
+                            
+                            //only set events, raw winner, and pax winner on the first run
+                            if(r.getRunNumber() == 1)
+                            {
+                                ds.setDsEvents(1);
+                                if(dsPk.getDsName().equals(rawWinner))
+                                {
+                                    ds.setDsRawWins(1);
+                                }
+                                else
+                                {
+                                    ds.setDsRawWins(0);
+                                }
+                                if(dsPk.getDsName().equals(paxWinner))
+                                {
+                                    ds.setDsPaxWins(1);
+                                }
+                                else
+                                {
+                                    ds.setDsPaxWins(0);
+                                }
+                            }
+                            ds.setDsCones(r.getRunCones());
+                            if(r.getRunOffcourse().equals("Y"))
+                            {
+                                ds.setDsOffcourses(1);
+                            }
+                            else
+                            {
+                                ds.setDsOffcourses(0);
+                            }
+                            ds.setDsRuns(1);
+                            
+                            statsMap.put(r.getRunDriverName(), ds);
+                        }
+                        else
+                        {
+                            DriverStats dsNew = new DriverStats(ds);
+                            dsNew.setDsCones(dsNew.getDsCones() + r.getRunCones());
+                            if(r.getRunOffcourse().equals("Y"))
+                            {
+                                dsNew.setDsOffcourses(dsNew.getDsOffcourses() + 1);
+                            }
+                            dsNew.setDsCones(dsNew.getDsCones() + 1);
+                            
+                            statsMap.put(r.getRunDriverName(), dsNew);
+                        }
+                    }
+                    
+                    for(String key : statsMap.keySet())
+                    {
+                        DriverStats tempDs = statsMap.get(key);
+                        if(driverStatsFacade.find(tempDs.getDriverStatsPK()) == null)
+                        {
+                            //brand new driver stat entry
+                            driverStatsFacade.create(tempDs);
+                        }
+                        else
+                        {
+                            DriverStats existingDs = (DriverStats)em.createQuery("SELECT d from Driver_Stats d WHERE d.dsName = :name AND d.dsYear = :year AND d.dsClass = :class").setParameter("name", tempDs.getDriverStatsPK().getDsName()).setParameter("year", tempDs.getDriverStatsPK().getDsYear()).setParameter("class", tempDs.getDriverStatsPK().getDsClass()).getResultList().get(0);
+                            driverStatsFacade.edit(combineDriverStats(tempDs, existingDs));
+                        }
+                    }
+               
                     progress = 100;
                     growlMessage = "Loaded Event: " + eventToWrite.getEventLocation() + " " + webFormat.format(eventToWrite.getEventDate());
                 }
@@ -192,6 +262,19 @@ public class CSVLoaderBean
             }
             
         }
+    }
+    
+    private static DriverStats combineDriverStats(DriverStats ds1, DriverStats ds2)
+    {
+        DriverStats newDs = new DriverStats();
+        newDs.setDriverStatsPK(ds1.getDriverStatsPK());
+        newDs.setDsCones(ds1.getDsCones() + ds2.getDsCones());
+        newDs.setDsEvents(ds1.getDsEvents() + ds2.getDsEvents());
+        newDs.setDsOffcourses(ds1.getDsOffcourses() + ds2.getDsOffcourses());
+        newDs.setDsPaxWins(ds1.getDsPaxWins() + ds2.getDsPaxWins());
+        newDs.setDsRawWins(ds1.getDsRawWins() + ds2.getDsRawWins());
+        newDs.setDsRuns(ds1.getDsRuns() + ds2.getDsRuns());
+        return newDs;
     }
     
     public double calculatePax(Classes classToWrite, String runTime)

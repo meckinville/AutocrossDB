@@ -13,6 +13,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -40,10 +42,20 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Events.findEventsInDateRange", query = "SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate ORDER BY e.eventDate desc"),
     @NamedQuery(name = "Events.findClubEventsInDateRange", query = "SELECT e FROM Events e where e.eventDate > :startDate AND e.eventDate < :endDate and e.eventClubName = :clubName ORDER BY e.eventDate desc")})
 public class Events implements Serializable {
+
+    @Column(name = "EVENT_OFFCOURSES")
+    private Integer eventOffcourses;
+
+    @Column(name = "EVENT_DRIVERS")
+    private Integer eventDrivers;
+    @Column(name = "EVENT_RUNS_PER")
+    private Integer eventRunsPer;
+    @Column(name = "EVENT_CONES")
+    private Integer eventCones;
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "EVENT_ID")
     private int eventId;
     @Basic(optional = false)
@@ -71,18 +83,6 @@ public class Events implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "EVENT_RAW_WINNER")
     private String eventRawWinner;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "EVENT_DRIVERS")
-    private int eventDrivers;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "EVENT_RUNS_PER")
-    private int eventRunsPer;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "EVENT_CONES")
-    private int eventCones;
     
 
     public Events() {
@@ -95,21 +95,16 @@ public class Events implements Serializable {
 
 
     public Events(Integer eventId, String eventClubName, String eventLocation, Date eventDate, String eventType) {
-        this.eventId = eventId;
+        if(eventId != null)
+        {
+            this.eventId = eventId;
+        }
         this.eventClubName = eventClubName;
         this.eventLocation = eventLocation;
         this.eventDate = eventDate;
         this.eventType = eventType;
     }
     
-    public Events(String eventUrl, String eventClubName, String eventLocation, Date eventDate, String eventType, String eventPaxWinner, String eventRawWinner) {
-        this.eventClubName = eventClubName;
-        this.eventLocation = eventLocation;
-        this.eventDate = eventDate;
-        this.eventType = eventType;
-        this.eventPaxWinner = eventPaxWinner;
-        this.eventRawWinner = eventRawWinner;
-    }
 
     public String getEventClubName() {
         return eventClubName;
@@ -235,6 +230,26 @@ public class Events implements Serializable {
     @Override
     public String toString() {
         return "autocrossdb.entities.Events[ eventId=" + eventId + " ]";
+    }
+
+    public void setEventDrivers(Integer eventDrivers) {
+        this.eventDrivers = eventDrivers;
+    }
+
+    public void setEventRunsPer(Integer eventRunsPer) {
+        this.eventRunsPer = eventRunsPer;
+    }
+
+    public void setEventCones(Integer eventCones) {
+        this.eventCones = eventCones;
+    }
+
+    public Integer getEventOffcourses() {
+        return eventOffcourses;
+    }
+
+    public void setEventOffcourses(Integer eventOffcourses) {
+        this.eventOffcourses = eventOffcourses;
     }
     
 }

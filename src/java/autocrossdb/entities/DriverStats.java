@@ -70,6 +70,17 @@ public class DriverStats implements Serializable {
     public DriverStats(DriverStatsPK driverStatsPK) {
         this.driverStatsPK = driverStatsPK;
     }
+    
+    public DriverStats(DriverStats ds)
+    {
+        this.driverStatsPK = ds.getDriverStatsPK();
+        this.dsEvents = ds.getDsEvents();
+        this.dsRawWins = ds.getDsRawWins();
+        this.dsPaxWins = ds.getDsPaxWins();
+        this.dsCones = ds.getDsCones();
+        this.dsOffcourses = ds.getDsOffcourses();
+        this.dsRuns = ds.getDsRuns();
+    }
 
     public DriverStats(DriverStatsPK driverStatsPK, int dsEvents, int dsRawWins, int dsPaxWins, int dsCones, int dsOffcourses, int dsRuns) {
         this.driverStatsPK = driverStatsPK;

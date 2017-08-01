@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Autocross DB</title>
+    </h:head>
+    <h:body>
+        <f:facet name="last">
+            <h:outputStylesheet name="css/autoxDbMainStyle.css"  />
+        </f:facet>
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="60" styleClass="menuBar" >
+                <h:form>
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:commandButton value="Home" ajax="false" action="index.xhtml?faces-redirect=true" icon="fa fa-home" />
+                            <p:commandButton value="Event Analysis" ajax="false" action="eventInfoPage.xhtml?faces-redirect=true" icon="fa fa-upload" />
+                            <p:commandButton value="New Event" ajax="false" action="loadEventPage.xhtml?faces-redirect=true" icon="fa fa-calendar" styleClass="ui-state-focus"  />
+                            <p:commandButton value="Chart" ajax="false" action="comparisonChart.xhtml?faces-redirect=true" icon="fa fa-line-chart" />
+                            <p:commandButton value="Awards" ajax="false" action="awardsPage.xhtml?faces-redirect=true" icon="fa fa-trophy" />
+                            <p:commandButton value="Driver Analysis" ajax="false" action="driverAnalysisPage.xhtml?faces-redirect=true" icon="fa fa-search" />
+                            <p:commandButton value="Statistics" ajax="false" action="statisticsPage.xhtml?faces-redirect=true" icon="fa fa-list-ol" />
+                            <p:commandButton value="Nemesis" ajax="false" action="nemesisPage.xhtml?faces-redirect=true" icon="fa fa-user-secret" />
+                            <p:commandButton value="Trophy Room" ajax="false" action="trophyRoomPage.xhtml?faces-redirect=true" icon="fa fa-trophy" />
+                        </f:facet>
+                    </p:toolbar>
+                </h:form>
+            </p:layoutUnit>
+            <p:layoutUnit position="center" >
+                <p:panel header="Event Loader" style="margin: 0 auto;width: 550px;">
+                    <h:form id="loadEventForm" enctype="multipart/form-data">
+                       <p:growl id="messages" severity="info"/>
+                       <p:panelGrid columns="2" styleClass="noOutlinePanelGrid" style="margin: 0 auto;" >
+                            <p:outputLabel for="url" value="Results URL:"></p:outputLabel>
+                            <p:fileUpload id="url" value="#{csvLoader.file}" required="true" mode="simple" />
+                            <p:outputLabel for="club" value="Club Name:"></p:outputLabel>
+                            <p:selectOneMenu id="club" value="#{csvLoader.club}" required="true" >
+                                <f:selectItem itemLabel="Buccaneer Region SCCA" itemValue="BUCCANEER" />
+                                <f:selectItem itemLabel="Central Florida SCCA" itemValue="CFRSCCA" />
+                                <f:selectItem itemLabel="Martin SCC" itemValue="MARTINSCC" />
+                                <f:selectItem itemLabel="Gulf Coast Autocrossers" itemValue="GULFCOAST" />
+                             </p:selectOneMenu>
+                            <p:outputLabel for="location" value="Event Location:" />
+                            <p:selectOneMenu id="location" value="#{csvLoader.location}" required="true" > 
+                                <f:selectItem itemLabel="Amelia Island" itemValue="AMELIA" />
+                                <f:selectItem itemLabel="Brooksville" itemValue="BROOKSVILLE" />
+                                <f:selectItem itemLabel="Buckingham Airfield" itemValue="BUCKINGHAM" />
+                                <f:selectItem itemLabel="Daytona" itemValue="DAYTONA" />
+                                <f:selectItem itemLabel="Deland" itemValue="DELAND" />
+                                <f:selectItem itemLabel="EFSC (Melbourne)" itemValue="EFSC" />
+                                <f:selectItem itemLabel="The FIRM" itemValue="FIRM" />
+                                <f:selectItem itemLabel="Gainesville" itemValue="GAINESVILLE" />
+                                <f:selectItem itemLabel="Geneva" itemValue="GENEVA" />
+                                <f:selectItem itemLabel="Hutchinson Island" itemValue="HUTCHINSON" />
+                                <f:selectItem itemLabel="Lake Tech" itemValue="LAKE TECH" />
+                                <f:selectItem itemLabel="OCCC" itemValue="OCCC" /> 
+                                <f:selectItem itemLabel="Roebling Road" itemValue="ROEBLING" />
+                                <f:selectItem itemLabel="Sebring" itemValue="SEBRING" />
+                                <f:selectItem itemLabel="Valkaria" itemValue="VALKARIA" />
+                           </p:selectOneMenu>
+                            <p:outputLabel for="date" value="Event Date:" />
+                            <p:calendar id="date" value="#{csvLoader.date}" required="true"/>
+                            <p:outputLabel for="points" value="Event Type:" />
+                            <p:selectOneRadio id="points" value="#{csvLoader.points}" required="true">
+                                <f:selectItem id="pointsCheckBox" itemLabel="Points" itemValue="POINTS"></f:selectItem>
+                                <f:selectItem id="practiceCheckBox" itemLabel="Practice" itemValue="PRACTICE"></f:selectItem>
+                            </p:selectOneRadio>
+                            <p:commandButton disabled="false" ajax="false" widgetVar="loadEventButton" value="Load Event" action="#{csvLoader.upload}"/>
+                        </p:panelGrid>
+                    </h:form>
+                </p:panel>
+            </p:layoutUnit>
+        </p:layout>
+        <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-74486649-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+    </h:body>
+</html>
+
